@@ -1,82 +1,80 @@
+(function() {
+    "use strict";
+    function setData(inputString) {
+        // Normalize the Japanese characters used for syntax
+        var remap = {
+            '（': '(',
+            '〔': '(',
+            '【': '(',
 
+            '）': ')',
+            '〕': ')',
+            '】': ')'
+        };
+        for(var key in remap) {
+            inputString = inputString.replace(new RegExp(key, 'g'), remap[key]);
+        }
 
-function setData(inputString) {
-    // Normalize the Japanese characters used for syntax
-    var remap = {
-        '（': '(',
-        '〔': '(',
-        '【': '(',
+        var lines = inputString.trim().split('\n');
 
-        '）': ')',
-        '〕': ')',
-        '】': ')'
-    };
-    for(var key in remap) {
-        inputString = inputString.replace(new RegExp(key, 'g'), remap[key]);
-    }
+        var top = document.getElementById("result");
 
-    var lines = inputString.trim().split('\n');
+        // Empty everything first
+        top.innerHTML = '';
 
-    var top = document.getElementById("result");
+        var area = document.createElement("div"); // Create a <div> per area
+        area.classList.add("flushright");
+        top.appendChild(area);
 
-    // Empty everything first
-    top.innerHTML = '';
+        for (var i=0 ; i<lines.length ; i++) {
+            var line = lines[i].trim();
+            if (line === '') {
+                // Create a new section
+                var sep = document.createElement("hr");
+                top.appendChild(sep);
+                area = document.createElement("div");
+                area.classList.add("flushright");
+                top.appendChild(area);
+            } else {
+                if (area.hasChildNodes()) {
+                    var space = document.createElement("div");
+                    space.classList.add("blank");
+                    area.insertBefore(space, area.firstChild);
+                }
 
-    var area = document.createElement("div"); // Create a <div> per area
-    area.classList.add("flushright");
-    top.appendChild(area);
+                // Real practice line. X(xxx) is a kanji followed by
+                // phonetics
+                line = line.replace(/(.)\(([^()]+)\)/g,
+                                    '<ruby><rb>$1</rb><rt>$2</rt></ruby>')
 
-    for (var i=0 ; i<lines.length ; i++) {
-        var line = lines[i].trim();
-        if (line === '') {
-            // Create a new section
-            var sep = document.createElement("hr");
-            top.appendChild(sep);
-            area = document.createElement("div");
-            area.classList.add("flushright");
-            top.appendChild(area);
-        } else {
-            if (area.hasChildNodes()) {
-                var space = document.createElement("div");
-                space.classList.add("blank");
-                area.insertBefore(space, area.firstChild);
+                var elem = document.createElement("span");
+                elem.classList.add("practice");
+                elem.innerHTML = line;
+                area.insertBefore(elem, area.firstChild);
             }
-
-            // Real practice line. X(xxx) is a kanji followed by
-            // phonetics
-            line = line.replace(/(.)\(([^()]+)\)/g,
-                                '<ruby><rb>$1</rb><rt>$2</rt></ruby>')
-
-            var elem = document.createElement("span");
-            elem.classList.add("practice");
-            elem.innerHTML = line;
-            area.insertBefore(elem, area.firstChild);
         }
     }
-}
 
-function refreshPage() {
-    var data = document.getElementById("data");
-    setData(data.value);
-}
+    function refreshPage() {
+        var data = document.getElementById("data");
+        setData(data.value);
+    }
 
-function refreshStyle() {
-    var mode = document.getElementById("mode");
-    var data = document.getElementById("result");
-    data.className = mode.value;
-}
+    function refreshStyle() {
+        var mode = document.getElementById("mode");
+        var data = document.getElementById("result");
+        data.className = mode.value;
+    }
 
-function setup() {
-    var data = document.getElementById("data");
-    data.addEventListener("change", refreshPage);
-    
-    data = document.getElementById("mode");
-    data.addEventListener("change", refreshStyle);
-    refreshPage();
-    refreshStyle();
-}
+    function setup() {
+        var data = document.getElementById("data");
+        data.addEventListener("change", refreshPage);
 
-document.addEventListener('DOMContentLoaded', setup);
+        data = document.getElementById("mode");
+        data.addEventListener("change", refreshStyle);
+        refreshPage();
+        refreshStyle();
+    }
 
-
-
+    document.addEventListener('DOMContentLoaded', setup);
+})();

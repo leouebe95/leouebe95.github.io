@@ -1,7 +1,35 @@
+div.collapsed div {
+  display: none;
+}
+
+div.collapsible.collapsed img {
+  content: url("img/Collapsible-collapsed.png");
+}
+div.collapsible.collapsed img:hover {
+  content: url("img/Collapsible-collapsed-hover.png");
+}
+div.collapsible img {
+  content: url("img/Collapsible-expanded.png");
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+div.collapsible img:hover {
+  content: url("img/Collapsible-expanded-hover.png");
+}
+
+h1:hover {
+  background-color: #dcebf5;
+}
+
+h1 {
+  background-color: #f5f5dc;
+  font-size: 125%;
+}
 
 hr {
-  margin-top: 2em;
-  margin-bottom: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 div.flushright  {
@@ -22,6 +50,11 @@ span.practice {
 
 dt {
   font-weight: bold;
+}
+
+/* Decrease the default kana size to allow 3 kana */
+ruby rt {
+  font-size: 33%;
 }
 
 rt {

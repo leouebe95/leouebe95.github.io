@@ -2,10 +2,12 @@
   <head>
 	<link rel="stylesheet" href="testSheet.css"></link>
 	<script src="testSheet.js"></script>
+	<script src="collapsible.js"></script>
   </head>
   <body>
 
 	<div id="controls" class="noprint">
+	  <div class="collapsible" title="Help">
 	  <p>
 		Type short sentences to practice kanji reading and
 		writing. This page is meant to be printed for practice. When
@@ -25,6 +27,9 @@
 		  <li><b>Solution</b>: Display both the kanji and phonetic kana</li>
 		</ul>
 	  </p>
+	  </div>
+
+	  <div class="collapsible" title="Input">
 	  
 	  Display mode: 
 	  <select id="mode" style="vertical-align: top;">
@@ -33,13 +38,12 @@
 		<option value="phonetics">Kana</option>
 		<option value="solution">Solution</option>
 	  </select>
-
 	  Input text:
 	  <textarea rows="20" cols="50" id="data" style="vertical-align: top;">
 足（あし）のつめ
 文（ぶん）をよむ
 ひげの男（おとこ）
-はそい糸（いと）
+ほそい糸（いと）
 虫（むし）がとんだ
 ひかる石（いし）
 はこに入（い）れる
@@ -58,6 +62,7 @@
 みどりの草（くさ）
 つめたい川（かわ）
 	  </textarea>
+	  </div>
 
 	  <hr/>
 	  </div>
