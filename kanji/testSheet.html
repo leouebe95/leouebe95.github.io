@@ -1,0 +1,60 @@
+<html>
+  <head>
+	<link rel="stylesheet" href="testSheet.css"></link>
+	<script src="testSheet.js"></script>
+  </head>
+  <body>
+	<div id="result"></div>
+
+	<div id="controls" class="noprint">
+	  <hr/>
+	  <div>
+	  Type short sentences to practice kanji reading and
+	  writing. Phonetic kana should follow the kanji in
+	  parenthesis, like in this example: 足（あし）のつめ.
+
+	  There are 4 modes:
+	  <dl>
+		<dt>Kanji</dt><dd>Find the right kanji to fill the blanks. </dd>
+		<dt>Trace</dt><dd>Kanji is displayed in grey to practice writing</dd>
+		<dt>Kana</dt><dd>Find the phonetic kana for all the kanji</dd>
+		<dt>Solution</dt><dd>Display both the kanji and phonetic kana</dd>
+	  </ul>
+	  </div>
+
+	  Display mode: 
+	  <select id="mode" style="vertical-align: top;">
+		<option value="kanji">Kanji</option>
+		<option value="trace">Trace</option>
+		<option value="phonetics">Kana</option>
+		<option value="solution">Solution</option>
+	  </select>
+
+	  Input text:
+	  <textarea rows="20" cols="50" id="data" style="vertical-align: top;">
+足（あし）のつめ
+文（ぶん）をよむ
+ひげの男（おとこ）
+はそい糸（いと）
+虫（むし）がとんだ
+ひかる石（いし）
+はこに入（い）れる
+土（つち）をほる
+町（まち）のはずれ
+花（はな）をつむ
+
+車（くるま）のうんてん
+みんなで学（まな）ぶ
+白（しろ）いこな
+力（ちから）くらべ
+耳（みみ）がかゆい
+竹（たけ）をほる
+どうぶつの本（ほん）
+子（こ）ブタ
+みどりの草（くさ）
+つめたい川（かわ）
+	  </textarea>
+
+	  </div>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+
+hr {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+div.flushright  {
+  text-align: right;
+}
+
+div.blank  {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+}
+
+span.practice {
+  font-size: 300%;
+  writing-mode: vertical-rl;
+  vertical-align: top;
+}
+
+dt {
+  font-weight: bold;
+}
+
+rt {
+  border: 2px solid rgba(0, 0, 0, 0);
+}
+rb {
+  border: 2px solid rgba(0, 0, 0, 0);
+}
+
+/* ---- hide kanji ---- */
+
+div.kanji rb {
+  border: 2px solid blue;
+  color: rgba(0, 0, 0, 0);
+}
+
+/* ---- Trace kanji ---- */
+
+div.trace rb {
+  border: 2px solid blue;
+  color: #E0E0E0;
+}
+
+/* ---- hide phonetics ---- */
+
+div.phonetics rt {
+  border: 2px solid blue;
+  color: rgba(0, 0, 0, 0);
+}
+
+/* ---- hide controls for printing ---- */
+@media print {
+  .noprint, .noprint * {
+    display: none !important;
+  }
+}
