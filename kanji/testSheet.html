@@ -1,5 +1,7 @@
 <html>
   <head>
+	<meta http-equiv="Content-Type" content="text/html;UTF-8">
+	<meta charset="UTF-8">
 	<link rel="stylesheet" href="testSheet.css"></link>
 	<script src="testSheet.js"></script>
 	<script src="collapsible.js"></script>
@@ -14,7 +16,7 @@
 		printing, the input text and explanation will be hidden.
 		Phonetic kana should follow the kanji in
 		parenthesis, like in this example: 足（あし）のつめ. Each
-		sentence will be dis[played vertically, right to left. A blank
+		sentence will be displayed vertically, right to left. A blank
 		line starts a new row of sentences.
 	  </p>
 
@@ -30,16 +32,44 @@
 	  </div>
 
 	  <div class="collapsible" title="Input">
-	  
-	  Display mode: 
-	  <select id="mode" style="vertical-align: top;">
-		<option value="kanji">Kanji</option>
-		<option value="trace">Trace</option>
-		<option value="phonetics">Kana</option>
-		<option value="solution">Solution</option>
-	  </select>
-	  Input text:
-	  <textarea rows="20" cols="50" id="data" style="vertical-align: top;">
+		<table>
+		  <tr>
+			<td style="vertical-align:top">
+			  <table>
+				<tr>
+				  <td>
+					Practice mode:
+					<select id="mode" style="vertical-align: top;">
+					  <option value="kanji">Kanji</option>
+					  <option value="trace">Trace</option>
+					  <option value="phonetics">Kana</option>
+					  <option value="solution">Solution</option>
+					</select>
+				  </td>
+				</tr>
+				<tr>
+				  <td>
+					<input type="checkbox" id="shuffle" checked="true"> Shuffle
+				  </td>
+				</tr>
+				<tr>
+				  <td>
+					Max Sentences per line:
+					<input type="number" id="maxlines" min="5" max="15" value="10">
+				  </td>
+				</tr>
+			  </table>
+			</td>
+			<td>
+			  <table>
+				<tr>
+				  <td>
+					Input text:
+				  </td>
+				</tr>
+				<tr>
+				  <td>
+					<textarea rows="20" cols="50" id="data" style="vertical-align: top;">
 足（あし）のつめ
 文（ぶん）をよむ
 ひげの男（おとこ）
@@ -50,7 +80,6 @@
 土（つち）をほる
 町（まち）のはずれ
 花（はな）をつむ
-
 車（くるま）のうんてん
 みんなで学（まな）ぶ
 白（しろ）いこな
@@ -61,7 +90,14 @@
 子（こ）ブタ
 みどりの草（くさ）
 つめたい川（かわ）
-	  </textarea>
+					</textarea>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		</table>
+
 	  </div>
 
 	  <hr/>
