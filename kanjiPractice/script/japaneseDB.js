@@ -63,6 +63,16 @@ JapaneseDB = (function($) {
             // On is typically katakana
 			__db = __db.concat(entries);
             __dbIsKanji = true;
+
+            for (var i=0 ; i<entries.length ; i++) {
+                if (entries[i][4] === 'Grade  1') {
+                var cc = entries[i][0].charCodeAt(0);
+                var code = cc.toString(16).toUpperCase();
+		        while (code.length < 5) { code = '0'+code; }
+
+                console.log('mv '+code+'.svg E:/jm-perso/git/leouebe95.github.io/kanjiPractice/kanjiStrokeOrder');
+                }
+            }
 		},
 
 	    addKanjiStateToDB: function(entries) {
