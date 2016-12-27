@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html manifest="language.appcache">
+  <head>
+	<meta charset="UTF-8" />
+	<title>Japanese Kanji Practice</title>
+	<link type="text/css" rel="stylesheet" href="style/base.css" />
+	<script type="text/javascript" src="script/base.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="style/language.css" />
+	<script type="text/javascript" src="script/japaneseKanjiUI.js"></script>
+
+	<script type="text/javascript" src="script/kana.js"></script>
+	<script type="text/javascript" src="script/japaneseDB.js"></script>
+	<script type="text/javascript" src="script/practiceKanji.js"></script>
+
+	<!-- For iOS  -->
+	<meta name="viewport"
+		  content="user-scalable=no, width=device-width,
+				   initial-scale=1.0, maximum-scale=1.0" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="apple-touch-icon" href="img/place.jpg" />
+
+	<!--
+	<link rel="apple-touch-startup-image" href="img/splash.png" />
+	-->
+  </head>
+  <body>
+
+	<h1>Kanji Practice</h1>
+
+	<table class="layout">
+	  <tr>
+		<td><div class="kanji" id="kanji">円</div>
+		  <div class="ctrl"><input type="checkbox" checked="true" id="kanjiCHK"/>Kanji</div>
+		</td>
+		<td>
+		  <table class="layout">
+			<tr>
+			  <td class="ctrl">Kun reading</td>
+			  <td class="ctrl"><input type="checkbox" id="kunCHK"/>ひらがな</td>
+			  <td><div class="kana" id="kun"></div></td>
+			</tr><tr>
+			  <td></td>
+			  <td class="ctrl"><input type="checkbox" id="kunkataCHK"/>カタカナ</td>
+			  <td><div class="roma" id="kunkata"></div></td>
+			</tr><tr>
+			  <td></td>
+			  <td class="ctrl"><input type="checkbox" id="kunromaCHK"/>Romaji</td>
+			  <td><div class="roma" id="kunroma"></div></td>
+			</tr><tr>
+			  <td>&nbsp;</td>
+			</tr><tr>
+			  <td class="ctrl">On reading</td>
+			  <td class="ctrl"><input type="checkbox" id="onCHK"/>カタカナ</td>
+			  <td><div class="kana" id="on"></div></td>
+			</tr><tr>
+			  <td></td>
+			  <td class="ctrl"><input type="checkbox" id="onhiraCHK"/>ひらがな</td>
+			  <td><div class="roma" id="onhira"></div></td>
+			</tr><tr>
+			  <td></td>
+			  <td class="ctrl"><input type="checkbox" id="onromaCHK"/>Romaji</td>
+			  <td><div class="roma" id="onroma"></div></td>
+			</tr><tr>
+			  <td>&nbsp;</td>
+			</tr><tr>
+			  <td class="ctrl">English</td>
+			  <td><input type="checkbox" id="englishCHK"/></td>
+			  <td><div class="roma" id="english"></div></td>
+			</tr><tr>
+			  <td>&nbsp;</td>
+			</tr><tr>
+			  <td></td>
+			  <td><div id="grade"></div></td>
+			</tr>
+		  </table>
+		</td>
+		<td style="vertical-align: bottom">
+		  <div id="order">
+			<!-- This is an HTML div, and inside goes the SVG -->
+			<svg width="300px" height="300px">
+			  <g style="fill-opacity:1;stroke:none">
+				<circle cx="150" cy="150" r="150" style="fill:#d22022" />
+				<circle cx="150" cy="150" r="125" style="fill:#ffffff" />
+				<rect width="260" height="25" x="25" y="137.5" transform="rotate(-45, 150, 150)" style="fill:#d22022" />
+			  </g>
+			</svg>
+		  </div>
+		  <div class="ctrl"><input type="checkbox" id="orderCHK"/>Stroke order</div>
+		</td>
+	  </tr>
+	</table>
+
+	<hr/>
+	<div id="results"></div>
+
+	<div class="JQbutton" id="hideAnsw">
+	  <img style="vertical-align: middle" src="img/hide.png"/>
+	  <span style="padding: 15px; vertical-align: middle">
+	  Hide answer</span></div>
+	<div class="JQbutton" id="showAnsw">
+	  <img style="vertical-align: middle" src="img/show.png"/>
+	  <span style="padding: 15px; vertical-align: middle">
+	  Show answer</span></div>
+	<div class="JQbutton" id="nextGood">
+	  <img style="vertical-align: middle" src="img/good.png"/>
+	  <span style="padding: 15px; vertical-align: middle">
+	  Good answer</span></div>
+	<div class="JQbutton" id="nextBad">
+	  <img style="vertical-align: middle" src="img/bad.png"/>
+	  <span style="padding: 15px; vertical-align: middle">
+	  Bad answer</span></div>
+
+	<hr/>
+
+	<table class="layout">
+	  <tr>
+		<td style="padding-right: 40px; vertical-align: top">
+		  <div>Default displayed</div>
+		  <div><input type="checkbox" checked="true" id="kanjiCHK0"/>Kanji</div>
+		  <div><input type="checkbox" id="kunCHK0"/>Kun reading: ひらがな</div>
+		  <div><input type="checkbox" id="kunkataCHK0"/>Kun reading: カタカナ</div>
+		  <div><input type="checkbox" id="kunromaCHK0"/>Kun reading: Romaji</div>
+		  <div><input type="checkbox" id="onCHK0"/>On reading: カタカナ</div>
+		  <div><input type="checkbox" id="onhiraCHK0"/>On reading: ひらがな</div>
+		  <div><input type="checkbox" id="onromaCHK0"/>On reading: Romaji</div>
+		  <div><input type="checkbox" id="englishCHK0"/>English</div>
+		  <div><input type="checkbox" id="orderCHK0"/>Stroke order</div>
+		</td>
+		<td style="padding-right: 40px; vertical-align: top">
+		  <div><input type="checkbox" id="skipKnown"/>Skip known ones</div>
+		</td>
+		<td id="lessonsC1" style="padding-right: 20px; vertical-align: top">
+		</td>
+		<td id="lessonsC2" style="padding-right: 20px; vertical-align: top">
+		</td>
+	  </tr>
+	</table>
+
+  </body>
+</html>

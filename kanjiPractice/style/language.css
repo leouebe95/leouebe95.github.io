@@ -1,0 +1,92 @@
+@CHARSET "UTF-8";
+
+body {
+  background-color:#001020;
+  color:#C0D0E0;
+  font-family: 'calibri';
+}
+
+h1 {
+  background-color:#102030;
+  font-size:150%;
+  color:#80C0E0;
+  font-weight:bold;
+}
+
+select, input {
+  background-color:#102030;
+  color:#C0D0E0;
+  border-color:#6080B0;
+  font-weight:bold;
+}
+
+.res {
+  width:120px
+}
+
+.warning {
+  padding:10px;
+  background-color: #A01020;
+  border-color: #801010;
+  color: white;
+}
+
+td.label {
+  width:400px;
+}
+
+div.JQhideableText {
+  font-size:200%;
+}
+
+/* All tables except layout class have a 1 pix border */
+table.layout {
+  border-collapse:collapse;
+  display: inline-table;
+  vertical-align: bottom;
+}
+table.layout * td {
+  padding-left:0px;
+  padding-right:0px;
+}
+
+tr.over {
+  font-size:50%;
+}
+span.kanji {
+  font-size:200%;
+}
+tr.over td {
+  text-align: center;
+}
+
+div.boxit {
+  background-color: #101040;
+  box-shadow: 3px 2px 10px black;
+  border-radius: 5px;
+  border-style: ridge;
+  border-color: #405060;
+  display: inline-block;
+  margin: 5px 10px;
+  padding: 5px;
+  color: white;
+}
+
+div.kanji {
+  font-size:1500%;
+  padding: 10px;
+}
+
+div.kana {
+  font-size:150%;
+  padding-left: 10px;
+}
+
+div.roma {
+  font-size:150%;
+  padding-left: 10px;
+}
+
+div.ctrl,td.ctrl {
+  color: #408080;
+}
