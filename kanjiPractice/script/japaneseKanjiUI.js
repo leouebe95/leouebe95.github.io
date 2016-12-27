@@ -97,7 +97,7 @@
 
         var node = document.getElementById("order");
         while (node.firstChild) {
-            node.removeChild(myNode.firstChild);
+            node.removeChild(node.firstChild);
         }
 
         var xhr = new XMLHttpRequest();
