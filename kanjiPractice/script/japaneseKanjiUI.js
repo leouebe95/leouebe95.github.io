@@ -23,7 +23,7 @@
 
     var nbGood = 0;
     var nbBad = 0;
-    
+
 	// Update the UI after the Display or Config parameters changed
 	function updateUI() {
         for (var i = 0; i < controls.length; i++) {
@@ -76,7 +76,7 @@
         for (var i = 0; i < controls.length; i++) {
             $(controls[i]+"CHK").prop('checked', !!$(controls[i]+"CHK0").attr('checked'));
         }
-        
+
 		// Hide the answers
         updateUI();
 		var data = JapaneseDB.next($("skipKnown").attr('checked') ? 1 : 0);
@@ -92,21 +92,21 @@
         $("#grade").text(data.grade);
 
         var cc = data.kanji.charCodeAt(0);
-        var code = cc.toString(16).toUpperCase();
+        var code = cc.toString(16).toLowerCase();
 		while (code.length < 5) { code = '0'+code; }
+
+        var node = document.getElementById("order");
+        while (node.firstChild) {
+            node.removeChild(myNode.firstChild);
+        }
 
         var xhr = new XMLHttpRequest();
         xhr.addEventListener("load", function() {
-            
-            document.getElementById("order")
-                .appendChild(this.responseXML.documentElement);
+                node.appendChild(this.responseXML.documentElement);
         });
         xhr.open("GET","kanjiStrokeOrder/"+code+".svg");
-        // Following line is just to be on the safe side;
-        // not needed if your server delivers SVG with correct MIME type
-        //xhr.overrideMimeType("image/svg+xml");
         xhr.send();
-        
+
         $("#results").text("Good answers: "+nbGood+"/"+(nbGood+nbBad));
     }
 
