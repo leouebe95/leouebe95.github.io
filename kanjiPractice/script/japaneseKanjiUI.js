@@ -85,7 +85,7 @@
             }
         }
         
-        for(var child=element.firstChild; child!==null; child=child.nextSibling) {
+        for(var child=elem.firstChild; child!==null; child=child.nextSibling) {
             fixSVGColor(child);
         }
     }
