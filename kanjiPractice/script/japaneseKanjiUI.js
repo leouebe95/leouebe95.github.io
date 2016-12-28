@@ -74,14 +74,8 @@
     // - recursively change stroke color
     function fixSVGColor(elem) {
         if (elem.tagName && (elem.tagName.toLowerCase() === 'g')) {
-            var style = elem.getAttribute('style');
-            if (style) {
-                var styles = style.split(';');
-                for (var i=0 ; i<styles.length ; i++) {
-                    if (styles[i].toLowerCase().startsWith('stroke:')) {
-                        styles[i] = 'stroke:#C0D0E0';
-                    }
-                }
+            if (elem.style && elem.style.stroke) {
+                elem.style.stroke =  '#C0D0E0';
             }
         }
         
