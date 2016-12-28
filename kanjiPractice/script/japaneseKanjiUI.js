@@ -12,13 +12,13 @@
 
 
 (function($) {
-	"use strict";
+	'use strict';
 
-    var controls = ["#kanji",
-		            "#kun", "#kunkata", "#kunroma",
-		            "#on", "#onhira", "#onroma",
-	                "#english",
-                    "#order"];
+    var controls = ['#kanji',
+		            '#kun', '#kunkata', '#kunroma',
+		            '#on', '#onhira', '#onroma',
+	                '#english',
+                    '#order'];
     var selGrades = ['Grade 1'];
 
     var nbGood = 0;
@@ -28,10 +28,10 @@
 	function updateUI() {
         for (var i = 0; i < controls.length; i++) {
             var opacity = 0;
-            if ($(controls[i]+"CHK").attr('checked')) {
+            if ($(controls[i]+'CHK').attr('checked')) {
                 opacity = 1;
             }
-		    $(controls[i]).css("opacity", opacity);
+		    $(controls[i]).css('opacity', opacity);
         }
     }
 
@@ -52,7 +52,7 @@
 	// Show the answer
 	function showAnswer(event) {
         for (var i = 0; i < controls.length; i++) {
-		    $(controls[i]).css("opacity", 1);
+		    $(controls[i]).css('opacity', 1);
         }
     }
 
@@ -70,61 +70,87 @@
         nextQuestion();
     }
 
+    // Transform the SVG data to adjust it to the page scheme:
+    // - recursively change stroke color
+    function fixSVGColor(elem) {
+        if (elem.tagName === 'G') {
+            var style = elem.getAttribute('style');
+            if (style) {
+                var styles = style.split(';');
+                for (var i=0 ; i<styles.length ; i++) {
+                    if (styles[i].toLowerCase().startsWith('stroke:')) {
+                        styles[i] = 'stroke:#C0D0E0';
+                    }
+                }
+            }
+        }
+    }
+
+    // Transform the SVG data to adjust it to the page scheme:
+    // - make the size 300x300
+    // - change stroke color
+    function fixSVG(root) {
+        root.setAttribute('width', 300);
+        root.setAttribute('height', 300);
+        fixSVGColor(root);
+        return root;
+    }
+
 	// Get to the next Kanji
 	function nextQuestion(event) {
         // Reset the display state
         for (var i = 0; i < controls.length; i++) {
-            $(controls[i]+"CHK").prop('checked', !!$(controls[i]+"CHK0").attr('checked'));
+            $(controls[i]+'CHK').prop('checked', !!$(controls[i]+'CHK0').attr('checked'));
         }
 
 		// Hide the answers
         updateUI();
-		var data = JapaneseDB.next($("skipKnown").attr('checked') ? 1 : 0);
+		var data = JapaneseDB.next($('skipKnown').attr('checked') ? 1 : 0);
 
-        $("#kanji").text(data.kanji);
-        $("#kun").text(data.kun);
-        $("#kunkata").text(data.kunkata);
-        $("#kunroma").text(data.kunroma);
-        $("#on").text(data.on);
-        $("#onhira").text(data.onhira);
-        $("#onroma").text(data.onroma);
-        $("#english").text(data.eng);
-        $("#grade").text(data.grade);
+        $('#kanji').text(data.kanji);
+        $('#kun').text(data.kun);
+        $('#kunkata').text(data.kunkata);
+        $('#kunroma').text(data.kunroma);
+        $('#on').text(data.on);
+        $('#onhira').text(data.onhira);
+        $('#onroma').text(data.onroma);
+        $('#english').text(data.eng);
+        $('#grade').text(data.grade);
 
         var cc = data.kanji.charCodeAt(0);
         var code = cc.toString(16).toLowerCase();
 		while (code.length < 5) { code = '0'+code; }
 
-        var node = document.getElementById("order");
+        var node = document.getElementById('order');
         while (node.firstChild) {
             node.removeChild(node.firstChild);
         }
 
         var xhr = new XMLHttpRequest();
-        xhr.addEventListener("load", function() {
-                node.appendChild(this.responseXML.documentElement);
+        xhr.addEventListener('load', function() {
+            node.appendChild(fixSVG(this.responseXML.documentElement));
         });
-        xhr.open("GET","kanjiStrokeOrder/"+code+".svg");
+        xhr.open('GET','kanjiStrokeOrder/'+code+'.svg');
         xhr.send();
 
-        $("#results").text("Good answers: "+nbGood+"/"+(nbGood+nbBad));
+        $('#results').text('Good answers: '+nbGood+'/'+(nbGood+nbBad));
     }
 
 	function main() {
 		// For iOS: disable page scrolling to get mouse move events
-		$("body").on('touchmove', function(e){ e.preventDefault(); });
+		$('body').on('touchmove', function(e){ e.preventDefault(); });
 
 		$.finalizeUI();
 		updateUI();
 
 		// Bind the buttons callbacks
-		$("#showAnsw").click(showAnswer)
-		$("#hideAnsw").click(updateUI)
-		$("#nextBad").click(nextBad)
-		$("#nextGood").click(nextGood)
+		$('#showAnsw').click(showAnswer)
+		$('#hideAnsw').click(updateUI)
+		$('#nextBad').click(nextBad)
+		$('#nextGood').click(nextGood)
 
         for (var i = 0; i < controls.length; i++) {
-            $(controls[i]+"CHK").change(updateUI);
+            $(controls[i]+'CHK').change(updateUI);
         }
 
         // Add the controls for all the grades
@@ -132,10 +158,10 @@
         var len1 = Math.max(6, Math.floor((grades.length+1)/2));
         for (var i=0 ; i<grades.length ; i++) {
             var grade = grades[i];
-            var colId = i>=len1 ? "lessonsC2" : "lessonsC1";
+            var colId = i>=len1 ? 'lessonsC2' : 'lessonsC1';
             var col = document.getElementById(colId);
-            var div = document.createElement("div");
-            var input = document.createElement("input");
+            var div = document.createElement('div');
+            var input = document.createElement('input');
             input.setAttribute('type', 'checkbox');
             input.setAttribute('id', grade);
             if (selGrades.indexOf(grade) >= 0) {
