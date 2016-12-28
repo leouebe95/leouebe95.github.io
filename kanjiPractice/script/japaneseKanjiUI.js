@@ -84,6 +84,10 @@
                 }
             }
         }
+        
+        for(var child=element.firstChild; child!==null; child=child.nextSibling) {
+            fixSVGColor(child);
+        }
     }
 
     // Transform the SVG data to adjust it to the page scheme:
