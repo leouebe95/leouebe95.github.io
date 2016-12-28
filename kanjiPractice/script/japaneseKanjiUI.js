@@ -73,7 +73,7 @@
     // Transform the SVG data to adjust it to the page scheme:
     // - recursively change stroke color
     function fixSVGColor(elem) {
-        if (elem.tagName.toLowerCase() === 'g') {
+        if (elem.tagName && (elem.tagName.toLowerCase() === 'g')) {
             var style = elem.getAttribute('style');
             if (style) {
                 var styles = style.split(';');
