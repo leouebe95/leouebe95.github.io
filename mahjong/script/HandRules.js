@@ -8,49 +8,60 @@
 	int indx, int score, String desc, [boolean special, boolean normal], int ... implies
 	if special and normal are ommited, they are set to false, true
  */
-function Rule() {
-    "use strict";
+class Rule {
+    constructor() {
+	    // Convert arguments to a real Array
+	    var args = Array.prototype.slice.call(arguments);
 
-	//! Reset a rule. The implied array is emptied
-	Rule.prototype.reset = function(indx, score, desc, special, normal) {
+	    var indx = args.shift();
+	    var score = args.shift();
+	    var desc = args.shift();
+	    var special = false;
+	    var normal = true;
+
+	    if ((args.length > 0) && ((typeof args[0]) === "boolean")) {
+		    special = args.shift();
+		    normal = args.shift();
+	    }
+
+	    // Use reset, to create the fields
+	    this.reset(indx, score, desc, special, normal);
+	    this.implies(args);
+    }
+
+	/**
+       Reset a rule. The implied array is emptied.
+       @param {Int} indx 
+       @param {Int} score 
+       @param {String} desc 
+       @param {Boolean} special 
+       @param {Boolean} normal 
+       @return {undefined}
+    */
+
+    reset(indx, score, desc, special, normal) {
 		this._indx    = indx;	//!< int: Rule official Id
 		this._score   = score;	//!< int: Number of points
 		this._desc    = desc;	//!< string: Rule name
 		this._special = special;//!< boolean: Rule applies to special hands
 		this._normal  = normal;	//!< boolean: Rule applies to normal hands
 		this._implies = [];		//!< int[]: Rules automatically implied
-	};
+	}
 
-	/*!
+	/**
 	  Add a series of implied rules. Argument is an array of integer. Each
 	  element is supposed to be an integer (rule id).
 	  For example:
 		 rule.implies([0]);
 		 rule.implies([0, 1, 6, 7]);
+       @param {Int, ...} args 
+       @return {undefined}
 	 */
-	Rule.prototype.implies = function(args) {
+	implies(args) {
 		for (var i = 0; i < args.length; i++) {
 			this._implies.push(args[i]);
 		}
-	};
-
-	// Convert arguments to a real Array
-	var args = Array.prototype.slice.call(arguments);
-
-	var indx = args.shift();
-	var score = args.shift();
-	var desc = args.shift();
-	var special = false;
-	var normal = true;
-
-	if ((args.length > 0) && ((typeof args[0]) === "boolean")) {
-		special = args.shift();
-		normal = args.shift();
 	}
-
-	// Use reset, to create the fields
-	this.reset(indx, score, desc, special, normal);
-	this.implies(args);
 }
 
 

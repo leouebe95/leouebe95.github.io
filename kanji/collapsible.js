@@ -20,7 +20,7 @@
         var t = document.createTextNode(titleContent);
         title.appendChild(t);
         var content = document.createElement("div");
-        while (elem.firstChild) content.appendChild(elem.firstChild);
+        while (elem.firstChild) {content.appendChild(elem.firstChild);}
 
         elem.appendChild(title);
         elem.appendChild(content);
@@ -36,5 +36,5 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', setupCollapsible);
+    document.addEventListener("DOMContentLoaded", setupCollapsible);
 })();

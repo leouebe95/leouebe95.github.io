@@ -1,17 +1,14 @@
 // -*- coding: utf-8 -*-
 /**
-   @author Jérôme Maillot
    @fileOverview handle the vocabulary database
-
-   <dl>
-   <dt class='heading'>Creation date:</dt>
-   <dd>Sun Sep 28 20:47:26 2014</dd>
-   </dl>
 */
 
-/*
-*/
-JapaneseDB = (function($) {
+// For eslint
+/* global Kana:false */
+
+window.JapaneseDB = (function() {
+	"use strict";
+
     var __dbIsKanji = false;
 	var __db = [];
 	var __good = [];
@@ -30,7 +27,7 @@ JapaneseDB = (function($) {
 	        __indexIndirect = [];
             for (var i = 0 ; i<__db.length ; i++) {
                 __good.push(0);
-				var key = __db[i][indx].replace(/  /g, ' ');
+				var key = __db[i][indx].replace(/ {2}/g, " ");
                 if (lessons.indexOf(key) >= 0) {
                     __indexIndirect.push(i);
                 }
@@ -82,54 +79,57 @@ JapaneseDB = (function($) {
 		},
 
 		/**
-			@param {string} str the input encoded string
-			@return the kana version of the string
+			@param {String} str The input encoded string.
+			@return {String} The kana version of the string.
 		*/
 		toKana: function(str) {
 			// Remove Romaji characters
-			var removeRoma = str.replace(/{[A-Za-z]+}/g, '');
+			var removeRoma = str.replace(/{[A-Za-z]+}/g, "");
 
 			// Replace grouped kanji with kana when there is an override
-			removeRoma = removeRoma.replace(/<[^<>]+>\[([^\x5D]+)\]/g, '$1');
+			removeRoma = removeRoma.replace(/<[^<>]+>\[([^\x5D]+)\]/g, "$1");
 			// Replace kanji with kana when there is an override
-			return removeRoma.replace(/.\[([^\x5D]+)\]/g, '$1');
+			return removeRoma.replace(/.\[([^\x5D]+)\]/g, "$1");
 		},
 
 		/**
-			@param {string} str the input encoded string
-			@return the kanji version of the string
+			@param {String} str The input encoded string.
+			@return {String} The kanji version of the string.
 		*/
 		toKanji: function(str) {
 			// Remove Romaji characters
-			var removeRoma = str.replace(/{[A-Za-z]+}/g, '');
+			var removeRoma = str.replace(/{[A-Za-z]+}/g, "");
 
 			// Remove Kanji grouping
-			removeRoma = removeRoma.replace(/[<>]/g, '');
+			removeRoma = removeRoma.replace(/[<>]/g, "");
 
 			// Remove the Kana phonetics
-			return removeRoma.replace(/\[[^\x5D]+\]/g, '');
+			return removeRoma.replace(/\[[^\x5D]+\]/g, "");
 		},
 
 		/**
-			@param {string} str the input encoded string
-			@return the romaji version of the string
+			@param {String} str The input encoded string.
+			@return {String} The romaji version of the string.
 		*/
 		toRoma: function(str) {
 			// Replace grouped kanji with kana when there is an override
-			var roma = str.replace(/<[^<>]+>\[([^\x5D]+)\]/g, '$1');
+			var roma = str.replace(/<[^<>]+>\[([^\x5D]+)\]/g, "$1");
 			// Replace kanji with kana when there is an override
-			roma = roma.replace(/.\[([^\x5D]+)\]/g, '$1');
+			roma = roma.replace(/.\[([^\x5D]+)\]/g, "$1");
 
 			// Replace kana with romaji when there is an override
-			var roma = roma.replace(/.{([A-Za-z]+)}/g, '$1');
+		    roma = roma.replace(/.{([A-Za-z]+)}/g, "$1");
 
 			// Remove the Kana phonetics
 			return Kana.toRomaji(roma);
 		},
 
 		/**
-			@return The elemId'th element in the form of a dictionary
-			If elemId is not set, returns the current element.
+           @param {Int} [elemId] Index of the database element to
+           return. If not set, the current element is returned.
+		   @return {Object} The elemId'th element in the form of a
+           dictionary. If elemId is not set, returns the current
+           element.
 		*/
 		elem: function(elemId) {
 			elemId = elemId || __index; // Set default value
@@ -151,7 +151,7 @@ JapaneseDB = (function($) {
                     eng: elem[3],
                     grade: elem[4],
                     opt : options
-                }
+                };
             }
 
 			var jap = elem[0];
@@ -165,13 +165,17 @@ JapaneseDB = (function($) {
 				lesson: elem[2],
 				category: elem[3],
 				type: elem[4]
-			}
+			};
 		},
 
 		/**
 			Render the current string inside the root div. The div is
 			completely emptied, then the content is repalced with
-			arrays to display kana or romaji phonetics on top
+			arrays to display kana or romaji phonetics on top.
+            @param {DOMElement} rootDiv The div to render into.
+            @param {DOMElement} [elemId] Index of the database element
+			to render. If not set, the current element is rendered.
+            @return {undefined}
 		*/
 		renderKanji: function(rootDiv, elemId) {
 			elemId = elemId || __index; // Set default value
@@ -180,36 +184,39 @@ JapaneseDB = (function($) {
 			var html = "";
 
 			// Remove Romaji characters
-			jap = jap.replace(/{[A-Za-z]+}/g, '');
+			jap = jap.replace(/{[A-Za-z]+}/g, "");
 
 			// Insert ~ around kanji with phonetics to be able to use
 			// split later.
 
 			// Simple case: One kanji E.g. 私[わたし]
 			// \x5D == ]
-			jap = jap.replace(/([^<>]\[[^\x5D]+\])/g, '~$1~');
+			jap = jap.replace(/([^<>]\[[^\x5D]+\])/g, "~$1~");
 			// Complex case: multiple kanji. E.g. <明日>[あした]
-			jap = jap.replace(/<([^<>]+)>\[([^\x5D]+)\]/g, '~$1[$2]~');
-			parts = jap.split("~");
+			jap = jap.replace(/<([^<>]+)>\[([^\x5D]+)\]/g, "~$1[$2]~");
+			var parts = jap.split("~");
 			// html += "!!!"+jap+"!!!"  // DEBUG
 			for (var i = 0; i < parts.length; i++) {
 				var token = parts[i];
 				if (/\[/.test(token)) {
 					// If part has phonetics, print as a vertical
 					// array
-					var kanji = token.replace(/\[[^\x5D]+\]/g, '');
-					var phonetics = token.replace(/.*\[([^\x5D]+)\]/g, '$1');
-					html += '<table class="layout"><tr class="over"><td>'+phonetics+'</td></tr><tr> <td>'+kanji+'</td></tr></table>';
+					var kanji = token.replace(/\[[^\x5D]+\]/g, "");
+					var phonetics = token.replace(/.*\[([^\x5D]+)\]/g, "$1");
+					html += '<table class="layout"><tr class="over"><td>'+phonetics+"</td></tr><tr> <td>"+kanji+"</td></tr></table>";
 				} else {
 					// If part has no phonetics, print as is
 					html += token;
 				}
 			}
-			rootDiv.html('<span class="kanji">'+html+'</span>');
+			rootDiv.html('<span class="kanji">'+html+"</span>");
 		},
 
 		/**
-			Use speech synthesis to pronounce it
+			Use speech synthesis to pronounce it.
+            @param {Int} [elemId] Index of the database element to
+			pronounce. If not set, the current element is pronounced.
+            @return {undefined}
 		*/
 		sayIt: function(elemId) {
             if (JPvoice === undefined) {
@@ -240,7 +247,7 @@ JapaneseDB = (function($) {
 
 
 		/**
-		   Return the number of entries in the database
+		   @return {Int} The number of entries in the database.
 		*/
 		size: function() {
             if (__indexIndirect.length>0) {
@@ -252,16 +259,13 @@ JapaneseDB = (function($) {
         /**
             Side effect function to move to the next entry in the DB.
 
-            @param {} nbGoodSkip When set to a positive number, all
+            @param {Int} [nbGoodSkip] When set to a positive number, all
             entries for which the number of good answers is greater or equal
             to this number are removed from the list.
-            @return The current entry
-            @public
-            @function
-            @name next
+            @return {Object} The current entry.
         */
 		next: function(nbGoodSkip) {
-            nbGoodSkip = nbGoodSkip | 0;
+            nbGoodSkip = nbGoodSkip || 0;
             if (nbGoodSkip<1) { nbGoodSkip = 99999; }
             do {
                 if (__indexIndirect.length>0) {
@@ -269,7 +273,7 @@ JapaneseDB = (function($) {
                     __indirect = indx;
                     __index = __indexIndirect[__indirect];
                 } else {
-                    var indx = Math.floor(Math.random() * __db.length);
+                    indx = Math.floor(Math.random() * __db.length);
                     __index = indx;
                 }
             }
@@ -287,7 +291,7 @@ JapaneseDB = (function($) {
         },
 
 		/**
-		   Return a sorted array of all known categories.
+		   @return {String[]} A sorted array of all known categories.
 		*/
 		categories: function() {
 			var array = new Array();
@@ -326,11 +330,11 @@ JapaneseDB = (function($) {
 			    }
             }
 			array.sort();
-			for (var i = 0 ; i<array.length ; i++) {
-				array[i] = array[i].replace(/  /g, ' ');
+			for (i = 0 ; i<array.length ; i++) {
+				array[i] = array[i].replace(/ {2}/g, " ");
             }
 			return array;
 		}
-	}
+	};
 
-})(jQuery);
+})();

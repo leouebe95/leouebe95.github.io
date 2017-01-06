@@ -1,3 +1,6 @@
+// For eslint
+/* global JapaneseDB:false */
+
 JapaneseDB.addKanjiToDB([
 	["一","ひとつ","イチ, イツ","one","Grade  1"],
 	["二","ふたつ","ニ, ジ","two","Grade  1"],
@@ -3085,6 +3088,5 @@ JapaneseDB.addKanjiToDB([
 	["雨","あめ, あま-, -さめ","ウ","rain","Grade-full  1"],
 	["赤","あか, あか-, あか.い, あか.らむ, あか.らめる","セキ, シャク","red","Grade-full  1"],
 	["青","あお, あお-, あお.い","セイ, ショウ","blue, green","Grade-full  1"],
-	["白","しろ, しら-, しろ.い","ハク, ビャク","white","Grade-full  1"],
-
+	["白","しろ, しら-, しろ.い","ハク, ビャク","white","Grade-full  1"]
 ]);

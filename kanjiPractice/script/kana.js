@@ -1,26 +1,23 @@
 // -*- coding: utf-8 -*-
 /**
-   @author Jérôme Maillot
    @fileOverview conversions hiragana, katakana, romaji
-
-   <dl>
-   <dt class='heading'>Creation date:</dt>
-   <dd>Sat Sep 27 18:46:59 2014</dd>
-   </dl>
 */
 
 // Add a replace all method to Strings
 String.prototype.replaceAll = function (find, replace) {
+	"use strict";
     var str = this;
-    return str.replace(new RegExp(find, 'gm'), replace);
-};
-// Add a replace all method to Strings
-String.prototype.replaceAllEscape = function (find, replace) {
-    var str = this;
-    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+    return str.replace(new RegExp(find, "gm"), replace);
 };
 
-Kana = (function($) {
+// Add a replace all method to Strings
+String.prototype.replaceAllEscape = function (find, replace) {
+	"use strict";
+    var str = this;
+    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"), "g"), replace);
+};
+
+window.Kana = (function() {
 	"use strict";
 
 	// Remap table for punctuation.
@@ -180,7 +177,7 @@ Kana = (function($) {
 		["びょ", "ビョ", "byo"],
 		["ぴゃ", "ピャ", "pya"],
 		["ぴゅ", "ピュ", "pyu"],
-		["ぴょ", "ピョ", "pyo"],
+		["ぴょ", "ピョ", "pyo"]
 	];
 
 	var __toKana = __toRoma.reverse();
@@ -191,10 +188,9 @@ Kana = (function($) {
 		},
 
 		/**
-			@name canonicalRomaji
-			Convert the input Romaji string to a canonical form
-			@param romaStr
-			@return a new string
+			Convert the input Romaji string to a canonical form.
+			@param {String} romaStr The input string to transform.
+			@return {String} A new string.
 		*/
 		canonicalRomaji: function(romaStr) {
 			romaStr = romaStr.toLowerCase();
@@ -205,15 +201,14 @@ Kana = (function($) {
 		},
 
 		/**
-			@name toRomaji
-			Convert the input Kana string to romaji
-			@param inStr
-			@return a new string
+			Convert the input Kana string to romaji.
+			@param {String} inStr The input string to transform.
+			@return {String} A new string.
 		*/
 		toRomaji: function(inStr) {
 			// Special "tsu" (Sokuon) case convert to hiragana
 			inStr = inStr.replaceAll("ッ", "っ");
-			
+
 
 			__toRoma.map(function(item) {
 				// Hiragana
@@ -228,11 +223,10 @@ Kana = (function($) {
 			}
 
 			// In case input string is katakana, convert double vowels
-			var reg = new RegExp("(.)ー", "g");
 			inStr = inStr.replace(/(.)ー/g, "$1$1");
-			
+
 			// Finally remap long vowels
-			for(var key in __long) {
+			for(key in __long) {
 				inStr = inStr.replaceAll(__long[key], key);
 			}
 			inStr = inStr.replaceAll("oo", "ō");
@@ -241,12 +235,11 @@ Kana = (function($) {
 		},
 
 		/**
-			@name toKana
-			Convert the input string to hiragana
-			@param inStr
-			@param hiragana if true convert to hiragana. Otherwise
-			convert to katakana
-			@return a new string
+			Convert the input string to hiragana.
+			@param {String} inStr The input string to transform.
+			@param {Boolean} hiragana If true convert to
+			hiragana. Otherwise convert to katakana.
+			@return {String} A new string.
 		*/
 		toKana: function(inStr, hiragana) {
 			inStr = this.canonicalRomaji(inStr);
@@ -273,7 +266,7 @@ Kana = (function($) {
 
 
 			// Punctuation
-			for(var key in __punct) {
+			for(key in __punct) {
 				inStr = inStr.replaceAllEscape(__punct[key], key);
 			}
 
@@ -290,9 +283,9 @@ Kana = (function($) {
 		toHiragana: function(inStr) {
 			return this.toKana(inStr, true);
 		},
+
 		toKatakana: function(inStr) {
 			return this.toKana(inStr, false);
-		},
-
+		}
 	};
-})(jQuery);
+})();

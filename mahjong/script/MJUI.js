@@ -67,7 +67,7 @@ window.MJUI = (function() {
 		        section[i].classList.remove("hidden");
             }
 	    }
-        
+
 	    section = document.getElementsByClassName("normalHand");
 	    for (i=0 ; i<section.length ; i++) {
 	        if (hand._isNormal) {
@@ -95,7 +95,7 @@ window.MJUI = (function() {
 	    if (result !== 0) {
 	        var title = strRes("HAND_VALUE").format(result);
 	        document.getElementById("HandValue").style.backgroundColor = "";
-	        if (result !== hand._valueHint) {
+	        if (hand._valueHint && (result !== hand._valueHint)) {
                 title += strRes("EXPECTED").format(hand._valueHint);
 		        document.getElementById("HandValue").style.backgroundColor = "#FFC0C0";
 	        }
@@ -137,7 +137,7 @@ window.MJUI = (function() {
 		        var meldName = "meld"+String(i);
 		        var tile = meld._firstTile;
 
-		        document.getElementById(meldName+"_concealed").setAttribute("checked", meld._isConcealed);
+		        document.getElementById(meldName+"_concealed").checked = meld._isConcealed;
 
 		        setIcon(tile, meldName+"1_tile");
 		        var val = 1;
@@ -168,12 +168,12 @@ window.MJUI = (function() {
 
 	    // Update the global flags
 
-		document.getElementById("SelfDrawn")   .setAttribute("checked", hand._selfDrawn);
-	    document.getElementById("Special")     .setAttribute("checked", !hand._isNormal);
-	    document.getElementById("Replacement") .setAttribute("checked", hand._replacementTile);
-	    document.getElementById("Robbing")     .setAttribute("checked", hand._robbedKong);
-	    document.getElementById("Last")        .setAttribute("checked", hand._lastTileDrawn);
-	    document.getElementById("LastExisting").setAttribute("checked", hand._lastExistingTile);
+		document.getElementById("SelfDrawn")   .checked = hand._selfDrawn;
+	    document.getElementById("Special")     .checked = !hand._isNormal;
+	    document.getElementById("Replacement") .checked = hand._replacementTile;
+	    document.getElementById("Robbing")     .checked = hand._robbedKong;
+	    document.getElementById("Last")        .checked = hand._lastTileDrawn;
+	    document.getElementById("LastExisting").checked = hand._lastExistingTile;
 
 	    selectTile(hand._lastTile, hand._isNormal);
 	    updateHandType(hand);
@@ -211,7 +211,7 @@ window.MJUI = (function() {
 	    // Add the 4 tiles
 	    for (var i = 1 ; i<5 ; i++) {
 	        main.insertAdjacentHTML("beforeend",
-                                    '<img class="tile updatable" id="'+
+                                    '<img class="tile" id="'+
                                     prefix+String(i)+
                                     '_tile" src="img/default/empty.png" data-value="empty"/>');
 	    }
@@ -225,7 +225,7 @@ window.MJUI = (function() {
     }
 
     function assignTile(type, num, id) {
-
+        currentHand._valueHint = undefined;
         if (id.startsWith("flower")) {
             var flowerId = Number(id.substring(6, 7))-1;
             currentHand._flowers[flowerId] = new Tile(type, num);
@@ -285,6 +285,57 @@ window.MJUI = (function() {
         });
     }
 
+
+    /**
+        Called when a checkbox or an option menu changed
+
+        @param {Event} event The event which was triggered
+        @return {undefined}
+    */
+    function UIhasChanged(event) {
+        switch(event.target.id) {
+        case "SelfDrawn":
+            currentHand._selfDrawn = event.target.checked;
+            break;
+	    case "Special":
+            currentHand._isNormal = !event.target.checked;
+            break;
+	    case "Replacement":
+            currentHand._replacementTile = event.target.checked;
+            break;
+	    case "Robbing":
+            currentHand._robbedKong = event.target.checked;
+            break;
+	    case "Last":
+            currentHand._lastTileDrawn = event.target.checked;
+            break;
+	    case "LastExisting":
+            currentHand._lastExistingTile = event.target.checked;
+            break;
+        }
+
+	    for (var i=1 ; i<5 ; i++ ) {
+            if (event.target.id === ("meld"+i+"_concealed")) {
+                currentHand._melds[i-1]._isConcealed = event.target.checked;
+            } else if (event.target.id === ("meld"+i+"_type")) {
+                var indx = event.target.selectedIndex;
+                switch (indx) {
+                case 0:
+                    currentHand._melds[i-1]._type = Meld.MeldType.CHOW;
+                    break;
+                case 1:
+                    currentHand._melds[i-1]._type = Meld.MeldType.PUNG;
+                    break;
+                case 2:
+                    currentHand._melds[i-1]._type = Meld.MeldType.KONG;
+                    break;
+                }
+            }
+        }
+        currentHand._valueHint = undefined;
+        updateUIFromHand(currentHand);
+    }
+
     MJUI.loadSample = function(sampleNum) {
 
 		var text = document.getElementById("valueTitle");
@@ -317,45 +368,13 @@ window.MJUI = (function() {
 	    for (i=0 ; i<tiles.length ; i++) {
 		    addTileMenu(tiles[i]);
 	    }
+
+        // Add the callbacks to update the UI
+	    elems = document.getElementsByClassName("updatable");
+	    for (i=0 ; i<elems.length ; i++) {
+            elems[i].addEventListener("change", UIhasChanged);
+	    }
     };
 
     return MJUI;
 })();
-
-/*
-
-
-    updateData: function(event) {
-	    var who = event.currentTarget.id;
-	    var data = who.split("_");
-	    var value = "";
-	    switch(data[1]) {
-	    case "tile":
-	        value = document.getElementById(who).data("value");
-	        break;
-
-	    case "type":
-	    XXXXX    value = document.getElementById(who+">option:selected").text();
-	        break;
-
-	    case "concealed":
-	        value = document.getElementById(who).attr("checked");
-	        break;
-	    }
-    },
-
-    updateMeld: function(prefix) {
-	    var type = window.MJ_UI.dataModel[prefix+"_type"];
-	    if (type == "Kong") {
-	        document.getElementById(prefix+"4_tile").attr("style", "opacity:1;");
-	    } else {
-	        document.getElementById(prefix+"4_tile").attr("style", "opacity:0.4;");
-	    }
-    },
-}
-
-var xmlhttp = new XMLHttpRequest();
-xmlhttp.open("GET", "userData/defaultSamples.json", false);
-xmlhttp.send();
-MJUI.prototype._Hand_samples = JSON.parse(xmlhttp.responseText);
-*/
