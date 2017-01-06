@@ -1,0 +1,25 @@
+
+/* section with a title*/
+.titBody {
+	margin:				0px 8px 0px 0px;
+	background-color:	#D0C0FF;
+	border:				2px solid;
+	font-weight:		bold;
+	margin-top: 5px;
+	padding:			20px 5px 5px 5px;
+	float:				left; /* so that the title does not span the entire line */
+	position:			relative;
+}
+
+.titName {
+	margin:				0px 3px;
+	background-color:	#FFFFC0;
+	border:				2px solid;
+	border-radius:		8px;
+	box-shadow:			1px 1px 5px #444444;
+	float:				left; /* so that the title does not span the entire line */
+	padding:			0px 10px 0px 10px;
+	position:			absolute;
+	top:				-6px;
+	z-index:			1; /* In over any other normal item */
+}

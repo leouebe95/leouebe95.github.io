@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="UTF-8">
+	<link type="text/css" rel="stylesheet" href="style/titledSection.css" />
+	<link type="text/css" rel="stylesheet" href="style/mahjong.css" />
+
+	<title>Mahjong</title>
+
+	<script type="text/javascript" src="script/Localizer.js"></script>
+	<script type="text/javascript" src="res/mahjongStr_En.js"></script>
+	<script type="text/javascript" src="script/HandSamples.js"></script>
+	<script type="text/javascript" src="script/Tile.js"></script>
+	<script type="text/javascript" src="script/Meld.js"></script>
+	<script type="text/javascript" src="script/Hand.js"></script>
+	<script type="text/javascript" src="script/MJUI.js"></script>
+	<script type="text/javascript" src="script/HandRules.js"></script>
+	<script type="text/javascript" src="script/Menu.js"></script>
+	<script type="text/javascript" src="script/mahjong.js"></script>
+	
+	<script type="text/javascript">
+	  document.addEventListener('DOMContentLoaded', Mahjong.main);
+	</script>
+  </head>
+  <body style="background-color:#404040; visibility: hidden">
+
+	<table>
+	  <tr><td colspan="2">
+		  <div class="titBody"><div class="titName">Flowers and Seasons</div>
+			<div style="width:100px;float:left">&nbsp;</div>
+			<tile id="flower1" class="flower" img="empty"></tile><tile id="flower2" class="flower" img="empty"></tile><tile id="flower3" class="flower" img="empty"></tile><tile id="flower4" class="flower" img="empty"></tile><tile id="flower5" class="flower" img="empty"></tile><tile id="flower6" class="flower" img="empty"></tile><tile id="flower7" class="flower" img="empty"></tile><tile id="flower8" class="flower" img="empty"></tile>
+		  </div>
+		  <div style="width:5px;float:left"></div>
+		  <div class="titBody"><div class="titName">Wind</div>
+			<tile id="wind" class="wind" img="wind_e"></tile>
+		  </div>
+		  <div style="width:5px;float:left"></div>
+		  <div class="titBody"><div class="titName">Player</div>
+			<tile id="player" class="wind" img="wind_e"></tile>
+		  </div>
+	  </td></tr>
+
+	  <tr><td colspan="2">
+		  <div class="titBody normalHand2" style="height:60px"><div class="titName">Pair</div>
+			<div style="width:100px;float:left">&nbsp;</div>
+			<tile id="pair1" img="empty"></tile><tile id="pair2" img="empty"></tile>
+		  </div>
+
+		  <div class="titBody" style="height:60px"><div class="titName">States</div>
+			<table><tr>
+				<td><input id="SelfDrawn" class="updatable" type="checkbox">Self drawn</input></td>
+				<td><input id="Special" class="updatable" type="checkbox">Special hand</input></td>
+				<td><input id="Replacement" class="updatable" type="checkbox">Replacement tile</input></td>
+				<td></td>
+			  </tr><tr>
+				<td><input id="Robbing" class="updatable" type="checkbox">Robbing Kong</input></td>
+				<td><input id="Last" class="updatable" type="checkbox">Last tile</input></td>
+				<td><input id="LastExisting" class="updatable" type="checkbox">Last existing tile</Input></td>
+			</tr></table>
+		  </div>
+	  </td></tr>
+
+	  <tr><td align="top">
+		  <div class="meldBlock normalHand" data-prefix="meld1" data-title="First Meld"></div>
+
+		  <div class="titBody specialHand"><div class="titName">Special Hand</div>
+			<div>
+			  <tile id="tile1" img="empty"></tile>
+			  <tile id="tile2" img="empty"></tile>
+			  <tile id="tile3" img="empty"></tile>
+			  <tile id="tile4" img="empty"></tile>
+			  <tile id="tile5" img="empty"></tile>
+			</div>
+			<div>
+			  <tile id="tile6" img="empty"></tile>
+			  <tile id="tile7" img="empty"></tile>
+			  <tile id="tile8" img="empty"></tile>
+			  <tile id="tile9" img="empty"></tile>
+			  <tile id="tile10" img="empty"></tile>
+			</div>
+			<div>
+			  <tile id="tile11" img="empty"></tile>
+			  <tile id="tile12" img="empty"></tile>
+			  <tile id="tile13" img="empty"></tile>
+			  <tile id="tile14" img="empty"></tile>
+			  </div>
+		  </div>
+
+		</td><td rowspan="4">
+		  <div id="result" class="titBody" style="height:325px; width:300px">
+			<div class="titName" id="HandValue">Hand value</div>
+			<table><tr><td><b id="valueTitle">Incomplete hand</b><center><hr style="width:290px"></center></td></tr>
+			  <tr><td id="valueDesc" style="font-weight:normal"></td></tr></table>
+		  </div>
+	  </td></tr>
+
+	  <tr><td>
+		  <div class="meldBlock normalHand" data-prefix="meld2" data-title="Second Meld"></div>
+	  </td></tr>
+
+	  <tr><td>
+		  <div class="meldBlock normalHand" data-prefix="meld3" data-title="Third Meld"></div>
+	  </td></tr>
+
+	  <tr><td>
+		  <div class="meldBlock normalHand" data-prefix="meld4" data-title="Fourth Meld"></div>
+	  </td></tr>
+	</table>
+
+	<div class="titBody" style="background-color:#A0D0FF; position:fixed; left:625px; top:8px;" >
+	  <div class="titName">Debug / Test</div>
+	  <input type="image" src="img/Button-Backward.png" onclick="MJUI.otherSample(-10)" />
+	  <input type="image" src="img/Button-Previous.png" onclick="MJUI.otherSample(-1)" />
+	  <input type="image" src="img/Button-Next.png"     onclick="MJUI.otherSample(1)" />
+	  <input type="image" src="img/Button-Forward.png"  onclick="MJUI.otherSample(10)" />
+	</div>
+  </body>
+</html>

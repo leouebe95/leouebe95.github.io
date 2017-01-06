@@ -1,0 +1,58 @@
+
+.tile {
+  box-shadow:			2px 5px 5px #444444;
+  margin:				3px 3px 3px 3px;
+  border:				0px none;
+}
+
+.selected.tile {
+  border:				3px solid;
+  color:				#CE2DAA;
+  margin:				0px 0px 0px 0px;
+}
+
+#result {
+	background-color:	#C0FFD0;
+}
+
+.meldBlock {
+  height: 60px;
+}
+
+.pressButton {
+  background-color:	#FFFFC0;
+  border:				2px solid;
+  border-radius:		10px;
+  box-shadow:			3px 3px 5px #888888;
+  min-height:			30px;
+  min-width:			50px;
+}
+
+/* class used for highlighing
+*/
+ul {
+  style: empty;
+  font-weight: bold;
+  background-color: #FFFFC0;
+}
+
+#user {
+  border: 1px red solid;
+  box-shadow:			3px 3px 5px #888888;
+}
+
+.hidden {
+  display: none;
+}
+.transparent {
+  visibility: hidden;
+}
+
+div.menu {
+  position:				fixed;
+  margin:				5px 5px 5px 5px;
+  border:				3px solid #73AD21;
+  background-color:		#FFFFC0;
+  box-shadow:			5px 5px 8px #444444;
+  z-index:				100; /* In over any other item */
+}

@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>Mahjong Tests</title>
+  <link media="screen" href="script/test/qunit.css" type="text/css" rel="stylesheet">
+  <script type="text/javascript" src="script/jquery.js"></script>
+  <script type="text/javascript" src="script/test/qunit.js"></script>
+  <script type="text/javascript" src="script/Localizer.js"></script>
+  <script type="text/javascript" src="script/Tile.js"></script>
+  <script type="text/javascript" src="script/test/Tile_Test.js"></script>
+  <script type="text/javascript" src="script/Meld.js"></script>
+  <script type="text/javascript" src="script/test/Meld_Test.js"></script>
+  <script type="text/javascript" src="script/Hand.js"></script>
+  <script type="text/javascript" src="script/test/Hand_Test.js"></script>
+  <script type="text/javascript" src="script/test/ConvertSamples.js"></script>
+  <script type="text/javascript" src="script/HandRules.js"></script>
+  <script type="text/javascript" src="script/test/Rules_Test.js"></script>
+</head>
+<body>
+  <script>
+	function msg(mess) { console.log(mess+"\n"); }
+	function info(msg) { console.log("INFO: "+msg+"\n"); }
+
+	$(document).ready(function() {
+	I18N.loadAllTransationTables("mahjongStr", "En", "AU");
+	Tile_Test();
+	Meld_Test();
+	Hand_Test();
+	Rules_Test();
+
+	var dumpSamples = true;
+	dumpSamples = false;
+	if (dumpSamples) {
+		var samples = [];
+		for (var i=1 ; i<=100 ; i++) {
+			var str = i.toString();
+			while (str.length < 3) str = "0"+str;
+			var s = XMLHandReaderFromFile("ex_"+str);
+			samples.push(s.simplifiedJSON());
+		}
+		info(JSON.stringify(samples));
+	}
+
+	// save_content_to_file(JSON.stringify(val.simplifiedJSON()), "C:/tmp/tst");
+	});
+  </script>
+
+  <h1 id="qunit-header">Mahjong JavaScript Tests</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">test markup, will be hidden</div>
+
+</body>
+</html>
