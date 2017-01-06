@@ -172,7 +172,10 @@ HandRules.prototype = {
 	  Return a descrition of all rules that have been applied.
 	  array of strings
 	 */
-	getDescription: function() { return this._rulesDescriptions; },
+	getDescription: function() {
+        "use strict";
+        return this._rulesDescriptions;
+    },
 
 
 	/*!
