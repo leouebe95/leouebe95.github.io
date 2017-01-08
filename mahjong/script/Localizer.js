@@ -1,25 +1,34 @@
-/* global I18N:true */
+// For eslint
+/* exported strRes I18N */
 
-// Augment String with a simple format method: only replaces {xx} words
+/**
+   Augment String with a simple format method: only replaces {xx}
+   words.
+   @return {String} The formatted string.
+*/
 String.prototype.format = function() {
     "use strict";
 
     var result = this;
     for (var i = 0; i < arguments.length; i++) {
-	var reg = new RegExp("\\{" + (i+1) + "\\}", "gm");
-	result = result.replace(reg, String(arguments[i]));
+	    var reg = new RegExp("\\{" + (i+1) + "\\}", "gm");
+	    result = result.replace(reg, String(arguments[i]));
     }
     return result;
 };
 
-I18N = {};
+/**
+   Define internationalization methods.
+ */
+class I18N {
+    static loadAllTransationTables(base, lang, country) {
+        // FIXME
+    }
+}
+
 I18N._currentResources = {};
 
-I18N.loadAllTransationTables = function (base, lang, country) {
-    "use strict";
-    // FIXME
-};
-
+// FIXME: Should be moved as a String method
 /*!
   Global utility method to access localized resources.
  */

@@ -136,16 +136,22 @@ class Tile {
 	/**
 	    @param {Tile.TileType} type Tile type.
 	    @param {Int} num 1-based index in the tile suit.
-        @return {String} the file name for the given tile. Return "empty" if the
-	    tile is not valid.
+        @return {String} the file name for the given tile. Return
+	    "empty" if the tile is not valid.
 	 */
-	fileName(type, num) {
-		if (num === undefined) {num = this._num;}
-		if (type === undefined) {type = this._type;}
+	static fileNameS(type, num) {
         var id = Tile.uniqueId(type, num);
         if (id<0) {return "empty";} // NOI18N
 
         return type.name+"_"+type.ext[num-1];
+    }
+    
+	/**
+        @return {String} the file name for the given tile. Return
+	    "empty" if the tile is not valid.
+	 */
+	fileName() {
+        return Tile.fileNameS(this._type, this._num);
     }
 
 	/**

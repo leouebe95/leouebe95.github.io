@@ -9,11 +9,11 @@
 (function($) {
 	"use strict";
 
-    var controls = ["#kanji",
-		            "#kun", "#kunkata", "#kunroma",
-		            "#on", "#onhira", "#onroma",
-	                "#english",
-                    "#order"];
+    var controls = ["kanji",
+		            "kun", "kunkata", "kunroma",
+		            "on", "onhira", "onroma",
+	                "english",
+                    "order"];
     var selGrades = ["Grade 1"];
 
     var nbGood = 0;
@@ -22,11 +22,13 @@
 	// Update the UI after the Display or Config parameters changed
 	function updateUI() {
         for (var i = 0; i < controls.length; i++) {
-            var opacity = 0;
-            if (document.getElementById(controls[i]+"CHK").checked) {
-                opacity = 1;
+            var elem = document.getElementById(controls[i]);
+            var elemCHK = document.getElementById(controls[i]+"CHK");
+            var visibility = "hidden";
+            if (elemCHK.checked) {
+                visibility = "visible";
             }
-		    document.getElementById(controls[i]).style.opacity = opacity;
+		    elem.style.visibility = visibility;
         }
     }
 
@@ -47,7 +49,7 @@
 	// Show the answer
 	function showAnswer(event) {
         for (var i = 0; i < controls.length; i++) {
-		    document.getElementById(controls[i]).style.opacity = 1;
+		    document.getElementById(controls[i]).style.visibility = "visible";
         }
     }
 
@@ -101,15 +103,15 @@
         updateUI();
 		var data = JapaneseDB.next(document.getElementById("skipKnown").checked ? 1 : 0);
 
-        document.getElementById("kanji").text = data.kanji;
-        document.getElementById("kun").text = data.kun;
-        document.getElementById("kunkata").text = data.kunkata;
-        document.getElementById("kunroma").text = data.kunroma;
-        document.getElementById("on").text = data.on;
-        document.getElementById("onhira").text = data.onhira;
-        document.getElementById("onroma").text = data.onroma;
-        document.getElementById("english").text = data.eng;
-        document.getElementById("grade").text = data.grade;
+        document.getElementById("kanji").innerText = data.kanji;
+        document.getElementById("kun").innerText = data.kun;
+        document.getElementById("kunkata").innerText = data.kunkata;
+        document.getElementById("kunroma").innerText = data.kunroma;
+        document.getElementById("on").innerText = data.on;
+        document.getElementById("onhira").innerText = data.onhira;
+        document.getElementById("onroma").innerText = data.onroma;
+        document.getElementById("english").innerText = data.eng;
+        document.getElementById("grade").innerText = data.grade;
 
         var cc = data.kanji.charCodeAt(0);
         var code = cc.toString(16).toLowerCase();
@@ -127,24 +129,21 @@
         xhr.open("GET","kanjiStrokeOrder/"+code+".svg");
         xhr.send();
 
-        document.getElementById("results").text = "Good answers: "+nbGood+"/"+(nbGood+nbBad);
+        document.getElementById("results").innerText = "Good answers: "+nbGood+"/"+(nbGood+nbBad);
     }
 
 	function main() {
-		// For iOS: disable page scrolling to get mouse move events
-		$("body").on("touchmove", function(e){ e.preventDefault(); });
-
 		$.finalizeUI();
 		updateUI();
 
 		// Bind the buttons callbacks
-		$("#showAnsw").click(showAnswer);
-		$("#hideAnsw").click(updateUI);
-		$("#nextBad").click(nextBad);
-		$("#nextGood").click(nextGood);
+        document.getElementById("showAnsw").addEventListener("click", showAnswer);
+		document.getElementById("hideAnsw").addEventListener("click", updateUI);
+		document.getElementById("nextBad").addEventListener("click", nextBad);
+		document.getElementById("nextGood").addEventListener("click", nextGood);
 
         for (var i = 0; i < controls.length; i++) {
-            $(controls[i]+"CHK").change(updateUI);
+            document.getElementById(controls[i]+"CHK").addEventListener("change", updateUI);
         }
 
         // Add the controls for all the grades

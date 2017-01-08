@@ -31,14 +31,13 @@ class Rule {
 
 	/**
        Reset a rule. The implied array is emptied.
-       @param {Int} indx 
-       @param {Int} score 
-       @param {String} desc 
-       @param {Boolean} special 
-       @param {Boolean} normal 
+       @param {Int} indx The rule ID.
+       @param {Int} score How many point this rule scores.
+       @param {String} desc Name of the rule.
+       @param {Boolean} special This rule applies to special hands.
+       @param {Boolean} normal  This rule applies to normal hands.
        @return {undefined}
     */
-
     reset(indx, score, desc, special, normal) {
 		this._indx    = indx;	//!< int: Rule official Id
 		this._score   = score;	//!< int: Number of points
@@ -49,12 +48,12 @@ class Rule {
 	}
 
 	/**
-	  Add a series of implied rules. Argument is an array of integer. Each
-	  element is supposed to be an integer (rule id).
-	  For example:
-		 rule.implies([0]);
-		 rule.implies([0, 1, 6, 7]);
-       @param {Int, ...} args 
+	   Add a series of implied rules. Argument is an array of integer. Each
+	   element is supposed to be an integer (rule id).
+	   @example
+	   rule.implies([0]);
+	   rule.implies([0, 1, 6, 7]);
+       @param {Int[]} args List of integers: ID of the rules that are implied.
        @return {undefined}
 	 */
 	implies(args) {
@@ -68,139 +67,39 @@ class Rule {
 /**
     Description of the entire ruleset
  */
-function HandRules() {
-    "use strict";
+class HandRules {
+    constructor() {
+        this.reset();
+    }
 
-	HandRules.prototype.reset = function() {
+    /**
+       Reset the values before counting the points
+       @return {undefined}
+    */
+	reset() {
 		this._activesRules = [];			// 0-based boolean array[_nbRules]
 		this._matchedRules = [];			// 1-based boolean array[_nbRules+1]
 		this._rulesDescriptions = [];		// Variable length string array
-	};
+	}
 
-	this.reset();
-}
-
-
-HandRules.prototype = {
-	_data: [
-		new Rule( 1, 1, "PURE_DOUBLE_CHOW"),
-		new Rule( 2, 1, "MIXED_DOUBLE_CHOW"),
-		new Rule( 3, 1, "SHORT_STRAIGHT"),
-		new Rule( 4, 1, "TWO_TERMINAL_CHOWS"),
-		new Rule( 5, 1, "PUNG_OF_TERMINALS_OR_HONORS"),
-		new Rule( 6, 1, "MELDED_KONG"),
-		new Rule( 7, 1, "ONE_VOIDED_SUIT",		true, true),
-		new Rule( 8, 1, "NO_HONORS",			true, true),
-		new Rule( 9, 1, "EDGE_WAIT"),
-		new Rule(10, 1, "CLOSED_WAIT"),
-		new Rule(11, 1, "SINGLE_WAIT"),
-		new Rule(12, 1, "SELF-DRAWN",			true, true),
-		new Rule(13, 1, "FLOWER_TILES",			true, true),
-
-		new Rule(14, 2, "DRAGON_PUNG"),
-		new Rule(15, 2, "PREVALENT_WIND"),
-		new Rule(16, 2, "SEAT_WIND"),
-		new Rule(17, 2, "CONCEALED_HAND"),
-		new Rule(18, 2, "ALL_CHOWS", 			true, true, 8),
-		new Rule(19, 2, "TILE_HOG",				true, true),
-		new Rule(20, 2, "DOUBLE_PUNG"),
-		new Rule(21, 2, "TWO_CONCEALED_PUNGS"),
-		new Rule(22, 2, "CONCEALED_KONG"),
-		new Rule(23, 2, "ALL_SIMPLES",          true, true,		8),
-
-		new Rule(24, 4, "OUTSIDE_HAND"),
-		new Rule(25, 4, "FULLY_CONCEALED_HAND", true, true,		12),
-		new Rule(26, 4, "TWO_MELDED_KONGS"),
-		new Rule(27, 4, "LAST_TILE"),
-
-		new Rule(28, 6, "ALL_PUNGS"),
-		new Rule(29, 6, "HALF_FLUSH",			true, true,		7),
-		new Rule(30, 6, "MIXED_SHIFTED_CHOWS"),
-		new Rule(31, 6, "ALL_TYPES",			true, true),
-		new Rule(32, 6, "MELDED_HAND",				11),
-		new Rule(33, 6, "TWO_DRAGONS"),
-		new Rule(34, 6, "ONE_MELDED_AND_ONE_CONCEALED_KONG", 22),
-
-		new Rule(35, 8, "MIXED_STRAIGHT"),
-		new Rule(36, 8, "REVERSIBLE_TILES",		true, true, 7),
-		new Rule(37, 8, "MIXED_TRIPLE_CHOW",         2),
-		new Rule(38, 8, "MIXED_SHIFTED_PUNGS"),
-		new Rule(39, 8, "CHICKEN_HAND"),
-		new Rule(40, 8, "LAST_TILE_DRAW"),
-		new Rule(41, 8, "LAST_TILE_CLAIM"),
-		new Rule(42, 8, "OUT_WITH_REPLACEMENT_TILE"),
-		new Rule(43, 8, "TWO_CONCEALED_KONGS"),
-		new Rule(44, 8, "ROBBING_THE_KONG"),
-
-		new Rule(45, 12, "LESSER_HONORS_AND_KNITTED_TILES", true, false, 31),
-		new Rule(46, 12, "KNITTED_STRAIGHT",	true, false),
-		new Rule(47, 12, "UPPER_FOUR",          true, true,     8),
-		new Rule(48, 12, "LOWER_FOUR",          true, true,     8),
-		new Rule(49, 12, "BIG_THREE_WINDS"),
-
-		new Rule(50, 16, "PURE_STRAIGHT",            3),
-		new Rule(51, 16, "THREE-SUITED_TERMINAL_CHOWS", 2, 4, 8, 18),
-		new Rule(52, 16, "PURE_SHIFTED_CHOWS"),
-		new Rule(53, 16, "ALL_FIVES",                8, 23),
-		new Rule(54, 16, "TRIPLE_PUNG",             20),
-		new Rule(55, 16, "THREE_CONCEALED_PUNGS"),
-
-		new Rule(56, 24, "SEVEN_PAIRS",			true, false),
-		new Rule(57, 24, "GREATER_HONORS_AND_KNITTED_TILES", true, false, 31, 45),
-		new Rule(58, 24, "ALL_EVEN",            true, true,     8, 23, 28),
-		new Rule(59, 24, "FULL_FLUSH",          true, true,     7, 8, 29),
-		new Rule(60, 24, "PURE_TRIPLE_CHOW",         1),
-		new Rule(61, 24, "PURE_SHIFTED_PUNGS"),
-		new Rule(62, 24, "UPPER_TILES",              8, 47),
-		new Rule(63, 24, "MIDDLE_TILES",             8, 23),
-		new Rule(64, 24, "LOWER_TILES",              8, 48),
-
-		new Rule(65, 32, "FOUR_SHIFTED_CHOWS",      52),
-		new Rule(66, 32, "THREE_KONGS"),
-		new Rule(67, 32, "ALL_TERMINALS_AND_HONORS", true, true, 5, 24, 28),
-
-		new Rule(68, 48, "PURE_QUADRUPLE_CHOW",      1, 7, 19, 60),
-		new Rule(69, 48, "FOUR_PURE_SHIFTED_PUNGS", 28, 61),
-
-		new Rule(70, 64, "ALL_TERMINALS",       true, true, 5,  8, 24, 28, 67),
-		new Rule(71, 64, "LITTLE_FOUR_WINDS",       49),
-		new Rule(72, 64, "LITTLE_THREE_DRAGONS",     7, 33),
-		new Rule(73, 64, "ALL_HONORS",          true, true, 5,  7, 24, 28, 67),
-		new Rule(74, 64, "FOUR_CONCEALED_PUNGS",     28),
-		new Rule(75, 64, "PURE_TERMINAL_CHOWS",      1,  7,  8, 18, 29, 59),
-
-		new Rule(76, 88, "BIG_FOUR_WINDS",           5,  7, 15, 16, 28, 49),
-		new Rule(77, 88, "BIG_THREE_DRAGONS",        7, 14, 33),
-		new Rule(78, 88, "ALL_GREEN",           true, true, 7, 29),
-		new Rule(79, 88, "NINE_GATES",			true, false),
-		new Rule(80, 88, "FOUR_KONGS",              28),
-		new Rule(81, 88, "SEVEN_SHIFTED_PAIRS", true, false),
-		new Rule(82, 88, "THIRTEEN_ORPHANS",	true, false, 31, 67)
-	],
-
-
-	/*!
-	  Return a descrition of all rules that have been applied.
-	  array of strings
-	 */
-	getDescription: function() {
-        "use strict";
+	/**
+	  @return {String[]} A descrition of all rules that have been applied.
+	  array of strings.
+	*/
+	getDescription() {
         return this._rulesDescriptions;
-    },
+    }
 
-
-	/*!
+	/**
 	  Check if we have a knitted suite. Only consider the valid HU
 	  hands: The 5 other tiles are either all honors or melds.
 
-	  @param[in] hand (Hand)
-	  @param[in] count (int[]) Count of each tiels in the hand
+	  @param {Hand} hand Hand to test.
+	  @param {Int[]} count Count of each tiles in the hand.
 
-	  @return The number of tiles matched
+	  @return {Int} The number of tiles matched
 	*/
-	computeKnittedData: function(hand, count) {
-        "use strict";
-
+	computeKnittedData(hand, count) {
 		// Private function to match remaining tiles to melds
 		var matchMelds = function(left) {
 			var count = left.slice(); // make a copy of the array
@@ -312,21 +211,19 @@ HandRules.prototype = {
 			}
 		}
 		return {"knitMatch": 0};
-	},
+	}
 
-	/*!
+	/**
 	  Compute the number of concealed pungs. Used for the rule 2, 3
 	  or 4 concealed pungs. For those rules, kongs can me counted as
 	  well except for the case of 2 concealed kongs and no pung which
 	  is already covered by the 2 concealed kongs rule.
 
-	  @param[in] hand hand to test
+	  @param {Hand} hand Hand to test
 
-	  @return the number pf pung+kong
+	  @return {Int} The number of pung+kong
 	*/
-	concealedPungs: function( hand) {
-        "use strict";
-
+	concealedPungs(hand) {
 		if (!hand._isNormal) {return 0;}
 
 		var pungs = 0;
@@ -342,17 +239,15 @@ HandRules.prototype = {
 		}
 		if ((pungs === 0) && (kong<3)) {return 0;}
 		return pungs+kong;
-	},
+	}
 
-	/*!
+	/**
 	  Compute all rules for the hand, and determines which ones score
-	  @param[in] handIn Hand to test
+	  @param {Hand} handIn Hand to test.
 
-	  @return number of points
+	  @return {Int} Number of points.
 	*/
-	compute: function(handIn) {
-        "use strict";
-
+	compute(handIn) {
 		// Prepare hand to make rules computation easier
 		var hand = handIn.sortedHand();
 		hand.fixConcealed();
@@ -375,7 +270,6 @@ HandRules.prototype = {
 		var knittedData = this.computeKnittedData(hand, count);
 
 		// Try all the rules starting by the largest number of points
-		var nbRules = 0;
 		var nbPoints = 0;
 		var nbFlowerPoints = 0;
 		var i, j, k;
@@ -549,7 +443,7 @@ HandRules.prototype = {
 					matching = 1;
 					for (i = 0 ; i<4 ; i++) {
 						if ((hand._melds[i]._type === Meld.MeldType.CHOW) &&
-                             hand._melds[i]._isConcealed &&
+                            hand._melds[i]._isConcealed &&
 							(hand._melds[i]._firstTile._tileId === lookFor)) {
 							matching = 0;
 							break;
@@ -716,12 +610,12 @@ HandRules.prototype = {
 			case 20: // Double Pung
 				for (i=0 ; i<3 ; i++) {
 					if ((hand._melds[i]._type === Meld.MeldType.CHOW) ||
-                         hand._melds[i]._firstTile.isHonor()) {
+                        hand._melds[i]._firstTile.isHonor()) {
                         continue;
                     }
                     for (j=i+1 ; j<4 ; j++) {
                         if ((hand._melds[j]._type === Meld.MeldType.CHOW) ||
-                             hand._melds[j]._firstTile.isHonor()) {
+                            hand._melds[j]._firstTile.isHonor()) {
                             continue;
                         }
 						if (hand._melds[i]._firstTile._num === hand._melds[j]._firstTile._num) {
@@ -877,7 +771,7 @@ HandRules.prototype = {
 				break;
 
 			case 36: // REVERSIBLE Tiles (all tiles in Bamboo
-					   // 245689, Dot 1234589, WhiteDragon)
+				// 245689, Dot 1234589, WhiteDragon)
 				var allowed = [];
 				for (i=0 ; i<Tile._kNumberDifferentTiles ; i++) {
 					allowed.push(false);
@@ -1382,9 +1276,9 @@ HandRules.prototype = {
 				// FIXME: Special
 				break;
 			case 82: //
-					 // Thirteen Orphans 1 & 9 of each suit, one of
-					 // each wind one of each dragon, last one making
-					 // a pair.
+				// Thirteen Orphans 1 & 9 of each suit, one of
+				// each wind one of each dragon, last one making
+				// a pair.
 				lookFor = [0, 8, 9+0, 9+8, 18+0, 18+8,
 						   27, 28, 29,
 						   30, 31, 32, 33];
@@ -1401,7 +1295,6 @@ HandRules.prototype = {
 			}
 
 			if (matching > 0) {
-				nbRules += matching;
 				var thisScore = matching * this._data[ruleId]._score;
 				nbPoints += thisScore;
 
@@ -1456,6 +1349,106 @@ HandRules.prototype = {
 
 		return nbPoints;
 	}
-};
+}
+
+
+/**
+   Static array of all rules.
+*/
+HandRules.prototype._data = [
+	new Rule( 1, 1, "PURE_DOUBLE_CHOW"),
+	new Rule( 2, 1, "MIXED_DOUBLE_CHOW"),
+	new Rule( 3, 1, "SHORT_STRAIGHT"),
+	new Rule( 4, 1, "TWO_TERMINAL_CHOWS"),
+	new Rule( 5, 1, "PUNG_OF_TERMINALS_OR_HONORS"),
+	new Rule( 6, 1, "MELDED_KONG"),
+	new Rule( 7, 1, "ONE_VOIDED_SUIT",		true, true),
+	new Rule( 8, 1, "NO_HONORS",			true, true),
+	new Rule( 9, 1, "EDGE_WAIT"),
+	new Rule(10, 1, "CLOSED_WAIT"),
+	new Rule(11, 1, "SINGLE_WAIT"),
+	new Rule(12, 1, "SELF-DRAWN",			true, true),
+	new Rule(13, 1, "FLOWER_TILES",			true, true),
+
+	new Rule(14, 2, "DRAGON_PUNG"),
+	new Rule(15, 2, "PREVALENT_WIND"),
+	new Rule(16, 2, "SEAT_WIND"),
+	new Rule(17, 2, "CONCEALED_HAND"),
+	new Rule(18, 2, "ALL_CHOWS", 			true, true, 8),
+	new Rule(19, 2, "TILE_HOG",				true, true),
+	new Rule(20, 2, "DOUBLE_PUNG"),
+	new Rule(21, 2, "TWO_CONCEALED_PUNGS"),
+	new Rule(22, 2, "CONCEALED_KONG"),
+	new Rule(23, 2, "ALL_SIMPLES",          true, true,		8),
+
+	new Rule(24, 4, "OUTSIDE_HAND"),
+	new Rule(25, 4, "FULLY_CONCEALED_HAND", true, true,		12),
+	new Rule(26, 4, "TWO_MELDED_KONGS"),
+	new Rule(27, 4, "LAST_TILE"),
+
+	new Rule(28, 6, "ALL_PUNGS"),
+	new Rule(29, 6, "HALF_FLUSH",			true, true,		7),
+	new Rule(30, 6, "MIXED_SHIFTED_CHOWS"),
+	new Rule(31, 6, "ALL_TYPES",			true, true),
+	new Rule(32, 6, "MELDED_HAND",				11),
+	new Rule(33, 6, "TWO_DRAGONS"),
+	new Rule(34, 6, "ONE_MELDED_AND_ONE_CONCEALED_KONG", 22),
+
+	new Rule(35, 8, "MIXED_STRAIGHT"),
+	new Rule(36, 8, "REVERSIBLE_TILES",		true, true, 7),
+	new Rule(37, 8, "MIXED_TRIPLE_CHOW",         2),
+	new Rule(38, 8, "MIXED_SHIFTED_PUNGS"),
+	new Rule(39, 8, "CHICKEN_HAND"),
+	new Rule(40, 8, "LAST_TILE_DRAW"),
+	new Rule(41, 8, "LAST_TILE_CLAIM"),
+	new Rule(42, 8, "OUT_WITH_REPLACEMENT_TILE"),
+	new Rule(43, 8, "TWO_CONCEALED_KONGS"),
+	new Rule(44, 8, "ROBBING_THE_KONG"),
+
+	new Rule(45, 12, "LESSER_HONORS_AND_KNITTED_TILES", true, false, 31),
+	new Rule(46, 12, "KNITTED_STRAIGHT",	true, false),
+	new Rule(47, 12, "UPPER_FOUR",          true, true,     8),
+	new Rule(48, 12, "LOWER_FOUR",          true, true,     8),
+	new Rule(49, 12, "BIG_THREE_WINDS"),
+
+	new Rule(50, 16, "PURE_STRAIGHT",            3),
+	new Rule(51, 16, "THREE-SUITED_TERMINAL_CHOWS", 2, 4, 8, 18),
+	new Rule(52, 16, "PURE_SHIFTED_CHOWS"),
+	new Rule(53, 16, "ALL_FIVES",                8, 23),
+	new Rule(54, 16, "TRIPLE_PUNG",             20),
+	new Rule(55, 16, "THREE_CONCEALED_PUNGS"),
+
+	new Rule(56, 24, "SEVEN_PAIRS",			true, false),
+	new Rule(57, 24, "GREATER_HONORS_AND_KNITTED_TILES", true, false, 31, 45),
+	new Rule(58, 24, "ALL_EVEN",            true, true,     8, 23, 28),
+	new Rule(59, 24, "FULL_FLUSH",          true, true,     7, 8, 29),
+	new Rule(60, 24, "PURE_TRIPLE_CHOW",         1),
+	new Rule(61, 24, "PURE_SHIFTED_PUNGS"),
+	new Rule(62, 24, "UPPER_TILES",              8, 47),
+	new Rule(63, 24, "MIDDLE_TILES",             8, 23),
+	new Rule(64, 24, "LOWER_TILES",              8, 48),
+
+	new Rule(65, 32, "FOUR_SHIFTED_CHOWS",      52),
+	new Rule(66, 32, "THREE_KONGS"),
+	new Rule(67, 32, "ALL_TERMINALS_AND_HONORS", true, true, 5, 24, 28),
+
+	new Rule(68, 48, "PURE_QUADRUPLE_CHOW",      1, 7, 19, 60),
+	new Rule(69, 48, "FOUR_PURE_SHIFTED_PUNGS", 28, 61),
+
+	new Rule(70, 64, "ALL_TERMINALS",       true, true, 5,  8, 24, 28, 67),
+	new Rule(71, 64, "LITTLE_FOUR_WINDS",       49),
+	new Rule(72, 64, "LITTLE_THREE_DRAGONS",     7, 33),
+	new Rule(73, 64, "ALL_HONORS",          true, true, 5,  7, 24, 28, 67),
+	new Rule(74, 64, "FOUR_CONCEALED_PUNGS",     28),
+	new Rule(75, 64, "PURE_TERMINAL_CHOWS",      1,  7,  8, 18, 29, 59),
+
+	new Rule(76, 88, "BIG_FOUR_WINDS",           5,  7, 15, 16, 28, 49),
+	new Rule(77, 88, "BIG_THREE_DRAGONS",        7, 14, 33),
+	new Rule(78, 88, "ALL_GREEN",           true, true, 7, 29),
+	new Rule(79, 88, "NINE_GATES",			true, false),
+	new Rule(80, 88, "FOUR_KONGS",              28),
+	new Rule(81, 88, "SEVEN_SHIFTED_PAIRS", true, false),
+	new Rule(82, 88, "THIRTEEN_ORPHANS",	true, false, 31, 67)
+];
 
 HandRules.prototype._nbRules = HandRules.prototype._data.length;

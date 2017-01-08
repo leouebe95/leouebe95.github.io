@@ -1,18 +1,19 @@
-var tableId = 'maintable';
-var modeId = 'mode';
+var tableId = "maintable";
+var modeId = "mode";
 var nbColumns = 3;
 
 function formatString(msg, values) {
+    "use strict";
     if (values) {
         for (var key in values) {
             if(values.hasOwnProperty(key)) {
                 var val = values[key];
-                if (typeof val === 'undefined') {
-                    val = 'undefined';
-                } else if (typeof val === 'object') {
+                if (typeof val === "undefined") {
+                    val = "undefined";
+                } else if (typeof val === "object") {
                     val = JSON.stringify(val);
                 }
-                msg = msg.replace('{'+key+'}', val.toString());
+                msg = msg.replace("{"+key+"}", val.toString());
             }
         }
     }
@@ -20,6 +21,7 @@ function formatString(msg, values) {
 }
 
 function makeElem(tag, text, parent) {
+    "use strict";
     var node = document.createElement(tag);
     var t = document.createTextNode(text);
     node.appendChild(t);
@@ -30,7 +32,8 @@ function makeElem(tag, text, parent) {
 }
 
 function isRowVisible(data, mode) {
-    if (mode == 'all') {
+    "use strict";
+    if (mode === "all") {
         return true;
     }
 
@@ -45,9 +48,9 @@ function isRowVisible(data, mode) {
             custom = window.stats[elem.name];
         }
 
-        if ((mode == 'have' && custom.got) ||
-            (mode == 'missing' && (!custom.got)) ||
-            (mode == 'evolve' && custom.candies >= candy)) {
+        if ((mode === "have" && custom.got) ||
+            (mode === "missing" && (!custom.got)) ||
+            (mode === "evolve" && custom.candies >= candy)) {
             return true;
         }
     }
@@ -55,15 +58,16 @@ function isRowVisible(data, mode) {
 }
 
 function appendRow(tr, data, mode) {
+    "use strict";
     // skip all rows with no evolution
-    res = {evolve: 0, got:0, miss: 0};
+    var res = {evolve: 0, got:0, miss: 0};
 
     for (var i=0 ; i<3 ; i++) {
         if (i>=data.length) {
-            var td = makeElem('td', '', tr);
-            td.classList.add('empty');
-            td = makeElem('td', '', tr);
-            td.classList.add('empty');
+            var td = makeElem("td", "", tr);
+            td.classList.add("empty");
+            td = makeElem("td", "", tr);
+            td.classList.add("empty");
             continue;
         }
 
@@ -79,28 +83,28 @@ function appendRow(tr, data, mode) {
         }
 
         if (elem.candy>0) {
-            var td = makeElem('td', elem.candy, tr);
-            td.classList.add('large');
+            td = makeElem("td", elem.candy, tr);
+            td.classList.add("large");
         }
 
-        var td = makeElem('td', elem.name, tr);
-        makeElem('div', '(#'+elem.number+')', td);
+        td = makeElem("td", elem.name, tr);
+        makeElem("div", "(#"+elem.number+")", td);
         if (custom.got) {
-            td.classList.add('found');
+            td.classList.add("found");
             res.got += 1;
         } else {
-            td.classList.add('missing');
+            td.classList.add("missing");
             res.miss += 1;
         }
-        var div = document.createElement('div');
-        div.classList.add('under');
+        var div = document.createElement("div");
+        div.classList.add("under");
 
-        var anchor = document.createElement('a');
-        anchor.setAttribute('href', 'https://en.wikipedia.org/wiki/'+elem.name);
-        var img = document.createElement('img');
-        img.classList.add('pokemon');
-        img.setAttribute('src', 'img/'+elem.number+'.png');
-        img.setAttribute('title', elem.name);
+        var anchor = document.createElement("a");
+        anchor.setAttribute("href", "https://en.wikipedia.org/wiki/"+elem.name);
+        var img = document.createElement("img");
+        img.classList.add("pokemon");
+        img.setAttribute("src", "img/"+elem.number+".png");
+        img.setAttribute("title", elem.name);
         anchor.appendChild(img);
         div.appendChild(anchor);
         td.insertBefore(div, td.firstChild);
@@ -111,12 +115,12 @@ function appendRow(tr, data, mode) {
             if (!elem.noevolve) {
                 res.evolve += nbEvolve;
             }
-            var img = document.createElement('img');
-            img.classList.add('over');
-            img.setAttribute('src', 'img/evolve.png');
+            img = document.createElement("img");
+            img.classList.add("over");
+            img.setAttribute("src", "img/evolve.png");
             div.appendChild(img);
-            var count = makeElem('div', String(nbEvolve));
-            count.classList.add('overnb');
+            var count = makeElem("div", String(nbEvolve));
+            count.classList.add("overnb");
             div.appendChild(count);
 
         }
@@ -125,6 +129,7 @@ function appendRow(tr, data, mode) {
 }
 
 function makechart(id, dataObj) {
+    "use strict";
     var mode = "all";
     var modeElem = document.getElementById(modeId);
     if (modeElem) {
@@ -133,28 +138,28 @@ function makechart(id, dataObj) {
 
     var root = document.getElementById(id);
     if (!root) {
-        var body = document.getElementsByTagName('body')[0];
+        var body = document.getElementsByTagName("body")[0];
         var error = 'Could not find element with ID "'+id+'"';
         console.error(error);
 
-        var h = makeElem('div', error);
-        h.classList.add('error');
-        body.insertBefore(h, body.firstChild);
+        var d = makeElem("div", error);
+        d.classList.add("error");
+        body.insertBefore(d, body.firstChild);
         return;
     }
 
-    var t = document.createElement('table');
-    var h = document.createElement('thead');
-    var tr = document.createElement('tr');
+    var t = document.createElement("table");
+    var h = document.createElement("thead");
+    var tr = document.createElement("tr");
     for (var i = 0 ; i<nbColumns ; i++ ) {
-        makeElem('th', 'Stage 1', tr);
-        makeElem('th', 'Candies', tr);
-        makeElem('th', 'Stage 2', tr);
-        makeElem('th', 'Candies', tr);
-        makeElem('th', 'Stage 3', tr);
+        makeElem("th", "Stage 1", tr);
+        makeElem("th", "Candies", tr);
+        makeElem("th", "Stage 2", tr);
+        makeElem("th", "Candies", tr);
+        makeElem("th", "Stage 3", tr);
         if (i<nbColumns-1) {
-            var sep = makeElem('th', '', tr);
-            sep.setAttribute('style', 'width: 2em;');
+            var sep = makeElem("th", "", tr);
+            sep.setAttribute("style", "width: 2em;");
         }
     }
     h.appendChild(tr);
@@ -164,25 +169,25 @@ function makechart(id, dataObj) {
 
     // Find the rows to display
     var rowToDisplay = [];
-    for (var i=0 ; i<data.length ; i++) {
+    for (i=0 ; i<data.length ; i++) {
         if (isRowVisible(data[i].stages, mode)) {
             rowToDisplay.push(i);
         }
     }
     var nbRows = Math.ceil(rowToDisplay.length/nbColumns);
 
-    var b = document.createElement('tbody');
+    var b = document.createElement("tbody");
     var total = {evolve: 0, got:0, miss: 0};
-    for (var i=0 ; i<nbRows ; i++) {
-        var tr = document.createElement('tr');
+    for (i=0 ; i<nbRows ; i++) {
+        tr = document.createElement("tr");
         for (var j=0 ; j<nbColumns ; j++ ) {
             if (i + j*nbRows >= rowToDisplay.length) {
                 break;
             }
             var indx = rowToDisplay[i + j*nbRows];
             if (j>0) {
-                var td = makeElem('td', '', tr);
-                td.classList.add('separate');
+                var td = makeElem("td", "", tr);
+                td.classList.add("separate");
             }
             var res = appendRow(tr, data[indx].stages, mode);
             total.evolve += res.evolve;
@@ -195,20 +200,22 @@ function makechart(id, dataObj) {
 
     t.appendChild(b);
 
-    makeElem('div', formatString('Total: {total}, missing {miss}, can evolve {evolve} (aim at 70)', total), root);
+    makeElem("div", formatString("Total: {total}, missing {miss}, can evolve {evolve} (aim at 70)", total), root);
 
     root.appendChild(t);
 }
 
 function refreshChart(id) {
+    "use strict";
     var root = document.getElementById(id);
     if (root) {
-        root.innerHTML = '';
+        root.innerHTML = "";
         makechart(id, window.maintable);
     }
 }
 
-document.addEventListener('DOMContentLoaded', function(event) {
+document.addEventListener("DOMContentLoaded", function(event) {
+    "use strict";
     makechart(tableId, window.maintable);
 
     var modeElem = document.getElementById(modeId);

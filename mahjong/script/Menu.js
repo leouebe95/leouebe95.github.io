@@ -1,5 +1,5 @@
 
-// for eslint
+// For eslint
 /* global Tile:false
 */
 
@@ -7,7 +7,7 @@
 window.Menu = (function() {
     "use strict";
     var Menu = {};
-    
+
     function appendChild(parent, tag, className) {
         var node = document.createElement(tag);
         if (className) {
@@ -33,7 +33,7 @@ window.Menu = (function() {
         menu.classList.add("menu");
         menu.style.top = x;
         menu.style.left = y;
-
+        var fakeType = {id:-10, len:1, offset:-10};
         var table = appendChild(menu, "table");
 
         var types = [Tile.TileType.BAMBOO,
@@ -51,6 +51,8 @@ window.Menu = (function() {
             types = [Tile.TileType.WIND
                     ];
         }
+        types.push(fakeType);
+
         var start = 0;
         var end = 9;
         var isChow = false;
@@ -66,9 +68,15 @@ window.Menu = (function() {
             for (let j = start ; j<Math.min(end, type.len) ; j++) {
                 var td = appendChild(tr, "td");
                 var img = appendChild(td, "img");
-                img.setAttribute("src", "img/default/"+Tile.prototype.fileName(type, j+1)+".png");
+                let tileId = j+1;
+                let tileType = type;
+                if (type.offset < 0) {
+                    tileType = Tile.TileType.BAMBOO;
+                    tileId = Tile._kBadId;
+                }
+                img.setAttribute("src", "img/default/"+Tile.fileNameS(tileType, tileId)+".png");
 	            img.addEventListener("click", function(event) {
-                    assignTileCB(type, j+1, id);
+                    assignTileCB(tileType, tileId, id);
                 });
             }
         }

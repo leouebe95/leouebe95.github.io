@@ -1,5 +1,6 @@
-// eslint
+// For eslint
 /* global Meld:false Tile:false */
+/* exported Hand */
 
 /**
   Description of a hand

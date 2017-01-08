@@ -2,7 +2,7 @@
   Utility module to generate UI elements
 */
 
-// for eslint
+// For eslint
 /* global Tile:false Meld:false Hand:false HandRules:false
    HandSamples:false Menu:false strRes:false
 */
@@ -198,7 +198,7 @@ window.MJUI = (function() {
 
 		var main = makeChild("div", parent, "titBody", {id: prefix+"_main"});
 		var titSection = makeChild("div", main, "titName", {id: prefix+"_title"});
-
+        titSection.innerHTML = title;
 	    // Create choice + concealed checkbox
 	    main.insertAdjacentHTML("beforeend",
                                 '<table style="width:100px;float:left">'+
