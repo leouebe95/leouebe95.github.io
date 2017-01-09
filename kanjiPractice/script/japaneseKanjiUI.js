@@ -6,7 +6,7 @@
 // For eslint
 /* global JapaneseDB:false */
 
-(function($) {
+(function() {
 	"use strict";
 
     var controls = ["kanji",
@@ -131,9 +131,47 @@
 
         document.getElementById("results").innerText = "Good answers: "+nbGood+"/"+(nbGood+nbBad);
     }
+    
+    function makeNode(tag, className, attrs) {
+		var child = document.createElement(tag);
+        if (className) {child.classList.add(className);}
+        if (attrs) {
+            for (var attr in attrs) {
+	            child.setAttribute(attr, attrs[attr]);
+            }
+        }
+        return child;
+    }
 
+    function makeChild(tag, parent, className, attrs) {
+        var child = makeNode(tag, className, attrs);
+        parent.appendChild(child);
+        return child;
+    }
+    
+    function expandButtonUI() {
+        // Expand the UI from divs
+	    var buttons = document.getElementsByClassName("iconTextButton");
+	    for (var i=0 ; i<buttons.length ; i++) {
+            var img = buttons[i].getAttribute("img");
+            var text = buttons[i].getAttribute("text");
+            if (img) {
+		        makeChild("img",buttons[i], "iconTextButtonImg", {src: img});
+            }
+            if (text) {
+		        var span = makeChild("span",buttons[i], "iconTextButtonTxt");
+                span.innerHTML = text;
+            }
+	    }
+    }
+
+    function expandUI() {
+        expandButtonUI();
+    }
+    
 	function main() {
-		$.finalizeUI();
+        expandUI();
+
 		updateUI();
 
 		// Bind the buttons callbacks
@@ -170,5 +208,5 @@
 		nextQuestion();
 	}
 
-    document.addEventListener('DOMContentLoaded', main);
-})(jQuery);
+    document.addEventListener("DOMContentLoaded", main);
+})();

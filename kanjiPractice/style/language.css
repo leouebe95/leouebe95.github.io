@@ -90,3 +90,30 @@ div.roma {
 div.ctrl,td.ctrl {
   color: #408080;
 }
+
+/* Styles for icon text buttons*/
+.iconTextButton {
+  display: inline-block;
+  border: 4px solid #283A63;
+  background: #001931;
+  border-radius: 5px;
+}
+.iconTextButtonImg {
+  vertical-align: middle;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.iconTextButtonTxt {
+  vertical-align: middle;
+  padding: 15px;
+}
+
+.iconTextButton:hover {
+  background: #0A355F;
+  border-color: #4C659C;
+}
+.iconTextButton:active {
+  background: #0b5769;
+  border-color: #4BB4CC;
+}
