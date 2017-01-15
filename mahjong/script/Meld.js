@@ -82,7 +82,7 @@ class Meld {
 	  Within blocks, sort per first tile
 	  Leave the pair last
 	 */
-	compare(meld1, meld2) {
+	static compare(meld1, meld2) {
 		if (meld2._type !== meld1._type) {
 			if (meld2._type === Meld.MeldType.CHOW) {return 1;}
 		    if (meld1._type === Meld.MeldType.CHOW) {return -1;}

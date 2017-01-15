@@ -117,3 +117,7 @@ div.ctrl,td.ctrl {
   background: #0b5769;
   border-color: #4BB4CC;
 }
+
+svg g {
+  font-size: 6pt;
+}

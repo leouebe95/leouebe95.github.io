@@ -51,20 +51,24 @@ window.Menu = (function() {
             types = [Tile.TileType.WIND
                     ];
         }
-        types.push(fakeType);
 
         var start = 0;
         var end = 9;
-        var isChow = false;
         if (menuType.startsWith("chow")) {
             start = Number(menuType.substring(4, 5))-1;
             end = start+7;
-            isChow = true;
+            types = [Tile.TileType.BAMBOO,
+	                 Tile.TileType.CHARACTER,
+	                 Tile.TileType.DOT
+                    ];
         }
+
+        types.push(fakeType);
+
         for (var i = 0 ; i<types.length ; i++ ) {
-            if (isChow && i>2) { break; }
             var tr = appendChild(table, "tr");
             let type = types[i]; // Use let because of CB created in a loop
+            if (type.offset<0) {start = 0;}
             for (let j = start ; j<Math.min(end, type.len) ; j++) {
                 var td = appendChild(tr, "td");
                 var img = appendChild(td, "img");

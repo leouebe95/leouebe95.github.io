@@ -15,6 +15,8 @@
 	<script type="text/javascript" src="script/Hand.js"></script>
 	<script type="text/javascript" src="script/MJUI.js"></script>
 	<script type="text/javascript" src="script/HandRules.js"></script>
+	<script type="text/javascript" src="script/HandRulesInternational.js"></script>
+	<script type="text/javascript" src="script/HandRulesRiichi.js"></script>
 	<script type="text/javascript" src="script/Menu.js"></script>
 	<script type="text/javascript" src="script/mahjong.js"></script>
 	
@@ -23,8 +25,24 @@
 	</script>
   </head>
   <body style="background-color:#404040; visibility: hidden">
-
 	<table>
+	  <tr><td>
+		<div class="titBody"><div class="titName">Settings</div>
+		  Rules:
+		  <select id="ruleSet">
+			<option value="international">International</option>
+			<option value="riichi">Riichi</option>
+		  </select>
+		  Language:
+		  <select id="language">
+			<option value="En_EN">English</option>
+			<option value="Jp_JP">Japanese</option>
+			<option value="Fr_FR">French</option>
+		  </select>
+		  
+		</div>
+	  </td></tr>
+		  
 	  <tr><td colspan="2">
 		  <div class="titBody"><div class="titName">Flowers and Seasons</div>
 			<div style="width:100px;float:left">&nbsp;</div>
@@ -113,6 +131,7 @@
 	  <input type="image" src="img/Button-Previous.png" onclick="MJUI.otherSample(-1)" />
 	  <input type="image" src="img/Button-Next.png"     onclick="MJUI.otherSample(1)" />
 	  <input type="image" src="img/Button-Forward.png"  onclick="MJUI.otherSample(10)" />
+	  <div><b id="HandDesc"></b></div>
 	</div>
   </body>
 </html>

@@ -3,7 +3,9 @@
 */
 
 // For eslint
-/* global Tile:false Meld:false Hand:false HandRules:false
+/* global Tile:false Meld:false Hand:false 
+   HandRulesInternational:false
+   HandRulesRiichi:false
    HandSamples:false Menu:false strRes:false
 */
 
@@ -11,6 +13,7 @@ window.MJUI = (function() {
     "use strict";
     var MJUI = {};
     var currentHand = new Hand();
+    var rulesType = "international";
 
     function makeNode(tag, className, attrs) {
 		var child = document.createElement(tag);
@@ -89,22 +92,37 @@ window.MJUI = (function() {
 
     function updateHandValue(hand) {
 
-	    var rules = new HandRules();
-	    var result = rules.compute(hand);
+        if (!hand.isComplete()) {
+	        document.getElementById("valueTitle").innerHTML = strRes("INCOMPLETE");
+	        document.getElementById("valueDesc").innerHTML = "";
+            return;
+        } else if (!hand.isValid()) {
+	        document.getElementById("valueTitle").innerHTML = strRes("INVALID HAND");
+	        document.getElementById("valueDesc").innerHTML = "";
+            return;
+        } else {
+	        var rules;
+            switch (rulesType) {
+            case "international":
+                rules = new HandRulesInternational();
+                break;
+            case "riichi":
+                rules = new HandRulesRiichi();
+                break;
+            }
 
-	    if (result !== 0) {
-	        var title = strRes("HAND_VALUE").format(result);
+	        var result = rules.compute(hand);
+
+	        var title = strRes("HAND_VALUE").format(result.nbPoints);
 	        document.getElementById("HandValue").style.backgroundColor = "";
-	        if (hand._valueHint && (result !== hand._valueHint)) {
+	        if (hand._valueHint && (result.nbPoints !== hand._valueHint)) {
                 title += strRes("EXPECTED").format(hand._valueHint);
 		        document.getElementById("HandValue").style.backgroundColor = "#FFC0C0";
 	        }
 		    document.getElementById("valueTitle").innerHTML = title;
-	        document.getElementById("valueDesc").innerHTML = rules._rulesDescriptions.join("<br/>");
-	    } else {
-	        document.getElementById("valueTitle").innerHTML = strRes("INCOMPLETE");
-	        document.getElementById("valueDesc").innerHTML = "";
+	        document.getElementById("valueDesc").innerHTML = result.desc.join("<br/>");
 	    }
+
 	    var d = new Date();
 	    document.getElementById("valueDesc").insertAdjacentHTML("beforeend", "<br/><br/>"+d.toISOString());
     }
@@ -149,10 +167,13 @@ window.MJUI = (function() {
 		            setIcon(tile, meldName+"2_tile");
 		            setIcon(tile, meldName+"3_tile");
 		        }
+		        var img = document.getElementById(meldName+"4_tile");
 		        if (meld._type === Meld.MeldType.KONG) {
+                    img.classList.remove("transparent");
 		            setIcon(tile, meldName+"4_tile");
 		            val = 2;
 		        } else {
+                    img.classList.add("transparent");
 		            setIcon(Tile._kBadTile, meldName+"4_tile");
 		        }
 
@@ -184,7 +205,7 @@ window.MJUI = (function() {
     MJUI.otherSample = function(offset) {
         handSampleNum += offset;
 	    var max = HandSamples.length;
-	    if (handSampleNum < 1)    {handSampleNum = 1;}
+	    if (handSampleNum < 0)    {handSampleNum = 0;}
 	    if (handSampleNum >= max) {handSampleNum = max-1;}
 
 	    MJUI.loadSample(handSampleNum);
@@ -255,6 +276,8 @@ window.MJUI = (function() {
             }
         }
 
+		var text = document.getElementById("HandDesc");
+        text.innerHTML = "Edited";
         updateUIFromHand(currentHand);
     }
 
@@ -285,6 +308,17 @@ window.MJUI = (function() {
         });
     }
 
+    function rulesHaveChanged(event) {
+        var indx = event.target.selectedIndex;
+        var val  = event.target.options[indx].value;
+
+        rulesType = val;
+        updateHandValue(currentHand);
+    }
+
+    function langHasChanged(event) {
+        console.error("NOT IMPLEMENTED");
+    }
 
     /**
         Called when a checkbox or an option menu changed
@@ -333,12 +367,14 @@ window.MJUI = (function() {
             }
         }
         currentHand._valueHint = undefined;
+		var text = document.getElementById("HandDesc");
+        text.innerHTML = "Edited";
         updateUIFromHand(currentHand);
     }
 
     MJUI.loadSample = function(sampleNum) {
 
-		var text = document.getElementById("valueTitle");
+		var text = document.getElementById("HandDesc");
         text.innerHTML = "Sample #"+String(sampleNum+1);
 
 	    currentHand = Hand.fromSimplifiedJSON(HandSamples[sampleNum]);
@@ -374,6 +410,11 @@ window.MJUI = (function() {
 	    for (i=0 ; i<elems.length ; i++) {
             elems[i].addEventListener("change", UIhasChanged);
 	    }
+
+	    var rules = document.getElementById("ruleSet");
+        rules.addEventListener("change", rulesHaveChanged);
+	    var language = document.getElementById("language");
+        language.addEventListener("change", langHasChanged);
     };
 
     return MJUI;

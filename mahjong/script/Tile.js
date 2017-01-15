@@ -160,7 +160,7 @@ class Tile {
 	   @param {Tile} tile2 Second Tile to compare.
 	   @return {Int} -1 0 or 1.
 	 */
-	compare(tile1, tile2) {
+	static compare(tile1, tile2) {
 		var t1 = tile2._tileId;
 		var t2 = tile1._tileId;
 		if (t1 < 0) {t1 = 100;}

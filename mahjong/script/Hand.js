@@ -235,24 +235,47 @@ class Hand {
 		return count;
 	}
 
-	//! @return True is the hand is complete and valid.
+	//! @return True is the hand is complete.
 	isComplete() {
-		if (this._tableWind.isValid() &&
-			this._playerWind.isValid() &&
-			(this._lastTile >= 0)) {
-			if (this._isNormal) {
-				if (this._melds[3].isValid() && this._melds[4].isValid()) {
-					return true;
+		if (!(this._tableWind.isValid() &&
+			  this._playerWind.isValid() &&
+			  (this._lastTile >= 0))) {
+            return false;
+        }
+            
+		if (this._isNormal) {
+            for (let i=0 ; i<5 ; i++) {
+				if (!this._melds[i].isValid()) {
+					return false;
                 }
-			} else {
-				if (this._tiles[13].isValid()) {
-					return true;
+            }
+		} else {
+            for (let i=0 ; i<14 ; i++) {
+				if (!this._tiles[i].isValid()) {
+					return false;
                 }
-			}
+            }
 		}
 
-		// TODO: check also if the hand is valid (i.e. no 5 copies of tiles...
-		return false;
+		return true;
+	}
+
+	//! @return True is the hand is valid.
+	isValid() {
+        var count = this.countTiles();
+		for (var i=0 ; i<count.length ; i++) {
+            if (i >= Tile.TileType.FLOWER.offset) {
+                if (count[i] > 1) {
+                    return false;
+                }
+            } else {
+                if (count[i] > 4) {
+                    return false;
+                }
+            }
+        }
+
+		return true;
 	}
 
 	//! Recompute the concealed flag for the last meld.
@@ -290,13 +313,11 @@ class Hand {
 						}
 					}
 				}
-			} else {
-				if ((this._lastTile >= 0) && (this._lastTile < 14)) {
-					for (let i = 0 ; i<14 ; i++) {
-						if (hand._tiles[i].sameAs(this._tiles[this._lastTile])) {
-							hand._lastTile = i;
-							break;
-						}
+			} else if ((this._lastTile >= 0) && (this._lastTile < 14)) {
+				for (let i = 0 ; i<14 ; i++) {
+					if (hand._tiles[i].sameAs(this._tiles[this._lastTile])) {
+						hand._lastTile = i;
+						break;
 					}
 				}
 			}
@@ -350,20 +371,19 @@ class Hand {
 	}
 
 	/*!
-	  @return An array of 2 ints: number of concealed kongs, and
+	  @return {Object} number of concealed kongs, and
 	  number of melded ones.
 	*/
 	kongs() {
-		var kongs = [0, 0];
-		if (this._isNormal) {
-			for (var i=0 ; i<4 ; i++) {
-				if (this._melds[i]._type === Meld.MeldType.KONG) {
-					if (this._melds[i]._isConcealed) {
-						kongs[0]++;
-					} else {
-						kongs[1]++;
-                    }
-				}
+		var kongs = {concealed: 0, melded: 0};
+		if (!this._isNormal) { return kongs; }
+		for (var i=0 ; i<4 ; i++) {
+			if (this._melds[i]._type === Meld.MeldType.KONG) {
+				if (this._melds[i]._isConcealed) {
+					kongs.concealed++;
+				} else {
+					kongs.melded++;
+                }
 			}
 		}
 		return kongs;
@@ -395,6 +415,18 @@ class Hand {
             }
 		}
 		return winds;
+	}
+
+	/*! @return the number of wind Pung or Kong
+	 */
+	flowers() {
+		var flowers = 0;
+		for (var i = 0 ; i<8 ; i++ ) {
+			if (this._flowers[i].isValid()) {
+				flowers++;
+            }
+        }
+		return flowers;
 	}
 
 	/*!
