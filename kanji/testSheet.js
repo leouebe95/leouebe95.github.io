@@ -81,6 +81,19 @@
 
     var inputs = ["data", "shuffle", "maxlines"];
 
+    function updatePredefinedSet() {
+        var predef = document.getElementById("predef");
+        var set = predef.value;
+        var inString = window.inputData[set]
+        if (inString) {
+            inString = inString.replace(/ /g, "");
+            inString = inString.replace(/^\n/g, "");
+            var data = document.getElementById("data");
+            data.value = inString;
+            refreshPage();
+        }
+    }
+    
     function refreshPage() {
         var data = {};
         for (var i=0 ; i<inputs.length ; i++) {
@@ -104,6 +117,10 @@
         data = document.getElementById("mode");
         data.addEventListener("change", refreshStyle);
 
+        data = document.getElementById("predef");
+        data.addEventListener("change", updatePredefinedSet);
+        
+        updatePredefinedSet();
         refreshPage();
         refreshStyle();
     }

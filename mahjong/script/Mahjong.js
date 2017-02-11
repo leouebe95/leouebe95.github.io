@@ -88,6 +88,8 @@ window.Mahjong = (function() {
 	    I18N.loadAllTransationTables("mahjongStr", "En", "AU");
         MJUI.expandUI();
 
+        // Show / hide sections depending on rules
+        MJUI.updateRulesDisplay();
         // Initialize with the first sample hand
         MJUI.otherSample(0);
 

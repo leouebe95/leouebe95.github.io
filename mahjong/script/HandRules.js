@@ -239,10 +239,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches.
         */
-        static pureDoubleChow(hand, data) {
+        static pureDoubleChow(hand) {
             var res = 0;
 			for (var i=0 ; i<3 ; i++) {
 				if (hand._melds[i]._type !== Meld.MeldType.CHOW) {break;}
@@ -258,10 +257,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static mixedDoubleChow(hand, data) {
+        static mixedDoubleChow(hand) {
             var res = 0;
 			var used = [false, false, false, false];
 			for (var i=0 ; i<3 ; i++) {
@@ -291,10 +289,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static shortStraight(hand, data) {
+        static shortStraight(hand) {
             var res = 0;
 			for (var i=0 ; i<3 ; i++) {
 				if ((hand._melds[i]._type !== Meld.MeldType.CHOW) ||
@@ -417,10 +414,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static edgeWait(hand, data) {
+        static edgeWait(hand) {
             var res = 0;
 			// Check if we finished on the 3 of a 123 Chow, or 7
 			// of 789
@@ -461,10 +457,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static closedWait(hand, data) {
+        static closedWait(hand) {
 			if (hand._lastTile <0) {
                 return 0;
             }
@@ -490,10 +485,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static singleWait(hand, data) {
+        static singleWait(hand) {
             var res = 0; // Check if we finished on the pair
 			if (hand._lastTile >= 3*4) {
 
@@ -543,10 +537,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static selfDrawn(hand, data) {
+        static selfDrawn(hand) {
 			if (hand._selfDrawn) {
                 return 1;
             }
@@ -554,30 +547,32 @@ window.HandRules = (function() {
         }
 
         /**
-            @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
-            @return {Int} number of times this rule matches
+           Flowers can be counted on valid hands only (>= 8 points)
+           @param {Hand} hand Hand to compute rules for.
+           @param {Object} data Precomputed data.
+           @param {Object} rulesRes current intermediate result with
+           all previous rules ran.
+           @return {Int} number of times this rule matches
         */
-        static flowerTiles(hand, data) {
+        static flowerTiles(hand, data, rulesRes) {
+            if (rulesRes.nbPoints < 8) {return 0;}
             return hand.flowers();
         }
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static dragonPung(hand, data) {
+        static dragonPung(hand) {
 			if (hand.dragons() === 1) {return 1;}
             return 0;
         }
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static prevalentWind(hand, data) {
+        static prevalentWind(hand) {
 			for (var i=0 ; i<4 ; i++) {
 				if (hand._melds[i]._firstTile._tileId === hand._tableWind._tileId) {
 					return 1;
@@ -588,10 +583,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static seatWind(hand, data) {
+        static seatWind(hand) {
 			for (var i=0 ; i<4 ; i++) {
 				if (hand._melds[i]._firstTile._tileId === hand._playerWind._tileId) {
 					return 1;
@@ -602,10 +596,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static concealedHand(hand, data) {
+        static concealedHand(hand) {
 			// if not finishing on a pair, the meld was flagged as
 			// not concealed
 			if (!hand._selfDrawn) {
@@ -623,7 +616,6 @@ window.HandRules = (function() {
             @return {Int} number of times this rule matches
         */
         static allChows(hand, data) {
-            var res = 0;
 			if (hand._isNormal) {
 				if (hand.chows() === 4) {
 					// The pair cannot be a pair of honnors
@@ -636,15 +628,14 @@ window.HandRules = (function() {
 			} else if ((data.knittedData.knitMatch > 0) && (!data.knittedData.honors) &&
 					   (data.knittedData.what === Meld.MeldType.CHOW)) {
 				// The pair cannot be a pair of honnors
-				res = 1;
 				for (var i = 0; i<7 ; i++) {
 					if (data.count[Tile.TileType.DRAGON.offset+i] > 0) {
-						res = 0;
-						break;
+						return 0;
 					}
 				}
+                return 1;
 			}
-            return res;
+            return 0;
         }
 
         /**
@@ -675,10 +666,9 @@ window.HandRules = (function() {
 
         /**
             @param {Hand} hand Hand to compute rules for.
-            @param {Object} data Precomputed data.
             @return {Int} number of times this rule matches
         */
-        static doublePung(hand, data) {
+        static doublePung(hand) {
             var res = 0;
 			for (var i=0 ; i<3 ; i++) {
 				if ((hand._melds[i]._type === Meld.MeldType.CHOW) ||
@@ -740,10 +730,9 @@ window.HandRules = (function() {
         /**
            Outside Hand: terminal or honor in each meld
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static outsideHand(hand, data) {
+        static outsideHand(hand) {
 			for (var i=0 ; i<5 ; i++) {
 				if (!(hand._melds[i].hasTerminal() ||
 					  hand._melds[i].isHonor())) {
@@ -755,10 +744,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static fullyConcealedHand(hand, data) {
+        static fullyConcealedHand(hand) {
 			if ((hand._selfDrawn) &&
 				((!hand._isNormal) || (hand.concealed() === 4))) {
 				return 1;
@@ -780,20 +768,18 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static lastTile(hand, data) {
+        static lastTile(hand) {
 			if (hand._lastExistingTile) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static allPungs(hand, data) {
+        static allPungs(hand) {
 			if (hand.chows() === 0) {return 1;}
             return 0;
         }
@@ -818,10 +804,9 @@ window.HandRules = (function() {
         /**
            Mixed Shifted Chows (E.g. 234 345 456 in 3 suits)
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static mixedShiftedChows(hand, data) {
+        static mixedShiftedChows(hand) {
 			for (var i=0 ; i<4 ; i++) {
 				if (hand._melds[i]._type !== Meld.MeldType.CHOW) {
 					continue;
@@ -862,10 +847,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static meldedHand(hand, data) {
+        static meldedHand(hand) {
 			// All 4 melds already exposed. Finishing on the pair,
 			// not self drawn
 			if ((hand.concealed() === 0) &&
@@ -875,12 +859,12 @@ window.HandRules = (function() {
             }
             return 0;
         }
+
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static twoDragons(hand, data) {
+        static twoDragons(hand) {
 			if (hand.dragons() === 2) {return 1;}
             return 0;
         }
@@ -900,10 +884,9 @@ window.HandRules = (function() {
         /**
            Mixed Straight 123 456 789 in 3 suits
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static mixedStraight(hand, data) {
+        static mixedStraight(hand) {
             for (var i=0 ; i<4 ; i++) {
 				if ((hand._melds[i]._type !== Meld.MeldType.CHOW) ||
 					(hand._melds[i]._firstTile._num !== 1)) {
@@ -972,10 +955,9 @@ window.HandRules = (function() {
            Mixed Triple Chow, E.g. 3.4.5 in each suit.
 		   Can only be applied once.
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static mixedTripleChow(hand, data) {
+        static mixedTripleChow(hand) {
             for (var i=0 ; i<2 ; i++) {
 				if (hand._melds[i]._type !== Meld.MeldType.CHOW) {
                     continue;
@@ -1007,10 +989,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static mixedShiftedPungs(hand, data) {
+        static mixedShiftedPungs(hand) {
 			for (var i=0 ; i<4 ; i++) {
 				if ((hand._melds[i]._type === Meld.MeldType.CHOW) ||
 					hand._melds[i].isHonor()) {
@@ -1061,30 +1042,27 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static lastTileDraw(hand, data) {
+        static lastTileDraw(hand) {
 			if (hand._lastTileDrawn && hand._selfDrawn) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static lastTileClaim(hand, data) {
+        static lastTileClaim(hand) {
 			if (hand._lastTileDrawn && !hand._selfDrawn) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static outWithReplacementTile(hand, data) {
+        static outWithReplacementTile(hand) {
 			if (hand._replacementTile) {return 1;}
             return 0;
         }
@@ -1101,10 +1079,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static robbingTheKong(hand, data) {
+        static robbingTheKong(hand) {
 			if (hand._robbedKong) {return 1;}
             return 0;
         }
@@ -1137,40 +1114,36 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static upperFour(hand, data) {
+        static upperFour(hand) {
 			if (hand.minMax(6, 9)) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static lowerFour(hand, data) {
+        static lowerFour(hand) {
 			if (hand.minMax(1, 4)) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static bigThreeWinds(hand, data) {
+        static bigThreeWinds(hand) {
 			if (hand.winds() === 3) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static pureStraight(hand, data) {
+        static pureStraight(hand) {
 			// May only happen once.
 			for (var i=0 ; i<2 ; i++) {
 				if ((hand._melds[i]._type !== Meld.MeldType.CHOW) ||
@@ -1231,10 +1204,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static pureShiftedChows(hand, data) {
+        static pureShiftedChows(hand) {
 	        for (var i=0 ; i<2 ; i++) {
 				if (hand._melds[i]._type !== Meld.MeldType.CHOW) {
 					continue;
@@ -1264,10 +1236,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static allFives(hand, data) {
+        static allFives(hand) {
 			for (var i=0 ; i<5 ; i++) {
 				var t = hand._melds[i]._firstTile;
 				if (!t.isRegular()) {return 0;}
@@ -1281,10 +1252,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static triplePung(hand, data) {
+        static triplePung(hand) {
 			for (var i=0 ; i<2 ; i++) {
 				var reference = hand._melds[i]._firstTile;
 				if ((hand._melds[i]._type === Meld.MeldType.CHOW) ||
@@ -1324,10 +1294,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static sevenPairs(hand, data) {
+        static sevenPairs(hand) {
 			// Special Hand
 			for (var i = 0 ; i<14 ; i+=2) {
 				if (hand._tiles[i]._tileId !== hand._tiles[i+1]._tileId) {
@@ -1387,10 +1356,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static pureTripleChow(hand, data) {
+        static pureTripleChow(hand) {
 			for (var i=0 ; i<2 ; i++) {
 				if ((hand._melds[i]._type !== Meld.MeldType.CHOW) ||
 					(hand._melds[i+1]._type !== Meld.MeldType.CHOW) ||
@@ -1407,10 +1375,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static pureShiftedPungs(hand, data) {
+        static pureShiftedPungs(hand) {
 			for (var i=0 ; i<2 ; i++) {
 				if ((hand._melds[i]._type === Meld.MeldType.CHOW) ||
 					(hand._melds[i+1]._type === Meld.MeldType.CHOW) ||
@@ -1430,40 +1397,36 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static upperTiles(hand, data) {
+        static upperTiles(hand) {
 			if (hand.minMax(7, 9)) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static middleTiles(hand, data) {
+        static middleTiles(hand) {
 			if (hand.minMax(4, 6)) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static lowerTiles(hand, data) {
+        static lowerTiles(hand) {
 			if (hand.minMax(1, 3)) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static fourShiftedChows(hand, data) {
+        static fourShiftedChows(hand) {
 			if ((hand.chows() < 4) ||
 				(! hand._melds[0]._firstTile.isRegular()) ||
 				(hand._melds[0]._firstTile._type !== hand._melds[3]._firstTile._type)) {
@@ -1507,10 +1470,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static quadrupleChow(hand, data) {
+        static quadrupleChow(hand) {
 			if (hand.chows() < 4) {return 0;}
 			var tileId = hand._melds[0]._firstTile._tileId;
 			if ((hand._melds[1]._firstTile._tileId === tileId) &&
@@ -1523,10 +1485,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static fourPureShiftedPungs(hand, data) {
+        static fourPureShiftedPungs(hand) {
 			if ((hand.chows() > 0) ||
 				(!hand._melds[0]._firstTile.isRegular()) ||
 				(hand._melds[0]._firstTile._num >= 7)) {
@@ -1559,10 +1520,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static littleFourWinds(hand, data) {
+        static littleFourWinds(hand) {
 			if ((hand.winds() === 3) &&
 				(hand._melds[4]._firstTile._type === Tile.TileType.WIND)) {
 				return 1;
@@ -1572,10 +1532,9 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static littleThreeDragons(hand, data) {
+        static littleThreeDragons(hand) {
 			if ((hand.dragons() === 2) &&
 				(hand._melds[4]._firstTile._type === Tile.TileType.DRAGON)) {
 				return 1;
@@ -1608,10 +1567,9 @@ window.HandRules = (function() {
         /**
            Pure Terminal Chows 123 789 twice + 55
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static pureTerminalChows(hand, data) {
+        static pureTerminalChows(hand) {
             if ((hand.chows() === 4) &&
 				(hand._melds[0]._firstTile._num === 1)) {
 				var tileId = hand._melds[0]._firstTile._tileId;
@@ -1627,20 +1585,18 @@ window.HandRules = (function() {
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static bigFourWinds(hand, data) {
+        static bigFourWinds(hand) {
 			if (hand.winds() === 4) {return 1;}
             return 0;
         }
 
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static bigThreeDragons(hand, data) {
+        static bigThreeDragons(hand) {
 			if (hand.dragons() === 3) {return 1;}
             return 0;
         }
@@ -1667,10 +1623,9 @@ window.HandRules = (function() {
         /**
            Nine Gates: 1112345678999 in a single suit
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static nineGates(hand, data) {
+        static nineGates(hand) {
 			// Special Hand
             if (hand._tiles[0].isRegular() &&
                 (hand._tiles[0]._num === 1)) {
@@ -1696,10 +1651,9 @@ window.HandRules = (function() {
         }
         /**
            @param {Hand} hand Hand to compute rules for.
-           @param {Object} data Precomputed data.
            @return {Int} number of times this rule matches
         */
-        static sevenShiftedPairs(hand, data) {
+        static sevenShiftedPairs(hand) {
 			// Special Hand
             if (hand._tiles[0].isRegular() &&
                 (hand._tiles[0]._num <= 3)) {
@@ -1794,7 +1748,7 @@ window.HandRules = (function() {
 
 				    res.matched[rule._indx] = true;
 				    res.desc.push(strRes("RULES_FORMAT").format(
-					    thisScore, matching, ruleId+1, strRes(ruleDescriptions[rule._computeCB])));
+					    thisScore, matching, rule._indx, strRes(ruleDescriptions[rule._computeCB])));
 
 				    // Disable implied rules
 				    var impliesArray = rule._implies;
@@ -1807,12 +1761,12 @@ window.HandRules = (function() {
 		    }
 
 		    if (res.nbPoints === 0) {
-				this._rulesDescriptions = [strRes("NO_VALID_HAND")];
+				res.desc = [strRes("NO_VALID_HAND")];
 		    }
 
 		    if (hand._lastTile < 0) {
 			    // Add a warning if the last tile is not set.
-			    this._rulesDescriptions.push(strRes("LAST_TILE_NOT_SET"));
+			    res.desc.push(strRes("LAST_TILE_NOT_SET"));
 		    }
 
 		    return res;

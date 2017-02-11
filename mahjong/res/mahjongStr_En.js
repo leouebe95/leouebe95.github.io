@@ -37,6 +37,7 @@ I18N._currentResources = {
     "PAIR_OF":					"Pair of {1}",
 
     "RULES_FORMAT":				"{1} points: {2}x Rule {3}: {4}",
+    "RULES_FORMAT_MINI":    	"{1} points: {2}",
 
     "THIRTEEN_ORPHANS":				"Thirteen Orphans",
     "SEVEN_SHIFTED_PAIRS":			"Seven Shifted Pairs",
@@ -121,6 +122,54 @@ I18N._currentResources = {
     "MIXED_DOUBLE_CHOW":			"Mixed Double Chow",
     "PURE_DOUBLE_CHOW":				"Pure Double Chow",
     "LAST_TILE_NOT_SET":			"WARNING: Last tile is not set",
-    "NO_VALID_HAND":				"Not a valid special hand"
+    "NO_VALID_HAND":				"Not a valid special hand",
+
+    "NO_YAKU":          			"No yaku point, this hand is not valid",
+
+    "IPPATSU":          "Ippatsu",
+    "DABURU_RIICHI":    "Daburu riichi",
+    "RIICHI":           "Riichi",
+    "CONCEALED_BONUS":  "Additional concealed bonus",
+    "TANYAO_CHUU":      "All Simples",
+    "PINFU":            "All Chows",
+    "IIPEIKOU":         "Pure Double Chow",
+    "JUNCHAN":          "Terminals in All Sets",
+    "RYAN_PEIKOU":      "Twice Pure Double Chows",
+    "TENHO":            "Blessing of Heaven",
+    "CHIHO":            "Blessing of Earth",
+    "RENHO":            "Blessing of Man",
+    "DORA":             "Dora",
+    "URADORA":          "Uradora",
+
+    "YAKU_POINTS":      "Yaku points:",
+    "YAKU":             "{1} yaku",
+    "MANGAN":           "Mangan ({1} yaku)",
+    "HANEMAN":          "Haneman ({1} yaku)",
+    "BAIMAN":           "Baiman ({1} yaku)",
+    "SANBAIMAN":        "Sanbaiman ({1} yaku)",
+    "YAKUMAN":          "Yakuman ({1} yaku)",
+    "DOUBLE_YAKUMAN":   "Double Yakuman ({1} yaku)",
+
+    "MINIPOINTS":       "Minipoints:",
+    "MINIPOINTS_TOTAL": "{1} Minipoints, rounded to {2}",
+    
+    "SEVEN_PAIRS_MINI": "Seven pairs",
+    "CONCEALED_ON_DISCARD": "Concealed hand, finishing on a discard",
+    "DEFAULT_MINI":     "Open hand and/or self-drawn",
+
+    "PUNG_MINI":        "Pung of simple",
+    "KONG_MINI":        "Kong of simple",
+    "PUNG_HONOR_MINI":  "Pung of terminals/honors",
+    "KONG_HONOR_MINI":  "Kong of terminals/honors",
+    "CONCEALED_MINI":   ", concealed",
+
+    "PAIR_DRAGON":      "Pair of dragon",
+    "PAIR_TABLE_WIND":  "Pair of table wind",
+    "PAIR_PLAYER_WIND": "Pair of player wind",
+    "SINGLE_WAIT_MINI": "Single Wait",
+    "CLOSED_WAIT_MINI": "Closed Wait",
+    "EDGE_WAIT_MINI":   "Edge Wait",
+    "SELF_DRAWN_MINI":  "Self-Drawn",
+    "OPEN_PINFU":       "Open Pinfu"
 };
 
