@@ -19,7 +19,7 @@
 	<script type="text/javascript" src="script/HandRulesRiichi.js"></script>
 	<script type="text/javascript" src="script/Menu.js"></script>
 	<script type="text/javascript" src="script/mahjong.js"></script>
-	
+
 	<script type="text/javascript">
 	  document.addEventListener('DOMContentLoaded', Mahjong.main);
 	</script>
@@ -39,23 +39,48 @@
 			<option value="Jp_JP">Japanese</option>
 			<option value="Fr_FR">French</option>
 		  </select>
-		  
+
 		</div>
 	  </td></tr>
-		  
+
 	  <tr><td colspan="2">
-		  <div class="titBody"><div class="titName">Flowers and Seasons</div>
+		  <div class="titBody NOriichi">
+			<div class="titName">Flowers and Seasons</div>
 			<div style="width:100px;float:left">&nbsp;</div>
 			<tile id="flower1" class="flower" img="empty"></tile><tile id="flower2" class="flower" img="empty"></tile><tile id="flower3" class="flower" img="empty"></tile><tile id="flower4" class="flower" img="empty"></tile><tile id="flower5" class="flower" img="empty"></tile><tile id="flower6" class="flower" img="empty"></tile><tile id="flower7" class="flower" img="empty"></tile><tile id="flower8" class="flower" img="empty"></tile>
 		  </div>
-		  <div style="width:5px;float:left"></div>
+		  <span class="riichi">
+			<div class="titBody"><div class="titName">Dora</div>
+			  <tile id="dora" img="empty"></tile>
+			</div>
+			<div class="titBody"><div class="titName">Uradora</div>
+			  <tile id="uradora" img="empty"></tile>
+			</div>
+			<div style="width:30px;float:left">&nbsp;</div>
+		  </span>
+
 		  <div class="titBody"><div class="titName">Wind</div>
 			<tile id="wind" class="wind" img="wind_e"></tile>
 		  </div>
-		  <div style="width:5px;float:left"></div>
 		  <div class="titBody"><div class="titName">Player</div>
 			<tile id="player" class="wind" img="wind_e"></tile>
 		  </div>
+
+		  <span class="riichi">
+			<div style="width:10px;float:left">&nbsp;</div>
+			<div class="titBody" style="height:60px"><div class="titName">Riichi States</div>
+			  <table><tr>
+				  <td><input id="tenho" class="updatable"
+							 type="checkbox">East out on draw</input></td>
+				  <td><input id="renho" class="updatable" type="checkbox">Out on discard</input></td>
+				  <td></td>
+				</tr><tr>
+				  <td><input id="chiho" class="updatable" type="checkbox">Player out on draw</input></td>
+				  <td style="padding-left:1em">in first round</td>
+				</tr><tr>
+			  </tr></table>
+			</div>
+		  </span>
 	  </td></tr>
 
 	  <tr><td colspan="2">
@@ -132,6 +157,7 @@
 	  <input type="image" src="img/Button-Next.png"     onclick="MJUI.otherSample(1)" />
 	  <input type="image" src="img/Button-Forward.png"  onclick="MJUI.otherSample(10)" />
 	  <div><b id="HandDesc"></b></div>
+	  <input type="image" src="img/Button-Save.png" onclick="MJUI.dumpCurrentHand()" />
 	</div>
   </body>
 </html>

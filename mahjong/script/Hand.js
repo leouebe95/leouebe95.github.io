@@ -25,8 +25,14 @@ class Hand {
 		result._lastExistingTile	= this._lastExistingTile;
 		result._robbedKong			= this._robbedKong;
 		result._replacementTile		= this._replacementTile;
+		result._tenho               = this._tenho;
+		result._chiho               = this._chiho;
+		result._renho               = this._renho;
+        
 		result._tableWind			= this._tableWind.clone();
 		result._playerWind			= this._playerWind.clone();
+		result._dora            	= this._dora.clone();
+		result._uradora            	= this._uradora.clone();
 		result._valueHint			= this._valueHint;
 
 		// Copy the arrays. A simple assignment will share
@@ -57,8 +63,13 @@ class Hand {
 		this._robbedKong			= false;
 		this._lastExistingTile		= false;
 		this._replacementTile		= false;
+		this._tenho                 = false;
+		this._chiho                 = false;
+		this._renho                 = false;
 		this._tableWind				= Tile._kBadTile;
 		this._playerWind			= Tile._kBadTile;
+		this._dora                  = Tile._kBadTile;
+		this._uradora               = Tile._kBadTile;
 		this._valueHint				= -1;
 		this._tiles = [];
 		this._melds = [];
@@ -242,7 +253,7 @@ class Hand {
 			  (this._lastTile >= 0))) {
             return false;
         }
-            
+
 		if (this._isNormal) {
             for (let i=0 ; i<5 ; i++) {
 				if (!this._melds[i].isValid()) {
@@ -490,9 +501,14 @@ class Hand {
 		result.lastExistingTile	= this._lastExistingTile;
 		result.robbedKong		= this._robbedKong;
 		result.replacementTile	= this._replacementTile;
+		result.tenho            = this._tenho;
+		result.chiho            = this._chiho;
+		result.renho            = this._renho;
 
 		result.tableWind		= this._tableWind.simplifiedJSON();
 		result.playerWind		= this._playerWind.simplifiedJSON();
+		result.dora             = this._tableWind.simplifiedJSON();
+		result.uradora          = this._playerWind.simplifiedJSON();
 		result.valueHint		= this._valueHint;
 
 		result.flowers = [];
@@ -536,6 +552,18 @@ class Hand {
 		result._tableWind		= Tile.fromSimplifiedJSON(simplified.tableWind);
 		result._playerWind		= Tile.fromSimplifiedJSON(simplified.playerWind);
 		result._valueHint		= simplified.valueHint;
+
+        // For Riichi:
+		result._tenho	= simplified.tenho;
+		result._chiho	= simplified.chiho;
+		result._renho	= simplified.renho;
+        
+        if (simplified.dora) {
+		    result._dora    		= Tile.fromSimplifiedJSON(simplified.dora);
+        }
+        if (simplified.uradora) {
+		    result._uradora    		= Tile.fromSimplifiedJSON(simplified.uradora);
+        }
 
 		var i;
 		for (i = 0 ; i<simplified.flowers.length ; i++) {

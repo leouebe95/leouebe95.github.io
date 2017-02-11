@@ -3,7 +3,7 @@
 */
 
 // For eslint
-/* global Tile:false Meld:false Hand:false 
+/* global Tile:false Meld:false Hand:false
    HandRulesInternational:false
    HandRulesRiichi:false
    HandSamples:false Menu:false strRes:false
@@ -141,8 +141,10 @@ window.MJUI = (function() {
 	    }
 
 	    // Update winds
-	    setIcon(hand._tableWind, "wind");
+	    setIcon(hand._tableWind,  "wind");
 	    setIcon(hand._playerWind, "player");
+	    setIcon(hand._dora,       "dora");
+	    setIcon(hand._uradora,    "uradora");
 
 	    if (hand._isNormal) {
 	        // Update the pair
@@ -195,6 +197,9 @@ window.MJUI = (function() {
 	    document.getElementById("Robbing")     .checked = hand._robbedKong;
 	    document.getElementById("Last")        .checked = hand._lastTileDrawn;
 	    document.getElementById("LastExisting").checked = hand._lastExistingTile;
+	    document.getElementById("tenho").checked        = hand._tenho;
+	    document.getElementById("renho").checked        = hand._renho;
+	    document.getElementById("chiho").checked        = hand._chiho;
 
 	    selectTile(hand._lastTile, hand._isNormal);
 	    updateHandType(hand);
@@ -254,6 +259,10 @@ window.MJUI = (function() {
             currentHand._tableWind = new Tile(type, num);
         } else if (id.startsWith("player")) {
             currentHand._playerWind = new Tile(type, num);
+        } else if (id.startsWith("dora")) {
+            currentHand._dora = new Tile(type, num);
+        } else if (id.startsWith("uradora")) {
+            currentHand._uradora = new Tile(type, num);
         }
 
 	    if (currentHand._isNormal) {
@@ -308,11 +317,34 @@ window.MJUI = (function() {
         });
     }
 
+    MJUI.updateRulesDisplay = function() {
+	    var NORiichi = document.getElementsByClassName("NOriichi");
+	    var riichi = document.getElementsByClassName("riichi");
+        var NORiichiViz = "initial";
+        var riichiViz = "initial";
+        switch (rulesType) {
+        case "international":
+            riichiViz = "none";
+            break;
+        case "riichi":
+            NORiichiViz = "none";
+            break;
+        }
+
+	    for (var i=0 ; i<riichi.length ; i++) {
+		    riichi[i].style.display = riichiViz;
+	    }
+	    for (i=0 ; i<NORiichi.length ; i++) {
+		    NORiichi[i].style.display = NORiichiViz;
+	    }
+    }
+
     function rulesHaveChanged(event) {
         var indx = event.target.selectedIndex;
         var val  = event.target.options[indx].value;
 
         rulesType = val;
+        MJUI.updateRulesDisplay();
         updateHandValue(currentHand);
     }
 
@@ -345,6 +377,15 @@ window.MJUI = (function() {
             break;
 	    case "LastExisting":
             currentHand._lastExistingTile = event.target.checked;
+            break;
+	    case "tenho":
+            currentHand._tenho = event.target.checked;
+            break;
+	    case "renho":
+            currentHand._renho = event.target.checked;
+            break;
+	    case "chiho":
+            currentHand._chiho = event.target.checked;
             break;
         }
 
@@ -416,6 +457,11 @@ window.MJUI = (function() {
 	    var language = document.getElementById("language");
         language.addEventListener("change", langHasChanged);
     };
+
+    MJUI.dumpCurrentHand = function() {
+        var simplified = currentHand.simplifiedJSON();
+        console.info(JSON.stringify(simplified));
+    }
 
     return MJUI;
 })();

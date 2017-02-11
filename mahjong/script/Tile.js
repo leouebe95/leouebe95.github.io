@@ -41,7 +41,7 @@ class Tile {
 	   @return {Tile} a new tile, next in the suit
 	*/
 	next(num) {
-		return new Tile(this._type, this._num+num);
+		return new Tile(this._type, 1+((this._num+num-1) % this._type.len));
 	}
 
 	/**
@@ -206,7 +206,7 @@ Tile._kBadId = -10;
 /** Resource names of the 3 dragons */
 Tile._kDragons = ["WHITE_DR", "GREEN_DR", "RED_DR"];
 /** Resource names of the 4 winds */
-Tile._kWinds =   ["EAST", "NORTH", "WEST", "SOUTH"];
+Tile._kWinds =   ["EAST", "SOUTH", "WEST", "NORTH"];
 /** Resource names of the 4 flowers */
 Tile._kFlowers = ["PLUM", "ORCHID", "CHRYSANT", "BAMBOO"];
 /** Resource names of the 4 seasons */
@@ -218,7 +218,7 @@ Tile.TileType = {
 	CHARACTER:	{id:1, len:9, offset: 9, name:"character", ext:"123456789"},
 	DOT:		{id:2, len:9, offset:18, name:"dot",       ext:"123456789"},
 	DRAGON:		{id:3, len:3, offset:27, name:"dragon",    ext:"wgr"},
-	WIND:		{id:4, len:4, offset:30, name:"wind",      ext:"enws"},
+	WIND:		{id:4, len:4, offset:30, name:"wind",      ext:"eswn"},
 	FLOWER:		{id:5, len:4, offset:34, name:"flower",    ext:"1234"},
 	SEASON:		{id:6, len:4, offset:38, name:"season",    ext:"1234"}};
 
