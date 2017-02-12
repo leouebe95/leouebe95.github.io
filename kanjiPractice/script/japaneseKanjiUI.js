@@ -24,7 +24,7 @@
                                                   controls.map(x=>x+"CHK0"));
     /**
        Save the setting into local storage.
-       @return undefined
+       @return {undefined}
     */
     function saveSettings() {
         var settings = {};
@@ -37,8 +37,8 @@
     }
 
     /**
-       Load the settings from local storage if any.
-       @return undefined
+       Load the settings from local storage if they exist
+       @return {undefined}
     */
 	function loadSettings() {
         if (localStorage.japaneseKanjiUIPrefs) {
@@ -53,9 +53,13 @@
         }
     }
 
+    /**
+       Remove all settings from the local storage.
+       @return {undefined}
+    */
     function resetSettings() {
-        localStorage.removeItem('japaneseKanjiUIPrefs');
-        localStorage.removeItem('japaneseKanjiUIPrefsVersion');
+        localStorage.removeItem("japaneseKanjiUIPrefs");
+        localStorage.removeItem("japaneseKanjiUIPrefsVersion");
     }
 
     // Update the UI after the Display or Config parameters changed
@@ -210,7 +214,7 @@
 
 	function main() {
         var searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get('reset')) {
+        if (searchParams.get("reset")) {
             resetSettings();
         }
 
@@ -249,7 +253,7 @@
         }
 
         // Save settings everytime a checkbox changes
-        for (var i = 0; i < boolSettings.length; i++) {
+        for (i = 0; i < boolSettings.length; i++) {
             document.getElementById(boolSettings[i]).addEventListener("change", saveSettings);
         }
         loadSettings();

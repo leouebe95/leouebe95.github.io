@@ -50,7 +50,7 @@ JapaneseDB = (function() {
         /**
            Shuffle the indirect array. Allows to access the DB in a
            repetable random order with next()
-           @return undefined
+           @return {undefined}
         */
         shuffle() {
             for (var i = this.__indexIndirect.length-1 ; i>1 ; i--) {
@@ -83,7 +83,7 @@ JapaneseDB = (function() {
 
            @param {Object[]} entries Array of objects to be added to
            the data base
-           @return undefined
+           @return {undefined}
         */
         static addToDB(entries) {
             if (__dbIsKanji) {
@@ -104,9 +104,9 @@ JapaneseDB = (function() {
 
            On is typically katakana.
 
-           @param {} entries entries Array of objects to be added to
-           the data base
-           @return undefined
+           @param {Object[]} entries entries Array of objects to be
+           added to the data base
+           @return {undefined}
         */
 		static addKanjiToDB(entries) {
             if ((__db.length>0) && (!__dbIsKanji)) {
