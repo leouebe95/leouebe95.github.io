@@ -15,6 +15,7 @@ window.JapaneseDB = (function() {
 	var __index = 0; // Index into __db
 	var __indexIndirect = []; // Indirection for filtered DB
 	var __indirect = 0;
+	var __fullRandom = false;
     var speech;
     var JPvoice;
 
@@ -32,8 +33,20 @@ window.JapaneseDB = (function() {
                     __indexIndirect.push(i);
                 }
             }
+            __indirect = -1;
             if (__indexIndirect.length>0) {
                 __index = __indexIndirect[0];
+            }
+
+            this.shuffle();
+        },
+
+        shuffle: function() {
+            for (var i = __indexIndirect.length-1 ; i>1 ; i--) {
+                var j = Math.floor(Math.random() * (i+1));
+                var k = __indexIndirect[i];
+                __indexIndirect[i] = __indexIndirect[j];
+                __indexIndirect[j] = k;
             }
         },
 
@@ -268,14 +281,16 @@ window.JapaneseDB = (function() {
             nbGoodSkip = nbGoodSkip || 0;
             if (nbGoodSkip<1) { nbGoodSkip = 99999; }
             do {
-                if (__indexIndirect.length>0) {
-                    var indx = Math.floor(Math.random() * __indexIndirect.length);
-                    __indirect = indx;
-                    __index = __indexIndirect[__indirect];
+                if (__fullRandom) {
+                    __indirect = Math.floor(Math.random() *
+                                            __indexIndirect.length);
                 } else {
-                    indx = Math.floor(Math.random() * __db.length);
-                    __index = indx;
+                    __indirect ++;
+                    if (__indirect >= __indexIndirect.length) {
+                        __indirect = 0;
+                    }
                 }
+                __index = __indexIndirect[__indirect];
             }
             while ((__good.length>__index) && (__good[__index] >= nbGoodSkip));
 
