@@ -18,6 +18,7 @@
 
     var nbGood = 0;
     var nbBad = 0;
+    var jpDB;
 
 	// Update the UI after the Display or Config parameters changed
 	function updateUI() {
@@ -42,7 +43,7 @@
             }
         }
 
-        JapaneseDB.initDB(selected);
+        jpDB = new JapaneseDB(selected);
         updateUI();
     }
 
@@ -56,14 +57,14 @@
 	// Check if the answer is correct
 	function nextBad(event) {
         nbBad++;
-        JapaneseDB.markGoodBad(false);
+        jpDB.markGoodBad(false);
         nextQuestion();
     }
 
 	// Check if the answer is correct
 	function nextGood(event) {
         nbGood++;
-        JapaneseDB.markGoodBad(true);
+        jpDB.markGoodBad(true);
         nextQuestion();
     }
 
@@ -101,7 +102,7 @@
 
 		// Hide the answers
         updateUI();
-		var data = JapaneseDB.next(document.getElementById("skipKnown").checked ? 1 : 0);
+		var data = jpDB.next(document.getElementById("skipKnown").checked ? 1 : 0);
 
         document.getElementById("kanji").innerText = data.kanji;
         document.getElementById("kun").innerText = data.kun;

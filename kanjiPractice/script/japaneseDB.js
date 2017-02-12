@@ -4,78 +4,121 @@
 */
 
 // For eslint
-/* global Kana:false */
+/* global Kana JapaneseDB:true */
+/* exported JapaneseDB */
 
-window.JapaneseDB = (function() {
+JapaneseDB = (function() {
 	"use strict";
 
+    // True if the DB is made of single Kanji, false if it is made of
+    // sentences
     var __dbIsKanji = false;
+    // Global database of all concatenated entries.
 	var __db = [];
-	var __good = [];
+
 	var __index = 0; // Index into __db
-	var __indexIndirect = []; // Indirection for filtered DB
 	var __indirect = 0;
 	var __fullRandom = false;
     var speech;
     var JPvoice;
 
-	return {
+	return class {
+
         // Init the DB to display only given lessons or grades
-        initDB: function(lessons) {
+        constructor(lessons) {
 			var indx = __dbIsKanji ? 4 : 2;
 
-            __good = [];
-	        __indexIndirect = [];
+            // Tracks good/bad answers
+            this.__good = [];
+            // Indirection into DB. Used for filtering and shuffling
+	        this.__indexIndirect = [];
             for (var i = 0 ; i<__db.length ; i++) {
-                __good.push(0);
+                this.__good.push(0);
 				var key = __db[i][indx].replace(/ {2}/g, " ");
                 if (lessons.indexOf(key) >= 0) {
-                    __indexIndirect.push(i);
+                    this.__indexIndirect.push(i);
                 }
             }
             __indirect = -1;
-            if (__indexIndirect.length>0) {
-                __index = __indexIndirect[0];
+            if (this.__indexIndirect.length>0) {
+                __index = this.__indexIndirect[0];
             }
 
             this.shuffle();
-        },
+        }
 
-        shuffle: function() {
-            for (var i = __indexIndirect.length-1 ; i>1 ; i--) {
+        /**
+           Shuffle the indirect array. Allows to access the DB in a
+           repetable random order with next()
+           @return undefined
+        */
+        shuffle() {
+            for (var i = this.__indexIndirect.length-1 ; i>1 ; i--) {
                 var j = Math.floor(Math.random() * (i+1));
-                var k = __indexIndirect[i];
-                __indexIndirect[i] = __indexIndirect[j];
-                __indexIndirect[j] = k;
+                var k = this.__indexIndirect[i];
+                this.__indexIndirect[i] = this.__indexIndirect[j];
+                this.__indexIndirect[j] = k;
             }
-        },
+        }
 
-		// Register all entries in the array into the database
-		addToDB: function(entries) {
-			// Each element is an array [jap, eng, lesson, keywords]
-			// The japanese string is encoded for display in kanji,
-			// kana, or romaji. It is a string of kanji/kana Each
-			// kanji can be followed by the kana pronumciation in
-			// brakets. a Romaji override can also be added in curly
-			// braces.
-			// Eg.
-			// すみません        (pure kana)
-			// 日[に]本[ほん]語  (pure kanji)
-			// 分[わか]ります    (mix of both)
-			// 私[わたし]は{wa}  (mix of both, plus romaji override)
-			// <明日>[あした]    (multiple Kanji phonetics)
+        /**
+           Register all entries of the array into the global
+           database. Need to be called before any JapaneseDB object
+           is created.
+
+		   Each element in entries is an array [jap, eng, lesson, keywords]
+
+		   The japanese string is encoded for display in kanji,
+		   kana, or romaji. It is a string of kanji/kana Each
+		   kanji can be followed by the kana pronunciation in
+		   brakets. A Romaji override can also be added in curly
+		   braces.
+
+		   @example
+		   すみません        (pure kana)
+		   日[に]本[ほん]語  (pure kanji)
+		   分[わか]ります    (mix of both)
+		   私[わたし]は{wa}  (mix of both, plus romaji override)
+		   <明日>[あした]    (multiple Kanji phonetics)
+
+           @param {Object[]} entries Array of objects to be added to
+           the data base
+           @return undefined
+        */
+        static addToDB(entries) {
+            if (__dbIsKanji) {
+                console.error("Cannot add normal entries to Kanjies");
+                return;
+            }
 			__db = __db.concat(entries);
-		},
+		}
 
-		addKanjiToDB: function(entries) {
-			// Each element is an array [kanji, kun, on, eng, lesson]
-            // Kun is typically hiragana
-            // On is typically katakana
+        /**
+           Register all entries of the array into the global
+           database. Need to be called before any JapaneseDB object
+           is created.
+
+		   Each element is an array [kanji, kun, on, eng, lesson].
+
+           Kun is typically hiragana.
+
+           On is typically katakana.
+
+           @param {} entries entries Array of objects to be added to
+           the data base
+           @return undefined
+        */
+		static addKanjiToDB(entries) {
+            if ((__db.length>0) && (!__dbIsKanji)) {
+                console.error("Cannot add Kanji entries to a normal database");
+                return;
+            }
 			__db = __db.concat(entries);
             __dbIsKanji = true;
-		},
+		}
 
-	    addKanjiStateToDB: function(entries) {
+        // TO REMOVE?
+	    static addKanjiStateToDB_UNUSED(entries) {
 			// Each element is an array [kanji, object]
             // object defines levels 1 and 2 for each entries
             if (__dbIsKanji) {
@@ -89,13 +132,13 @@ window.JapaneseDB = (function() {
                     }
                 }
             }
-		},
+		}
 
 		/**
-			@param {String} str The input encoded string.
-			@return {String} The kana version of the string.
+		   @param {String} str The input encoded string.
+		   @return {String} The kana version of the string.
 		*/
-		toKana: function(str) {
+		toKana(str) {
 			// Remove Romaji characters
 			var removeRoma = str.replace(/{[A-Za-z]+}/g, "");
 
@@ -103,13 +146,13 @@ window.JapaneseDB = (function() {
 			removeRoma = removeRoma.replace(/<[^<>]+>\[([^\x5D]+)\]/g, "$1");
 			// Replace kanji with kana when there is an override
 			return removeRoma.replace(/.\[([^\x5D]+)\]/g, "$1");
-		},
+		}
 
 		/**
-			@param {String} str The input encoded string.
-			@return {String} The kanji version of the string.
+		   @param {String} str The input encoded string.
+		   @return {String} The kanji version of the string.
 		*/
-		toKanji: function(str) {
+		toKanji(str) {
 			// Remove Romaji characters
 			var removeRoma = str.replace(/{[A-Za-z]+}/g, "");
 
@@ -118,13 +161,13 @@ window.JapaneseDB = (function() {
 
 			// Remove the Kana phonetics
 			return removeRoma.replace(/\[[^\x5D]+\]/g, "");
-		},
+		}
 
 		/**
-			@param {String} str The input encoded string.
-			@return {String} The romaji version of the string.
+		   @param {String} str The input encoded string.
+		   @return {String} The romaji version of the string.
 		*/
-		toRoma: function(str) {
+		toRoma(str) {
 			// Replace grouped kanji with kana when there is an override
 			var roma = str.replace(/<[^<>]+>\[([^\x5D]+)\]/g, "$1");
 			// Replace kanji with kana when there is an override
@@ -135,7 +178,7 @@ window.JapaneseDB = (function() {
 
 			// Remove the Kana phonetics
 			return Kana.toRomaji(roma);
-		},
+		}
 
 		/**
            @param {Int} [elemId] Index of the database element to
@@ -144,7 +187,7 @@ window.JapaneseDB = (function() {
            dictionary. If elemId is not set, returns the current
            element.
 		*/
-		elem: function(elemId) {
+		elem(elemId) {
 			elemId = elemId || __index; // Set default value
 			var elem = __db[elemId];
 
@@ -179,18 +222,18 @@ window.JapaneseDB = (function() {
 				category: elem[3],
 				type: elem[4]
 			};
-		},
+		}
 
 		/**
-			Render the current string inside the root div. The div is
-			completely emptied, then the content is repalced with
-			arrays to display kana or romaji phonetics on top.
-            @param {DOMElement} rootDiv The div to render into.
-            @param {DOMElement} [elemId] Index of the database element
-			to render. If not set, the current element is rendered.
-            @return {undefined}
+		   Render the current string inside the root div. The div is
+		   completely emptied, then the content is repalced with
+		   arrays to display kana or romaji phonetics on top.
+           @param {DOMElement} rootDiv The div to render into.
+           @param {DOMElement} [elemId] Index of the database element
+		   to render. If not set, the current element is rendered.
+           @return {undefined}
 		*/
-		renderKanji: function(rootDiv, elemId) {
+		renderKanji(rootDiv, elemId) {
 			elemId = elemId || __index; // Set default value
 			var elem = __db[elemId];
 			var jap = elem[0];
@@ -223,15 +266,15 @@ window.JapaneseDB = (function() {
 				}
 			}
 			rootDiv.html('<span class="kanji">'+html+"</span>");
-		},
+		}
 
 		/**
-			Use speech synthesis to pronounce it.
-            @param {Int} [elemId] Index of the database element to
-			pronounce. If not set, the current element is pronounced.
-            @return {undefined}
+		   Use speech synthesis to pronounce it.
+           @param {Int} [elemId] Index of the database element to
+		   pronounce. If not set, the current element is pronounced.
+           @return {undefined}
 		*/
-		sayIt: function(elemId) {
+		sayIt(elemId) {
             if (JPvoice === undefined) {
                 speech = window.speechSynthesis;
                 // Find a Japanese voice
@@ -256,59 +299,55 @@ window.JapaneseDB = (function() {
 			var utterance = new SpeechSynthesisUtterance(phonetic);
 			utterance.voice = JPvoice;
 			speech.speak(utterance);
-		},
-
+		}
 
 		/**
-		   @return {Int} The number of entries in the database.
+		   @return {Int} The number of valid entries in the database.
 		*/
-		size: function() {
-            if (__indexIndirect.length>0) {
-                return __indexIndirect.length;
-            }
-			return __db.length;
-		},
+		size() {
+            return this.__indexIndirect.length;
+		}
 
         /**
-            Side effect function to move to the next entry in the DB.
+           Side effect function to move to the next entry in the DB.
 
-            @param {Int} [nbGoodSkip] When set to a positive number, all
-            entries for which the number of good answers is greater or equal
-            to this number are removed from the list.
-            @return {Object} The current entry.
+           @param {Int} [nbGoodSkip] When set to a positive number, all
+           entries for which the number of good answers is greater or equal
+           to this number are removed from the list.
+           @return {Object} The current entry.
         */
-		next: function(nbGoodSkip) {
+		next(nbGoodSkip) {
             nbGoodSkip = nbGoodSkip || 0;
             if (nbGoodSkip<1) { nbGoodSkip = 99999; }
             do {
                 if (__fullRandom) {
                     __indirect = Math.floor(Math.random() *
-                                            __indexIndirect.length);
+                                            this.__indexIndirect.length);
                 } else {
                     __indirect ++;
-                    if (__indirect >= __indexIndirect.length) {
+                    if (__indirect >= this.__indexIndirect.length) {
                         __indirect = 0;
                     }
                 }
-                __index = __indexIndirect[__indirect];
+                __index = this.__indexIndirect[__indirect];
             }
-            while ((__good.length>__index) && (__good[__index] >= nbGoodSkip));
+            while ((this.__good.length>__index) && (this.__good[__index] >= nbGoodSkip));
 
 			return this.elem();
-		},
+		}
 
-        markGoodBad: function(what) {
+        markGoodBad(what) {
             if (what) {
-                __good[__index]++;
+                this.__good[__index]++;
             } else {
-                __good[__index] = 0;
+                this.__good[__index] = 0;
             }
-        },
+        }
 
 		/**
 		   @return {String[]} A sorted array of all known categories.
 		*/
-		categories: function() {
+		static categories() {
 			var array = new Array();
 			for (var i = 0 ; i<__db.length ; i++) {
 				var category = __db[i][3];
@@ -319,9 +358,9 @@ window.JapaneseDB = (function() {
 
 			array.sort();
 			return array;
-		},
+		}
 
-		lessons: function() {
+		static lessons() {
 			var array = new Array();
 			for (var i = 0 ; i<__db.length ; i++) {
 				var lesson = __db[i][2];
@@ -332,9 +371,9 @@ window.JapaneseDB = (function() {
 
 			array.sort();
 			return array;
-		},
+		}
 
-		grades: function() {
+		static grades() {
 			var array = new Array();
             if (__dbIsKanji) {
 			    for (var i = 0 ; i<__db.length ; i++) {
