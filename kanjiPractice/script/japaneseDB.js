@@ -301,7 +301,7 @@ window.JapaneseDB = (function() {
             if (what) {
                 __good[__index]++;
             } else {
-                __good = 0;
+                __good[__index] = 0;
             }
         },
 
