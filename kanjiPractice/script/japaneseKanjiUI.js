@@ -20,7 +20,45 @@
     var nbBad = 0;
     var jpDB;
 
-	// Update the UI after the Display or Config parameters changed
+    var boolSettings = JapaneseDB.grades().concat(["skipKnown"],
+                                                  controls.map(x=>x+"CHK0"));
+    /**
+       Save the setting into local storage.
+       @return undefined
+    */
+    function saveSettings() {
+        var settings = {};
+        for (var i = 0; i < boolSettings.length; i++) {
+            var key = boolSettings[i];
+            settings[key] = !!document.getElementById(key).checked;
+        }
+        localStorage.japaneseKanjiUIPrefs = JSON.stringify(settings);
+        localStorage.japaneseKanjiUIPrefsVersion = "1.0";
+    }
+
+    /**
+       Load the settings from local storage if any.
+       @return undefined
+    */
+	function loadSettings() {
+        if (localStorage.japaneseKanjiUIPrefs) {
+            var settings =
+                JSON.parse(localStorage.japaneseKanjiUIPrefs);
+            for (var key in settings) {
+                var elem = document.getElementById(key);
+                if (elem) {
+                    elem.checked = settings[key];
+                }
+            }
+        }
+    }
+
+    function resetSettings() {
+        localStorage.removeItem('japaneseKanjiUIPrefs');
+        localStorage.removeItem('japaneseKanjiUIPrefsVersion');
+    }
+
+    // Update the UI after the Display or Config parameters changed
 	function updateUI() {
         for (var i = 0; i < controls.length; i++) {
             var elem = document.getElementById(controls[i]);
@@ -132,7 +170,7 @@
 
         document.getElementById("results").innerText = "Good answers: "+nbGood+"/"+(nbGood+nbBad);
     }
-    
+
     function makeNode(tag, className, attrs) {
 		var child = document.createElement(tag);
         if (className) {child.classList.add(className);}
@@ -149,7 +187,7 @@
         parent.appendChild(child);
         return child;
     }
-    
+
     function expandButtonUI() {
         // Expand the UI from divs
 	    var buttons = document.getElementsByClassName("iconTextButton");
@@ -169,8 +207,13 @@
     function expandUI() {
         expandButtonUI();
     }
-    
+
 	function main() {
+        var searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.get('reset')) {
+            resetSettings();
+        }
+
         expandUI();
 
 		updateUI();
@@ -205,6 +248,11 @@
             input.addEventListener("click", updateDB);
         }
 
+        // Save settings everytime a checkbox changes
+        for (var i = 0; i < boolSettings.length; i++) {
+            document.getElementById(boolSettings[i]).addEventListener("change", saveSettings);
+        }
+        loadSettings();
         updateDB();
 		nextQuestion();
 	}
