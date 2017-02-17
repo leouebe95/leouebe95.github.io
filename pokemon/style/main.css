@@ -38,10 +38,18 @@ td.found {
   background-color: #cceeee;
 }
 
+td.found.gen2 {
+  background-color: #feffb9;
+}
+
 td.missing {
   border-style: solid;
   border-width: 3px;
   border-color: #EE8080;
+}
+
+td.missing.gen2 {
+  background-color: #ffffe6;
 }
 
 img.pokemon {

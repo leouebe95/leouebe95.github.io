@@ -41,6 +41,9 @@ function isRowVisible(data, mode) {
         var elem = data[i];
         var custom = {};
         var candy = 0;
+        if (elem.skip) {
+            continue;
+        }
         if (data[i+1] && data[i+1].candy) {
             candy = data[i+1].candy;
         }
@@ -64,7 +67,7 @@ function appendRow(tr, data, mode) {
 
     for (var i=0 ; i<3 ; i++) {
         if (i>=data.length) {
-            var td = makeElem("td", "", tr);
+            let td = makeElem("td", "", tr);
             td.classList.add("empty");
             td = makeElem("td", "", tr);
             td.classList.add("empty");
@@ -72,6 +75,18 @@ function appendRow(tr, data, mode) {
         }
 
         var elem = data[i];
+        if (elem.skip) {
+            let td = makeElem("td", "", tr);
+            td.classList.add("empty");
+            if (i>0) {
+                td = makeElem("td", "", tr);
+                td.classList.add("empty");
+            }
+            continue;
+        }
+
+        // Generation
+        var gen = elem.gen || 1;
         var custom = {};
         var candy = 0;
         if (data[i+1] && data[i+1].candy) {
@@ -83,11 +98,11 @@ function appendRow(tr, data, mode) {
         }
 
         if (elem.candy>0) {
-            td = makeElem("td", elem.candy, tr);
+            let td = makeElem("td", elem.candy, tr);
             td.classList.add("large");
         }
 
-        td = makeElem("td", elem.name, tr);
+        let td = makeElem("td", elem.name, tr);
         makeElem("div", "(#"+elem.number+")", td);
         if (custom.got) {
             td.classList.add("found");
@@ -96,6 +111,8 @@ function appendRow(tr, data, mode) {
             td.classList.add("missing");
             res.miss += 1;
         }
+        td.classList.add("gen"+gen);
+
         var div = document.createElement("div");
         div.classList.add("under");
 
