@@ -20,6 +20,45 @@ function formatString(msg, values) {
     return msg;
 }
 
+/*
+  Build the index->name table
+*/
+function buildIdIndex() {
+    "use strict";
+    window.idIndex = {};
+    var data = window.maintable.species;
+    for (var i=0 ; i<data.length ; i++) {
+        var stages = data[i].stages;
+        for (var j=0 ; j<stages.length ; j++) {
+            if (stages[j].number) {
+                window.idIndex[stages[j].number] = stages[j];
+            }
+        }
+    }
+}
+
+/*
+   Debug function to dump cleaned up stats sorted in Id order
+*/
+function dumpStats() {
+    var ids = Object.keys(window.idIndex).sort();
+    var res = 'window.stats = {\n';
+    for (var i=0 ; i<ids.length ; i++) {
+        var id = ids[i];
+        var name = window.idIndex[id].name;
+        var line = window.stats[name];
+        if (line.candies === 0) {
+            delete line.candies;
+        }
+        res += formatString('    "{n}": {l},\n',
+                            {n: name,
+                             l: JSON.stringify(line)});
+    }
+    res += '};\n';
+    console.log(res);
+}
+
+
 function makeElem(tag, text, parent) {
     "use strict";
     var node = document.createElement(tag);
@@ -60,7 +99,55 @@ function isRowVisible(data, mode) {
     return false;
 }
 
-function appendRow(tr, data, mode) {
+function appendPokemon(tr, elem, custom, candy) {
+    // Generation
+    var gen = elem.gen || 1;
+    candy = candy || 0;
+    var res = {evolve: 0, got:0, miss: 0};
+
+    let td = makeElem("td", elem.name, tr);
+    makeElem("div", "(#"+elem.number+")", td);
+    if (custom.got) {
+        td.classList.add("found");
+        res.got += 1;
+    } else {
+        td.classList.add("missing");
+        res.miss += 1;
+    }
+    td.classList.add("gen"+gen);
+
+    var div = document.createElement("div");
+    div.classList.add("under");
+
+    var anchor = document.createElement("a");
+    anchor.setAttribute("href", "https://en.wikipedia.org/wiki/"+elem.name);
+    var img = document.createElement("img");
+    img.classList.add("pokemon");
+    img.setAttribute("src", "img/"+elem.number+".png");
+    img.setAttribute("title", elem.name);
+    anchor.appendChild(img);
+    div.appendChild(anchor);
+    td.insertBefore(div, td.firstChild);
+
+    if (custom.candies >= candy) {
+        var nbEvolve = Math.floor(custom.candies/candy);
+        // Special case for Eevee which can eveolve to 3 kinds
+        if (!elem.noevolve) {
+            res.evolve += nbEvolve;
+        }
+        img = document.createElement("img");
+        img.classList.add("over");
+        img.setAttribute("src", "img/evolve.png");
+        div.appendChild(img);
+        var count = makeElem("div", String(nbEvolve));
+        count.classList.add("overnb");
+        div.appendChild(count);
+    }
+
+    return res;
+}
+
+function appendRow(tr, data) {
     "use strict";
     // skip all rows with no evolution
     var res = {evolve: 0, got:0, miss: 0};
@@ -85,8 +172,6 @@ function appendRow(tr, data, mode) {
             continue;
         }
 
-        // Generation
-        var gen = elem.gen || 1;
         var custom = {};
         var candy = 0;
         if (data[i+1] && data[i+1].candy) {
@@ -101,50 +186,67 @@ function appendRow(tr, data, mode) {
             let td = makeElem("td", elem.candy, tr);
             td.classList.add("large");
         }
-
-        let td = makeElem("td", elem.name, tr);
-        makeElem("div", "(#"+elem.number+")", td);
-        if (custom.got) {
-            td.classList.add("found");
-            res.got += 1;
-        } else {
-            td.classList.add("missing");
-            res.miss += 1;
-        }
-        td.classList.add("gen"+gen);
-
-        var div = document.createElement("div");
-        div.classList.add("under");
-
-        var anchor = document.createElement("a");
-        anchor.setAttribute("href", "https://en.wikipedia.org/wiki/"+elem.name);
-        var img = document.createElement("img");
-        img.classList.add("pokemon");
-        img.setAttribute("src", "img/"+elem.number+".png");
-        img.setAttribute("title", elem.name);
-        anchor.appendChild(img);
-        div.appendChild(anchor);
-        td.insertBefore(div, td.firstChild);
-
-        if (custom.candies >= candy) {
-            var nbEvolve = Math.floor(custom.candies/candy);
-            // Special case for Eevee which can eveolve to 3 kinds
-            if (!elem.noevolve) {
-                res.evolve += nbEvolve;
-            }
-            img = document.createElement("img");
-            img.classList.add("over");
-            img.setAttribute("src", "img/evolve.png");
-            div.appendChild(img);
-            var count = makeElem("div", String(nbEvolve));
-            count.classList.add("overnb");
-            div.appendChild(count);
-
-        }
+        var tmpRes = appendPokemon(tr, elem, custom, candy);
+        res.evolve += tmpRes.evolve;
+        res.got += tmpRes.got;
+        res.miss += tmpRes.miss;
     }
     return res;
 }
 
+/*
+ */
+function makeSortedMissingChart(root, dataObj) {
+    var ids = Object.keys(window.idIndex).sort();
+    var t = document.createElement("table");
+    var h = document.createElement("thead");
+    var tr = document.createElement("tr");
+    var nbCol = nbColumns*4;
+    for (var i = 0 ; i<nbCol ; i++ ) {
+        makeElem("th", "Pokemon", tr);
+    }
+    h.appendChild(tr);
+    t.appendChild(h);
+
+    // Find the missing pokemons
+    var toDisplay = [];
+    for (var i=0 ; i<ids.length ; i++) {
+        var id = ids[i];
+        var name = window.idIndex[id].name;
+        if (!window.stats[name].got) {
+            toDisplay.push(id);
+        }
+    }
+    var nbRows = Math.ceil(toDisplay.length/nbCol);
+    var b = document.createElement("tbody");
+    var indx = 0;
+    for (i=0 ; i<nbRows ; i++) {
+        tr = document.createElement("tr");
+        for (var j=0 ; j<nbCol ; j++ ) {
+            if (indx >= toDisplay.length) {
+                break;
+            }
+            var id = toDisplay[indx];
+            var name = window.idIndex[id].name;
+            var custom = {};
+            if (window.stats && window.stats[name]) {
+                custom = window.stats[name];
+            }
+            var res = appendPokemon(tr, window.idIndex[id], custom);
+
+            indx++;
+        }
+        b.appendChild(tr);
+    }
+    t.appendChild(b);
+    makeElem("div", formatString("Missing {m}", {m: toDisplay.length}), root);
+
+    root.appendChild(t);
+
+}
+
+/*
+*/
 function makechart(id, dataObj) {
     "use strict";
     var mode = "all";
@@ -162,6 +264,11 @@ function makechart(id, dataObj) {
         var d = makeElem("div", error);
         d.classList.add("error");
         body.insertBefore(d, body.firstChild);
+        return;
+    }
+
+    if (mode == 'sortedMissing') {
+        makeSortedMissingChart(root, dataObj);
         return;
     }
 
@@ -206,7 +313,7 @@ function makechart(id, dataObj) {
                 var td = makeElem("td", "", tr);
                 td.classList.add("separate");
             }
-            var res = appendRow(tr, data[indx].stages, mode);
+            var res = appendRow(tr, data[indx].stages);
             total.evolve += res.evolve;
             total.got    += res.got;
             total.miss   += res.miss;
@@ -233,7 +340,10 @@ function refreshChart(id) {
 
 document.addEventListener("DOMContentLoaded", function(event) {
     "use strict";
+
+    buildIdIndex();
     makechart(tableId, window.maintable);
+    // dumpStats();
 
     var modeElem = document.getElementById(modeId);
     if (modeElem) {
