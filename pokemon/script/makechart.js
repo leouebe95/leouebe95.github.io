@@ -120,7 +120,10 @@ function appendPokemon(tr, elem, custom, candy) {
     div.classList.add("under");
 
     var anchor = document.createElement("a");
-    anchor.setAttribute("href", "https://en.wikipedia.org/wiki/"+elem.name);
+    //anchor.setAttribute("href", "https://en.wikipedia.org/wiki/"+elem.name);
+    anchor.setAttribute("href",
+                        formatString("http://bulbapedia.bulbagarden.net/wiki/{n}_(Pok%C3%A9mon)",
+                                     {n: elem.name}));
     var img = document.createElement("img");
     img.classList.add("pokemon");
     img.setAttribute("src", "img/"+elem.number+".png");
