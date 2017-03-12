@@ -204,12 +204,16 @@ function appendRow(tr, data) {
 
         var elem = data[i];
         if (elem.skip) {
-            let td = makeElem("td", "", tr);
-            td.classList.add("empty");
             if (i>0) {
-                td = makeElem("td", "", tr);
+                let td = makeElem("td", "", tr);
                 td.classList.add("empty");
             }
+            let td = makeElem("td", "", tr);
+            td.classList.add("empty");
+            var img = document.createElement("img");
+            img.setAttribute("src", "img/arrow.png");
+            img.classList.add("pokemon");
+            td.appendChild(img);
             continue;
         }
 
