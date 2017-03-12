@@ -60,6 +60,13 @@ div.under {
   position: relative;
 }
 
+img.lock {
+  width: 64px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
 img.over {
   width: 32px;
   position: absolute;

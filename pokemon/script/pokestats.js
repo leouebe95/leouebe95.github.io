@@ -156,7 +156,7 @@ window.stats = {
     "Cyndaquil": {},
     "Quilava": {},
     "Typhlosion": {},
-    "Totodile": {},
+    "Totodile": {"got":true},
     "Croconaw": {"got":true},
     "Feraligatr": {},
     "Sentret": {"got":true,"candies":56},

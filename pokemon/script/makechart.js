@@ -1,6 +1,8 @@
 var tableId = "maintable";
 var modeId = "mode";
 var nbColumns = 3;
+var maxGeneration = 2;
+
 
 function formatString(msg, values) {
     "use strict";
@@ -18,6 +20,32 @@ function formatString(msg, values) {
         }
     }
     return msg;
+}
+
+function checkGeneration(dataObj) {
+    "use strict";
+    var generationMax = [0, 151, 251, 386, 493, 649, 721, 802];
+    var data = dataObj.species;
+    for (var i=0 ; i<data.length ; i++) {
+        var stages = data[i].stages;
+        for (var j=0 ; j<stages.length ; j++) {
+            if (stages[j].number) {
+                var id = Number(stages[j].number);
+                var gen = stages[j].gen || 1;
+                if (id<=generationMax[gen-1]) {
+                    console.error("Gen too high: "+stages[j].name);
+                } else if (id>generationMax[gen]) {
+                    console.error("Gen too low: "+stages[j].name);
+                }
+            }
+        }
+    }
+}
+
+function pokeLink(name) {
+    "use strict";
+    return formatString("http://bulbapedia.bulbagarden.net/wiki/{n}_(Pok%C3%A9mon)",
+                        {n: name});
 }
 
 /*
@@ -80,7 +108,7 @@ function isRowVisible(data, mode) {
         var elem = data[i];
         var custom = {};
         var candy = 0;
-        if (elem.skip) {
+        if (elem.skip || elem.noPokemon) {
             continue;
         }
         if (data[i+1] && data[i+1].candy) {
@@ -91,7 +119,7 @@ function isRowVisible(data, mode) {
         }
 
         if ((mode === "have" && custom.got) ||
-            (mode === "missing" && (!custom.got)) ||
+            (mode === "missing" && (!custom.got) && (elem.gen <= maxGeneration)) ||
             (mode === "evolve" && custom.candies >= candy)) {
             return true;
         }
@@ -110,20 +138,20 @@ function appendPokemon(tr, elem, custom, candy) {
     if (custom.got) {
         td.classList.add("found");
         res.got += 1;
-    } else {
+    } else if (gen <= maxGeneration){
         td.classList.add("missing");
         res.miss += 1;
     }
     td.classList.add("gen"+gen);
 
+    if (gen>maxGeneration) {
+        candy = 99999
+    }
     var div = document.createElement("div");
     div.classList.add("under");
 
     var anchor = document.createElement("a");
-    //anchor.setAttribute("href", "https://en.wikipedia.org/wiki/"+elem.name);
-    anchor.setAttribute("href",
-                        formatString("http://bulbapedia.bulbagarden.net/wiki/{n}_(Pok%C3%A9mon)",
-                                     {n: elem.name}));
+    anchor.setAttribute("href", pokeLink(elem.name));
     var img = document.createElement("img");
     img.classList.add("pokemon");
     img.setAttribute("src", "img/"+elem.number+".png");
@@ -145,6 +173,16 @@ function appendPokemon(tr, elem, custom, candy) {
         var count = makeElem("div", String(nbEvolve));
         count.classList.add("overnb");
         div.appendChild(count);
+    }
+    
+    if (gen>maxGeneration) {
+        var anchor = document.createElement("a");
+        anchor.setAttribute("href", pokeLink(elem.name));
+        img = document.createElement("img");
+        img.classList.add("lock");
+        img.setAttribute("src", "img/lock.png");
+        anchor.appendChild(img);
+        div.appendChild(anchor);
     }
 
     return res;
@@ -175,6 +213,18 @@ function appendRow(tr, data) {
             continue;
         }
 
+        if (elem.noPokemon) {
+            let td = makeElem("td", "", tr);
+            td.classList.add("empty");
+            td = makeElem("td", "", tr);
+            td.classList.add("empty");
+            var img = document.createElement("img");
+            img.classList.add("pokemon");
+            img.setAttribute("src", "img/noPokemon.png");
+            td.appendChild(img);
+            continue;
+        }
+
         var custom = {};
         var candy = 0;
         if (data[i+1] && data[i+1].candy) {
@@ -187,6 +237,10 @@ function appendRow(tr, data) {
 
         if (elem.candy>0) {
             let td = makeElem("td", elem.candy, tr);
+            td.classList.add("large");
+        }
+        if (elem.candy<0) {
+            let td = makeElem("td", "?", tr);
             td.classList.add("large");
         }
         var tmpRes = appendPokemon(tr, elem, custom, candy);
@@ -345,6 +399,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     "use strict";
 
     buildIdIndex();
+    checkGeneration(window.maintable);
     makechart(tableId, window.maintable);
     // dumpStats();
 
