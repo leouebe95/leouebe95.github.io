@@ -274,7 +274,9 @@ function makeSortedMissingChart(root, dataObj) {
     for (var i=0 ; i<ids.length ; i++) {
         var id = ids[i];
         var name = window.idIndex[id].name;
-        if (!window.stats[name].got) {
+        if (window.stats[name] &&
+            (!window.stats[name].got) &&
+            (window.idIndex[id].gen <= maxGeneration)) {
             toDisplay.push(id);
         }
     }
