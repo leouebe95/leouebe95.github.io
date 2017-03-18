@@ -66,7 +66,7 @@ window.HandRules = (function() {
 		// Private function to match remaining tiles to melds
 		var matchMelds = function(left) {
 			var count = left.slice(); // make a copy of the array
-			for (var i = 0; i<count.length ; i++ ) {
+			for (let i = 0; i<count.length ; i++ ) {
 				var suit = Math.floor(i/8);
 				var num = i-8*suit;
 				switch(count[i]) {
@@ -121,13 +121,14 @@ window.HandRules = (function() {
 					return -999;
 				}
 			}
+			return -999;
 		};
 
 		if (hand._isNormal) {return false;}
 
 		// See if all honors are different, if so, compute the number of them.
 		var nbHonors = 0;
-		for (i = 0; i<7 ; i++) {
+		for (let i = 0; i<7 ; i++) {
 			if (count[Tile.TileType.DRAGON.offset+i] === 1) {
 				nbHonors++;
             } else if (count[Tile.TileType.DRAGON.offset+i] > 1) {
@@ -647,7 +648,7 @@ window.HandRules = (function() {
             var res = 0;
 			// Tile Hog: 4 identical tiles scattered in
 			// Pungs, Chow, and/or Pair
-			for (var i=0 ; i<Tile._kNumberDifferentTiles ; i++) {
+			for (let i=0 ; i<Tile._kNumberDifferentTiles ; i++) {
 				if (data.count[i] === 4) {
 					res++;
                 }
@@ -655,7 +656,7 @@ window.HandRules = (function() {
 
 			// NEED TO IGNORE KONGS
 			if (hand._isNormal) {
-				for (i=0 ; i<5 ; i++) {
+				for (let i=0 ; i<5 ; i++) {
 					if (hand._melds[i]._type === Meld.MeldType.KONG) {
 						res--;
                     }
@@ -925,23 +926,23 @@ window.HandRules = (function() {
         static reversibleTiles(hand, data) {
 			var allowed = Array(Tile._kNumberDifferentTiles).fill(false);
 
-			var start = Tile.TileType.BAMBOO.offset;
-			allowed[start-1 + 2] = true;
-			allowed[start-1 + 4] = true;
-			allowed[start-1 + 5] = true;
-			allowed[start-1 + 6] = true;
-			allowed[start-1 + 8] = true;
-			allowed[start-1 + 9] = true;
-			start = Tile.TileType.DOT.offset;
-			allowed[start-1 + 1] = true;
-			allowed[start-1 + 2] = true;
-			allowed[start-1 + 3] = true;
-			allowed[start-1 + 4] = true;
-			allowed[start-1 + 5] = true;
-			allowed[start-1 + 8] = true;
-			allowed[start-1 + 9] = true;
-			start = Tile.TileType.DRAGON.offset;
-			allowed[start-1 + 1] = true;
+			var start = Tile.TileType.BAMBOO.offset-1;
+			allowed[start + 2] = true;
+			allowed[start + 4] = true;
+			allowed[start + 5] = true;
+			allowed[start + 6] = true;
+			allowed[start + 8] = true;
+			allowed[start + 9] = true;
+			start = Tile.TileType.DOT.offset-1;
+			allowed[start + 1] = true;
+			allowed[start + 2] = true;
+			allowed[start + 3] = true;
+			allowed[start + 4] = true;
+			allowed[start + 5] = true;
+			allowed[start + 8] = true;
+			allowed[start + 9] = true;
+			start = Tile.TileType.DRAGON.offset-1;
+			allowed[start + 1] = true;
 
 			for (var i=0 ; i<Tile._kNumberDifferentTiles ; i++) {
 				if ((!allowed[i]) && (data.count[i] > 0)) {

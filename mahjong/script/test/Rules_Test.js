@@ -3,6 +3,9 @@
 /* exported Rules_Test */
 
 
+/**
+   Unit test function for Rule.
+*/
 function Rules_Test() {
     'use strict';
 

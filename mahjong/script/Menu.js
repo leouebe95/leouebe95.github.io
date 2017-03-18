@@ -8,6 +8,13 @@ window.Menu = (function() {
     'use strict';
     var Menu = {};
 
+    /**
+        @param {DOMelement} parent Parent DOM element to attch the
+        child to.
+        @param {String} tag Tag of the new node to create.
+        @param {String} [className] Class name
+        @return {DOMelement} The new child.
+    */
     function appendChild(parent, tag, className) {
         var node = document.createElement(tag);
         if (className) {
@@ -17,7 +24,7 @@ window.Menu = (function() {
         return node;
     }
 
-    /*
+    /**
       Remove all previously created menus
      */
     function closeMenu() {
@@ -79,7 +86,7 @@ window.Menu = (function() {
                     tileId = Tile._kBadId;
                 }
                 img.setAttribute('src', 'img/default/'+Tile.fileNameS(tileType, tileId)+'.png');
-	            img.addEventListener('click', function(event) {
+	            img.addEventListener('click', function() {
                     assignTileCB(tileType, tileId, id);
                 });
             }

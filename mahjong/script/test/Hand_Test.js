@@ -2,6 +2,9 @@
 /* global QUnit:false Hand:false HandSamples:false */
 /* exported Hand_Test */
 
+/**
+   Unit test function for Hand.
+*/
 function Hand_Test() {
     'use strict';
 

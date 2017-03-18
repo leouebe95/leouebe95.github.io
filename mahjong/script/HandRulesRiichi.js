@@ -9,15 +9,31 @@ window.HandRulesRiichi = (function(hr) {
     */
     var yaku;
 
+    /**
+       @param {Hand} hand The hand to test
+       @return {Boolean} True is the hand is concealed
+    */
     function concealedHand(hand) {
         return (hr.concealedHand(hand) > 0) ||
             (hr.fullyConcealedHand(hand) > 0);
     }
 
+    /**
+       Format a rule result for display.
+       @param {Number} count Number of points for this rule.
+       @param {String} message Rule name.
+       @return {String} Formatted result.
+    */
     function formatRule(count, message) {
         return strRes('RULES_FORMAT_MINI').format(count, message);
     }
-
+    /**
+       Compute the number of points based in number of yaku and
+       mini-points.
+       @param {Number} yaku Number of yaku points
+       @param {Number} mini Number of mini-points
+       @return {Number} Total number of points
+    */
     function computePoints(yaku, mini) {
         var points = {
             20:  [  0,  400, 700, 1300],
@@ -39,6 +55,13 @@ window.HandRulesRiichi = (function(hr) {
         return totalRound;
     }
 
+    /**
+       Compute the number of mini-points for this hand.
+
+       @param {Hand} hand The hand to test
+       @param {Object} yakuRes Intermediate yaku result
+       @return {Number} Number of mini-points
+    */
     function computeMinipoints(hand, yakuRes) {
         var res = {
             nbPoints: 0,
@@ -134,6 +157,14 @@ window.HandRulesRiichi = (function(hr) {
         return res;
     }
 
+    /**
+       Compute the number of dora points.
+
+       @param {Tile} tile The dora tile.
+       @param {Object} data Precomputed hand data.
+       @param {Object} rulesRes Result of rules computation.
+       @return {Number} Number of dora points.
+    */
     function computeDora(tile, data, rulesRes) {
         if (rulesRes.nbPoints < 1) {return 0;}
 
@@ -194,7 +225,7 @@ window.HandRulesRiichi = (function(hr) {
             var miniRes = computeMinipoints(handIn, yakuRes);
             yakuRes.desc = yakuRes.desc.concat(miniRes.desc);
             var miniPoints = Math.ceil(miniRes.nbPoints/10) * 10;
-            if (miniRes.nbPoints == 25) {
+            if (miniRes.nbPoints === 25) {
                 miniPoints = 25;
             }
             yakuRes.desc.push(strRes('MINIPOINTS_TOTAL').format(miniRes.nbPoints, miniPoints));

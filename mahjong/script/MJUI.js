@@ -8,6 +8,7 @@
    HandRulesRiichi:false
    HandSamples:false Menu:false strRes:false
 */
+/* eslint no-console: ["error", { allow: ["info"] }] */
 
 window.MJUI = (function() {
     'use strict';
@@ -63,7 +64,7 @@ window.MJUI = (function() {
     function updateHandType(hand) {
 
 	    var section = document.getElementsByClassName('specialHand');
-	    for (var i=0 ; i<section.length ; i++) {
+	    for (let i=0 ; i<section.length ; i++) {
 	        if (hand._isNormal) {
 		        section[i].classList.add('hidden');
             } else {
@@ -72,7 +73,7 @@ window.MJUI = (function() {
 	    }
 
 	    section = document.getElementsByClassName('normalHand');
-	    for (i=0 ; i<section.length ; i++) {
+	    for (let i=0 ; i<section.length ; i++) {
 	        if (hand._isNormal) {
 		        section[i].classList.remove('hidden');
             } else {
@@ -81,7 +82,7 @@ window.MJUI = (function() {
 	    }
 
         section = document.getElementsByClassName('normalHand2');
-	    for (i=0 ; i<section.length ; i++) {
+	    for (let i=0 ; i<section.length ; i++) {
 	        if (hand._isNormal) {
 		        section[i].classList.remove('transparent');
             } else {
@@ -106,7 +107,7 @@ window.MJUI = (function() {
             case 'international':
                 rules = new HandRulesInternational();
                 break;
-            case 'riichi':
+            default: // Default is riichi
                 rules = new HandRulesRiichi();
                 break;
             }
@@ -136,7 +137,7 @@ window.MJUI = (function() {
 
     function updateUIFromHand(hand) {
 	    // Update flowers
-	    for (var i=1 ; i<9 ; i++ ) {
+	    for (let i=1 ; i<9 ; i++ ) {
 	        setIcon(hand._flowers[i-1], 'flower'+String(i));
 	    }
 
@@ -152,7 +153,7 @@ window.MJUI = (function() {
 	        setIcon(hand._melds[4]._firstTile, 'pair2');
 
 	        // Update the melds
-	        for (i=1 ; i<5 ; i++ ) {
+	        for (let i=1 ; i<5 ; i++ ) {
 		        var meld = hand._melds[i-1];
 		        var meldName = 'meld'+String(i);
 		        var tile = meld._firstTile;
@@ -183,7 +184,7 @@ window.MJUI = (function() {
 	        }
 	    } else {
 	        // Update the special hand
-	        for (i=0 ; i<14 ; i++ ) {
+	        for (let i=0 ; i<14 ; i++ ) {
 		        var tileName = 'tile'+String(i+1);
 		        setIcon(hand._tiles[i], tileName);
 	        }
@@ -326,15 +327,15 @@ window.MJUI = (function() {
         case 'international':
             riichiViz = 'none';
             break;
-        case 'riichi':
+        default: // default is 'riichi'
             NORiichiViz = 'none';
             break;
         }
 
-	    for (var i=0 ; i<riichi.length ; i++) {
+	    for (let i=0 ; i<riichi.length ; i++) {
 		    riichi[i].style.display = riichiViz;
 	    }
-	    for (i=0 ; i<NORiichi.length ; i++) {
+	    for (let i=0 ; i<NORiichi.length ; i++) {
 		    NORiichi[i].style.display = NORiichiViz;
 	    }
     };
@@ -426,29 +427,29 @@ window.MJUI = (function() {
     MJUI.expandUI = function() {
         var table = {'tile': expandTile};
         for (var tag in table) {
-            var elems = document.getElementsByTagName(tag);
+            let elems = document.getElementsByTagName(tag);
             // Loop backward because replace child messes up the
             // element list otherwise.
-            for (var i=elems.length ; i-- ; ) {
+            for (let i=elems.length ; i-- ; ) {
                 table[tag](elems[i]);
             }
         }
 
         // Expand the UI from divs
 	    var melds = document.getElementsByClassName('meldBlock');
-	    for (i=0 ; i<melds.length ; i++) {
+	    for (let i=0 ; i<melds.length ; i++) {
 		    addMeld(melds[i]);
 	    }
 
         // Add the tile menus
 	    var tiles = document.getElementsByClassName('tile');
-	    for (i=0 ; i<tiles.length ; i++) {
+	    for (let i=0 ; i<tiles.length ; i++) {
 		    addTileMenu(tiles[i]);
 	    }
 
         // Add the callbacks to update the UI
-	    elems = document.getElementsByClassName('updatable');
-	    for (i=0 ; i<elems.length ; i++) {
+	    let elems = document.getElementsByClassName('updatable');
+	    for (let i=0 ; i<elems.length ; i++) {
             elems[i].addEventListener('change', UIhasChanged);
 	    }
 

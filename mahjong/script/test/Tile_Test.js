@@ -2,13 +2,16 @@
 /* global QUnit:false Tile:false */
 /* exported Tile_Test */
 
+/**
+   Unit test function for Tile.
+*/
 function Tile_Test() {
     'use strict';
 
     QUnit.module('Tile');
 
     QUnit.test('basic', function(assert) {
-	    // FIXME: Any shorter way to access _kBadTile and TileType?
+
 	    var bad = Tile._kBadTile;
 	    var char1 = new Tile(Tile.TileType.CHARACTER, 1);
 	    var char3 = new Tile(Tile.TileType.CHARACTER, 3);

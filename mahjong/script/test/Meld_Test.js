@@ -2,13 +2,15 @@
 /* global QUnit:false Tile:false Meld:false */
 /* exported Meld_Test */
 
+/**
+   Unit test function for Meld.
+*/
 function Meld_Test() {
     'use strict';
 
     QUnit.module('Meld');
 
     QUnit.test('basic', function(assert) {
-		// FIXME: Any shorter way to access _kBadTile and TileType?
 		var bad = Meld._kBadMeld;
 
 		var char1   = new Tile(Tile.TileType.CHARACTER, 1);

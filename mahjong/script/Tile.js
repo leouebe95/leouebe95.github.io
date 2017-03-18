@@ -127,10 +127,9 @@ class Tile {
 		case Tile.TileType.WIND.id:   return strRes(Tile._kWinds  [this._num-1]);
 		case Tile.TileType.FLOWER.id: return strRes(Tile._kFlowers[this._num-1]);
 		case Tile.TileType.SEASON.id: return strRes(Tile._kSeasons[this._num-1]);
+        default: return strRes('TILE_FORMAT').format(this._num,
+											         strRes(this._type.name));
 		}
-
-		return strRes('TILE_FORMAT').format(this._num,
-											strRes(this._type.name));
 	}
 
 	/**
