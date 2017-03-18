@@ -119,7 +119,7 @@ class Tile {
 	*/
 	toString() {
 		if (!this.isValid()) {
-			return strRes("BAD_TILE").format(this._type.name, this._num);
+			return strRes('BAD_TILE').format(this._type.name, this._num);
         }
 
 		switch (this._type.id) {
@@ -129,7 +129,7 @@ class Tile {
 		case Tile.TileType.SEASON.id: return strRes(Tile._kSeasons[this._num-1]);
 		}
 
-		return strRes("TILE_FORMAT").format(this._num,
+		return strRes('TILE_FORMAT').format(this._num,
 											strRes(this._type.name));
 	}
 
@@ -141,9 +141,9 @@ class Tile {
 	 */
 	static fileNameS(type, num) {
         var id = Tile.uniqueId(type, num);
-        if (id<0) {return "empty";} // NOI18N
+        if (id<0) {return 'empty';} // NOI18N
 
-        return type.name+"_"+type.ext[num-1];
+        return type.name+'_'+type.ext[num-1];
     }
     
 	/**
@@ -204,23 +204,23 @@ class Tile {
 Tile._kBadId = -10;
 
 /** Resource names of the 3 dragons */
-Tile._kDragons = ["WHITE_DR", "GREEN_DR", "RED_DR"];
+Tile._kDragons = ['WHITE_DR', 'GREEN_DR', 'RED_DR'];
 /** Resource names of the 4 winds */
-Tile._kWinds =   ["EAST", "SOUTH", "WEST", "NORTH"];
+Tile._kWinds =   ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 /** Resource names of the 4 flowers */
-Tile._kFlowers = ["PLUM", "ORCHID", "CHRYSANT", "BAMBOO"];
+Tile._kFlowers = ['PLUM', 'ORCHID', 'CHRYSANT', 'BAMBOO'];
 /** Resource names of the 4 seasons */
-Tile._kSeasons=  ["SPRING", "SUMMER", "AUTUMN", "WINTER"];
+Tile._kSeasons=  ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'];
 
 /** Tile types */
 Tile.TileType = {
-	BAMBOO:		{id:0, len:9, offset: 0, name:"bamboo",    ext:"123456789"},
-	CHARACTER:	{id:1, len:9, offset: 9, name:"character", ext:"123456789"},
-	DOT:		{id:2, len:9, offset:18, name:"dot",       ext:"123456789"},
-	DRAGON:		{id:3, len:3, offset:27, name:"dragon",    ext:"wgr"},
-	WIND:		{id:4, len:4, offset:30, name:"wind",      ext:"eswn"},
-	FLOWER:		{id:5, len:4, offset:34, name:"flower",    ext:"1234"},
-	SEASON:		{id:6, len:4, offset:38, name:"season",    ext:"1234"}};
+	BAMBOO:		{id:0, len:9, offset: 0, name:'bamboo',    ext:'123456789'},
+	CHARACTER:	{id:1, len:9, offset: 9, name:'character', ext:'123456789'},
+	DOT:		{id:2, len:9, offset:18, name:'dot',       ext:'123456789'},
+	DRAGON:		{id:3, len:3, offset:27, name:'dragon',    ext:'wgr'},
+	WIND:		{id:4, len:4, offset:30, name:'wind',      ext:'eswn'},
+	FLOWER:		{id:5, len:4, offset:34, name:'flower',    ext:'1234'},
+	SEASON:		{id:6, len:4, offset:38, name:'season',    ext:'1234'}};
 
 /** Max value of _tileId */
 Tile._kNumberDifferentTiles = Tile.TileType.SEASON.offset + Tile.TileType.SEASON.len;

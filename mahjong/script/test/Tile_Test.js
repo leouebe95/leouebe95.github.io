@@ -3,11 +3,11 @@
 /* exported Tile_Test */
 
 function Tile_Test() {
-    "use strict";
+    'use strict';
 
-    QUnit.module("Tile");
+    QUnit.module('Tile');
 
-    QUnit.test("basic", function(assert) {
+    QUnit.test('basic', function(assert) {
 	    // FIXME: Any shorter way to access _kBadTile and TileType?
 	    var bad = Tile._kBadTile;
 	    var char1 = new Tile(Tile.TileType.CHARACTER, 1);
@@ -54,11 +54,11 @@ function Tile_Test() {
 	    assert.equal(drag1.isRegular(), false);
 	    assert.equal(flower2.isRegular(), false);
 
-	    assert.equal(bad.toString(),	 "Bad Tile (-10,bamboo)");
-	    assert.equal(char1.toString(),   "character-1");
-	    assert.equal(char3.toString(),   "character-3");
-	    assert.equal(wind3.toString(),   "West");
-	    assert.equal(drag1.toString(),   "White Dragon");
-	    assert.equal(flower2.toString(), "Orchid");
+	    assert.equal(bad.toString(),	 'Bad Tile (-10,bamboo)');
+	    assert.equal(char1.toString(),   'character-1');
+	    assert.equal(char3.toString(),   'character-3');
+	    assert.equal(wind3.toString(),   'West');
+	    assert.equal(drag1.toString(),   'White Dragon');
+	    assert.equal(flower2.toString(), 'Orchid');
     });
 }

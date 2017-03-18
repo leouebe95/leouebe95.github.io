@@ -4,12 +4,12 @@
 
 
 function Rules_Test() {
-    "use strict";
+    'use strict';
 
     // Check the computations for each data sample.
-    QUnit.module("Rule");
+    QUnit.module('Rule');
 
-    QUnit.test("basic", function(assert) {
+    QUnit.test('basic', function(assert) {
 	    var rules = new HandRulesInternational();
 	    var startAt = 1-1;
 
@@ -20,10 +20,10 @@ function Rules_Test() {
 	        var sample = Hand.fromSimplifiedJSON(HandSamples[i]);
 	        var result = rules.compute(sample);
 
-	        var message = "Testing Hand sample "+String(i+1)+", "+result.nbPoints+" points\n";
+	        var message = 'Testing Hand sample '+String(i+1)+', '+result.nbPoints+' points\n';
 	        if (result.nbPoints !== sample._valueHint) {
-		        message += result.desc.join("\n");
-		        message += "\n"+JSON.stringify(sample.simplifiedJSON());
+		        message += result.desc.join('\n');
+		        message += '\n'+JSON.stringify(sample.simplifiedJSON());
 	        }
 	        assert.equal(result.nbPoints, sample._valueHint, message);
 	    }

@@ -6,7 +6,7 @@
   private methods.
 */
 window.HandRules = (function() {
-    "use strict";
+    'use strict';
 
     var ruleDescriptions = {};
 
@@ -37,7 +37,7 @@ window.HandRules = (function() {
 	        this._special = false;      //!< boolean: Rule applies to special hands
 	        this._normal = true;        //!< boolean: Rule applies to normal hands
 
-	        if ((args.length > 0) && ((typeof args[0]) === "boolean")) {
+	        if ((args.length > 0) && ((typeof args[0]) === 'boolean')) {
 		        this._special = args.shift();
 		        this._normal = args.shift();
 	        }
@@ -47,8 +47,8 @@ window.HandRules = (function() {
 			    this._implies.push(args[i]);
 		    }
 
-            if (typeof this._computeCB !== "function") {
-                console.error("Rule #{1} is does not have a compute function".format(this._indx));
+            if (typeof this._computeCB !== 'function') {
+                console.error('Rule #{1} is does not have a compute function'.format(this._indx));
             }
         }
     }
@@ -161,19 +161,19 @@ window.HandRules = (function() {
 
 			// Check if all tiles left are honors, and different
 			if (knitMatch + nbHonors === 14) {
-				return {"tiles": left, "knitMatch": knitMatch, "honors": true};
+				return {'tiles': left, 'knitMatch': knitMatch, 'honors': true};
             }
 			// Else, see if we have melds. This is only valid if we
 			// have a full suit, one meld and one pair
 			if (knitMatch === 9) {
 				var what = matchMelds(left);
 				if (what >= 0) {
-					return {"tiles": left, "knitMatch": knitMatch,
-							"honors": false,"what": what };
+					return {'tiles': left, 'knitMatch': knitMatch,
+							'honors': false, 'what': what };
                 }
 			}
 		}
-		return {"knitMatch": 0};
+		return {'knitMatch': 0};
 	}
 
 	/**
@@ -1747,7 +1747,7 @@ window.HandRules = (function() {
 				    res.nbPoints += thisScore;
 
 				    res.matched[rule._indx] = true;
-				    res.desc.push(strRes("RULES_FORMAT").format(
+				    res.desc.push(strRes('RULES_FORMAT').format(
 					    thisScore, matching, rule._indx, strRes(ruleDescriptions[rule._computeCB])));
 
 				    // Disable implied rules
@@ -1761,12 +1761,12 @@ window.HandRules = (function() {
 		    }
 
 		    if (res.nbPoints === 0) {
-				res.desc = [strRes("NO_VALID_HAND")];
+				res.desc = [strRes('NO_VALID_HAND')];
 		    }
 
 		    if (hand._lastTile < 0) {
 			    // Add a warning if the last tile is not set.
-			    res.desc.push(strRes("LAST_TILE_NOT_SET"));
+			    res.desc.push(strRes('LAST_TILE_NOT_SET'));
 		    }
 
 		    return res;
@@ -1775,99 +1775,99 @@ window.HandRules = (function() {
 
     // Register the descriptions matching the rules
     hr.registerDescriptions([
-	    ["PURE_DOUBLE_CHOW",    hr.pureDoubleChow],
-	    ["MIXED_DOUBLE_CHOW",   hr.mixedDoubleChow],
-	    ["SHORT_STRAIGHT",      hr.shortStraight],
-	    ["TWO_TERMINAL_CHOWS",  hr.twoTerminalChows],
-	    ["PUNG_OF_TERMINALS_OR_HONORS", hr.pungOfTerminalsOrHonors],
-	    ["MELDED_KONG",         hr.meldedKong],
-	    ["ONE_VOIDED_SUIT",     hr.oneVoidedSuit],
-	    ["NO_HONORS",           hr.noHonors],
-	    ["EDGE_WAIT",           hr.edgeWait],
-	    ["CLOSED_WAIT",         hr.closedWait],
-	    ["SINGLE_WAIT",         hr.singleWait],
-	    ["SELF-DRAWN",          hr.selfDrawn],
-	    ["FLOWER_TILES",        hr.flowerTiles],
+	    ['PURE_DOUBLE_CHOW',    hr.pureDoubleChow],
+	    ['MIXED_DOUBLE_CHOW',   hr.mixedDoubleChow],
+	    ['SHORT_STRAIGHT',      hr.shortStraight],
+	    ['TWO_TERMINAL_CHOWS',  hr.twoTerminalChows],
+	    ['PUNG_OF_TERMINALS_OR_HONORS', hr.pungOfTerminalsOrHonors],
+	    ['MELDED_KONG',         hr.meldedKong],
+	    ['ONE_VOIDED_SUIT',     hr.oneVoidedSuit],
+	    ['NO_HONORS',           hr.noHonors],
+	    ['EDGE_WAIT',           hr.edgeWait],
+	    ['CLOSED_WAIT',         hr.closedWait],
+	    ['SINGLE_WAIT',         hr.singleWait],
+	    ['SELF-DRAWN',          hr.selfDrawn],
+	    ['FLOWER_TILES',        hr.flowerTiles],
 
-	    ["DRAGON_PUNG",         hr.dragonPung],
-	    ["PREVALENT_WIND",      hr.prevalentWind],
-	    ["SEAT_WIND",           hr.seatWind],
-	    ["CONCEALED_HAND",      hr.concealedHand],
-	    ["ALL_CHOWS",           hr.allChows],
-	    ["TILE_HOG",            hr.tileHog],
-	    ["DOUBLE_PUNG",         hr.doublePung],
-	    ["TWO_CONCEALED_PUNGS", hr.twoConcealedPungs],
-	    ["CONCEALED_KONG",      hr.concealedKong],
-	    ["ALL_SIMPLES",         hr.allSimples],
+	    ['DRAGON_PUNG',         hr.dragonPung],
+	    ['PREVALENT_WIND',      hr.prevalentWind],
+	    ['SEAT_WIND',           hr.seatWind],
+	    ['CONCEALED_HAND',      hr.concealedHand],
+	    ['ALL_CHOWS',           hr.allChows],
+	    ['TILE_HOG',            hr.tileHog],
+	    ['DOUBLE_PUNG',         hr.doublePung],
+	    ['TWO_CONCEALED_PUNGS', hr.twoConcealedPungs],
+	    ['CONCEALED_KONG',      hr.concealedKong],
+	    ['ALL_SIMPLES',         hr.allSimples],
 
-	    ["OUTSIDE_HAND",		hr.outsideHand],
-	    ["FULLY_CONCEALED_HAND", hr.fullyConcealedHand],
-	    ["TWO_MELDED_KONGS",	hr.twoMeldedKongs],
-	    ["LAST_TILE",           hr.lastTile],
+	    ['OUTSIDE_HAND',		hr.outsideHand],
+	    ['FULLY_CONCEALED_HAND', hr.fullyConcealedHand],
+	    ['TWO_MELDED_KONGS',	hr.twoMeldedKongs],
+	    ['LAST_TILE',           hr.lastTile],
 
-	    ["ALL_PUNGS",           hr.allPungs],
-	    ["HALF_FLUSH",          hr.halfFlush],
-	    ["MIXED_SHIFTED_CHOWS", hr.mixedShiftedChows],
-	    ["ALL_TYPES",           hr.allTypes],
-	    ["MELDED_HAND",         hr.meldedHand],
-	    ["TWO_DRAGONS",         hr.twoDragons],
-	    ["ONE_MELDED_AND_ONE_CONCEALED_KONG", hr.oneMeldedAndOneConcealedKong],
+	    ['ALL_PUNGS',           hr.allPungs],
+	    ['HALF_FLUSH',          hr.halfFlush],
+	    ['MIXED_SHIFTED_CHOWS', hr.mixedShiftedChows],
+	    ['ALL_TYPES',           hr.allTypes],
+	    ['MELDED_HAND',         hr.meldedHand],
+	    ['TWO_DRAGONS',         hr.twoDragons],
+	    ['ONE_MELDED_AND_ONE_CONCEALED_KONG', hr.oneMeldedAndOneConcealedKong],
 
-	    ["MIXED_STRAIGHT",      hr.mixedStraight],
-	    ["REVERSIBLE_TILES",	hr.reversibleTiles],
-	    ["MIXED_TRIPLE_CHOW",   hr.mixedTripleChow],
-	    ["MIXED_SHIFTED_PUNGS", hr.mixedShiftedPungs],
-	    ["CHICKEN_HAND",        hr.chickenHand],
-	    ["LAST_TILE_DRAW",      hr.lastTileDraw],
-	    ["LAST_TILE_CLAIM",     hr.lastTileClaim],
-	    ["OUT_WITH_REPLACEMENT_TILE", hr.outWithReplacementTile],
-	    ["TWO_CONCEALED_KONGS", hr.twoConcealedKongs],
-	    ["ROBBING_THE_KONG",	hr.robbingTheKong],
+	    ['MIXED_STRAIGHT',      hr.mixedStraight],
+	    ['REVERSIBLE_TILES',	hr.reversibleTiles],
+	    ['MIXED_TRIPLE_CHOW',   hr.mixedTripleChow],
+	    ['MIXED_SHIFTED_PUNGS', hr.mixedShiftedPungs],
+	    ['CHICKEN_HAND',        hr.chickenHand],
+	    ['LAST_TILE_DRAW',      hr.lastTileDraw],
+	    ['LAST_TILE_CLAIM',     hr.lastTileClaim],
+	    ['OUT_WITH_REPLACEMENT_TILE', hr.outWithReplacementTile],
+	    ['TWO_CONCEALED_KONGS', hr.twoConcealedKongs],
+	    ['ROBBING_THE_KONG',	hr.robbingTheKong],
 
-	    ["LESSER_HONORS_AND_KNITTED_TILES", hr.lesserHonorsAndKnittedTiles],
-	    ["KNITTED_STRAIGHT",    hr.knittedStraight],
-	    ["UPPER_FOUR",          hr.upperFour],
-	    ["LOWER_FOUR",          hr.lowerFour],
-	    ["BIG_THREE_WINDS",     hr.bigThreeWinds],
+	    ['LESSER_HONORS_AND_KNITTED_TILES', hr.lesserHonorsAndKnittedTiles],
+	    ['KNITTED_STRAIGHT',    hr.knittedStraight],
+	    ['UPPER_FOUR',          hr.upperFour],
+	    ['LOWER_FOUR',          hr.lowerFour],
+	    ['BIG_THREE_WINDS',     hr.bigThreeWinds],
 
-	    ["PURE_STRAIGHT",       hr.pureStraight],
-	    ["THREE-SUITED_TERMINAL_CHOWS", hr.threeSuitedTerminalChows],
-	    ["PURE_SHIFTED_CHOWS",  hr.pureShiftedChows],
-	    ["ALL_FIVES",           hr.allFives],
-	    ["TRIPLE_PUNG",         hr.triplePung],
-	    ["THREE_CONCEALED_PUNGS", hr.threeConcealedPungs],
+	    ['PURE_STRAIGHT',       hr.pureStraight],
+	    ['THREE-SUITED_TERMINAL_CHOWS', hr.threeSuitedTerminalChows],
+	    ['PURE_SHIFTED_CHOWS',  hr.pureShiftedChows],
+	    ['ALL_FIVES',           hr.allFives],
+	    ['TRIPLE_PUNG',         hr.triplePung],
+	    ['THREE_CONCEALED_PUNGS', hr.threeConcealedPungs],
 
-	    ["SEVEN_PAIRS",         hr.sevenPairs],
-	    ["GREATER_HONORS_AND_KNITTED_TILES",		hr.greaterHonorsAndKnittedTiles],
-	    ["ALL_EVEN",            hr.allEven],
-	    ["FULL_FLUSH",          hr.fullFlush],
-	    ["PURE_TRIPLE_CHOW",    hr.pureTripleChow],
-	    ["PURE_SHIFTED_PUNGS",  hr.pureShiftedPungs],
-	    ["UPPER_TILES",         hr.upperTiles],
-	    ["MIDDLE_TILES",        hr.middleTiles],
-	    ["LOWER_TILES",         hr.lowerTiles],
+	    ['SEVEN_PAIRS',         hr.sevenPairs],
+	    ['GREATER_HONORS_AND_KNITTED_TILES',		hr.greaterHonorsAndKnittedTiles],
+	    ['ALL_EVEN',            hr.allEven],
+	    ['FULL_FLUSH',          hr.fullFlush],
+	    ['PURE_TRIPLE_CHOW',    hr.pureTripleChow],
+	    ['PURE_SHIFTED_PUNGS',  hr.pureShiftedPungs],
+	    ['UPPER_TILES',         hr.upperTiles],
+	    ['MIDDLE_TILES',        hr.middleTiles],
+	    ['LOWER_TILES',         hr.lowerTiles],
 
-	    ["FOUR_SHIFTED_CHOWS",  hr.fourShiftedChows],
-	    ["THREE_KONGS",         hr.threeKongs],
-	    ["ALL_TERMINALS_AND_HONORS", hr.allTerminalsAndHonors],
+	    ['FOUR_SHIFTED_CHOWS',  hr.fourShiftedChows],
+	    ['THREE_KONGS',         hr.threeKongs],
+	    ['ALL_TERMINALS_AND_HONORS', hr.allTerminalsAndHonors],
 
-	    ["PURE_QUADRUPLE_CHOW", hr.quadrupleChow],
-	    ["FOUR_PURE_SHIFTED_PUNGS", hr.fourPureShiftedPungs],
+	    ['PURE_QUADRUPLE_CHOW', hr.quadrupleChow],
+	    ['FOUR_PURE_SHIFTED_PUNGS', hr.fourPureShiftedPungs],
 
-	    ["ALL_TERMINALS",       hr.allTerminals],
-	    ["LITTLE_FOUR_WINDS",   hr.littleFourWinds],
-	    ["LITTLE_THREE_DRAGONS", hr.littleThreeDragons],
-	    ["ALL_HONORS",          hr.allHonors],
-	    ["FOUR_CONCEALED_PUNGS", hr.fourConcealedPungs],
-	    ["PURE_TERMINAL_CHOWS", hr.pureTerminalChows],
+	    ['ALL_TERMINALS',       hr.allTerminals],
+	    ['LITTLE_FOUR_WINDS',   hr.littleFourWinds],
+	    ['LITTLE_THREE_DRAGONS', hr.littleThreeDragons],
+	    ['ALL_HONORS',          hr.allHonors],
+	    ['FOUR_CONCEALED_PUNGS', hr.fourConcealedPungs],
+	    ['PURE_TERMINAL_CHOWS', hr.pureTerminalChows],
 
-	    ["BIG_FOUR_WINDS",      hr.bigFourWinds],
-	    ["BIG_THREE_DRAGONS",   hr.bigThreeDragons],
-	    ["ALL_GREEN",           hr.allGreen],
-	    ["NINE_GATES",          hr.nineGates],
-	    ["FOUR_KONGS",          hr.fourKongs],
-	    ["SEVEN_SHIFTED_PAIRS", hr.sevenShiftedPairs],
-	    ["THIRTEEN_ORPHANS",    hr.thirteenOrphans]
+	    ['BIG_FOUR_WINDS',      hr.bigFourWinds],
+	    ['BIG_THREE_DRAGONS',   hr.bigThreeDragons],
+	    ['ALL_GREEN',           hr.allGreen],
+	    ['NINE_GATES',          hr.nineGates],
+	    ['FOUR_KONGS',          hr.fourKongs],
+	    ['SEVEN_SHIFTED_PAIRS', hr.sevenShiftedPairs],
+	    ['THIRTEEN_ORPHANS',    hr.thirteenOrphans]
     ]);
 
     // The public class to export

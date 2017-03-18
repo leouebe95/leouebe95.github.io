@@ -2,7 +2,7 @@
 /* global HandRules:false */
 
 window.HandRulesInternational = (function(hr) {
-    "use strict";
+    'use strict';
 
     /**
        Private array of all rules.

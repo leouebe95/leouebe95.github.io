@@ -65,13 +65,13 @@ class Meld {
 		if (this.isValid()) {
 			var tileName = this._firstTile.toString();
 			switch (this._type) {
-			case Meld.MeldType.CHOW: return strRes("CHOW_OF").format(tileName);
-			case Meld.MeldType.PUNG: return strRes("PUNG_OF").format(tileName);
-			case Meld.MeldType.KONG: return strRes("KONG_OF").format(tileName);
-			case Meld.MeldType.PAIR: return strRes("PAIR_OF").format(tileName);
+			case Meld.MeldType.CHOW: return strRes('CHOW_OF').format(tileName);
+			case Meld.MeldType.PUNG: return strRes('PUNG_OF').format(tileName);
+			case Meld.MeldType.KONG: return strRes('KONG_OF').format(tileName);
+			case Meld.MeldType.PAIR: return strRes('PAIR_OF').format(tileName);
 			}
 		}
-		return strRes("UNDEFINED");
+		return strRes('UNDEFINED');
 	}
 
 	/** Comparable interface for sorting.

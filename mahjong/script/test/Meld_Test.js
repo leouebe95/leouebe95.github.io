@@ -3,11 +3,11 @@
 /* exported Meld_Test */
 
 function Meld_Test() {
-    "use strict";
+    'use strict';
 
-    QUnit.module("Meld");
+    QUnit.module('Meld');
 
-    QUnit.test("basic", function(assert) {
+    QUnit.test('basic', function(assert) {
 		// FIXME: Any shorter way to access _kBadTile and TileType?
 		var bad = Meld._kBadMeld;
 
@@ -61,15 +61,15 @@ function Meld_Test() {
 		assert.equal(wind3mb.hasTerminal(),	false); // pair
 		assert.equal(drag1m.hasTerminal(),	false);
 		assert.equal(char1bm.hasTerminal(),	true);
-		assert.equal(flower2m.hasTerminal(),false);
+		assert.equal(flower2m.hasTerminal(), false);
 
-		assert.equal(bad.toString(),		"Undefined");
-		assert.equal(char1m.toString(),		"Chow of character-1");
-		assert.equal(char8m.toString(),		"Undefined");
-		assert.equal(wind3m.toString(),		"Undefined");
-		assert.equal(wind3mb.toString(),	"Pair of West");
-		assert.equal(drag1m.toString(),		"Pung of White Dragon");
-		assert.equal(char1bm.toString(),	"Kong of character-1");
-		assert.equal(flower2m.toString(),	"Undefined");
+		assert.equal(bad.toString(),		'Undefined');
+		assert.equal(char1m.toString(),		'Chow of character-1');
+		assert.equal(char8m.toString(),		'Undefined');
+		assert.equal(wind3m.toString(),		'Undefined');
+		assert.equal(wind3mb.toString(),	'Pair of West');
+		assert.equal(drag1m.toString(),		'Pung of White Dragon');
+		assert.equal(char1bm.toString(),	'Kong of character-1');
+		assert.equal(flower2m.toString(),	'Undefined');
     });
 }

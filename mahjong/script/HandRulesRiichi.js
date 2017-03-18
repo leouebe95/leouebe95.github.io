@@ -2,7 +2,7 @@
 /* global HandRules:false Meld:false Tile:false strRes:false */
 
 window.HandRulesRiichi = (function(hr) {
-    "use strict";
+    'use strict';
 
     /**
        Array of all the rules scoring a yaku
@@ -15,7 +15,7 @@ window.HandRulesRiichi = (function(hr) {
     }
 
     function formatRule(count, message) {
-        return strRes("RULES_FORMAT_MINI").format(count, message);
+        return strRes('RULES_FORMAT_MINI').format(count, message);
     }
 
     function computePoints(yaku, mini) {
@@ -47,15 +47,15 @@ window.HandRulesRiichi = (function(hr) {
 
         if (yakuRes.matched[19]) { // 7 pairs
             res.nbPoints = 25;
-            res.desc = [strRes("SEVEN_PAIRS_MINI")];
+            res.desc = [strRes('SEVEN_PAIRS_MINI')];
             return res;
         }
         res.nbPoints = 20; // Default
-        res.desc = [formatRule(20, strRes("DEFAULT_MINI"))];
+        res.desc = [formatRule(20, strRes('DEFAULT_MINI'))];
         if ((!hand._selfDrawn) && concealedHand(hand)) {
             // 30 minipoints for Concealed on a discard
             res.nbPoints = 30;
-            res.desc = [formatRule(res.nbPoints, strRes("CONCEALED_ON_DISCARD"))];
+            res.desc = [formatRule(res.nbPoints, strRes('CONCEALED_ON_DISCARD'))];
         }
 
         if (hand._isNormal) {
@@ -64,10 +64,10 @@ window.HandRulesRiichi = (function(hr) {
                 var count = 0;
                 var message;
                 if (hand._melds[i]._type === Meld.MeldType.PUNG) {
-                    message = strRes("PUNG_MINI");
+                    message = strRes('PUNG_MINI');
                     count = 2;
                 } else if (hand._melds[i]._type === Meld.MeldType.KONG) {
-                    message = strRes("KONG_MINI");
+                    message = strRes('KONG_MINI');
                     count = 8;
                 } else {
                     continue;
@@ -76,15 +76,15 @@ window.HandRulesRiichi = (function(hr) {
                 if (hand._melds[i]._firstTile.isTerminal() ||
                     hand._melds[i]._firstTile.isHonor()) {
                     if (hand._melds[i]._type === Meld.MeldType.PUNG) {
-                        message = strRes("PUNG_HONOR_MINI");
+                        message = strRes('PUNG_HONOR_MINI');
                     } else {
-                        message = strRes("KONG_HONOR_MINI");
+                        message = strRes('KONG_HONOR_MINI');
                     }
                     count *= 2;
                 }
 
                 if (hand._melds[i]._isConcealed) {
-                    message += strRes("CONCEALED_MINI");
+                    message += strRes('CONCEALED_MINI');
                     count *= 2;
                 }
 
@@ -94,39 +94,39 @@ window.HandRulesRiichi = (function(hr) {
 
             // Add minipoints for special pairs
             if (hand._melds[4]._firstTile._type === Tile.TileType.DRAGON) {
-                res.desc.push(formatRule(2, strRes("PAIR_DRAGON")));
+                res.desc.push(formatRule(2, strRes('PAIR_DRAGON')));
                 res.nbPoints += 2;
             }
             if (hand._melds[4]._firstTile._tileId === hand._tableWind._tileId) {
-                res.desc.push(formatRule(2, strRes("PAIR_TABLE_WIND")));
+                res.desc.push(formatRule(2, strRes('PAIR_TABLE_WIND')));
                 res.nbPoints += 2;
             }
             if (hand._melds[4]._firstTile._tileId === hand._playerWind._tileId) {
-                res.desc.push(formatRule(2, strRes("PAIR_PLAYER_WIND")));
+                res.desc.push(formatRule(2, strRes('PAIR_PLAYER_WIND')));
                 res.nbPoints += 2;
             }
 
             if (hr.edgeWait(hand)) {
-                res.desc.push(formatRule(2, strRes("EDGE_WAIT_MINI")));
+                res.desc.push(formatRule(2, strRes('EDGE_WAIT_MINI')));
                 res.nbPoints += 2;
             }
             if (hr.closedWait(hand)) {
-                res.desc.push(formatRule(2, strRes("CLOSED_WAIT_MINI")));
+                res.desc.push(formatRule(2, strRes('CLOSED_WAIT_MINI')));
                 res.nbPoints += 2;
             }
             if (hr.singleWait(hand)) {
-                res.desc.push(formatRule(2, strRes("SINGLE_WAIT_MINI")));
+                res.desc.push(formatRule(2, strRes('SINGLE_WAIT_MINI')));
                 res.nbPoints += 2;
             }
 
             if (!yakuRes.matched[7]) { // Pinfu
                 if (hr.selfDrawn(hand)) {
-                    res.desc.push(formatRule(2, strRes("SELF_DRAWN_MINI")));
+                    res.desc.push(formatRule(2, strRes('SELF_DRAWN_MINI')));
                     res.nbPoints += 2;
                 }
 
                 if (hrr.openPinfu(hand)) {
-                    res.desc.push(formatRule(2, strRes("OPEN_PINFU")));
+                    res.desc.push(formatRule(2, strRes('OPEN_PINFU')));
                     res.nbPoints += 2;
                 }
             }
@@ -155,32 +155,32 @@ window.HandRulesRiichi = (function(hr) {
 	    compute(handIn) {
             var yakuRes =  hr.compute(handIn, yaku);
             if (yakuRes.nbPoints === 0) {
-				yakuRes.desc = [strRes("NO_YAKU")];
+				yakuRes.desc = [strRes('NO_YAKU')];
                 return yakuRes;
             }
 
-            yakuRes.desc.unshift(strRes("YAKU_POINTS"));
+            yakuRes.desc.unshift(strRes('YAKU_POINTS'));
             // Limit hands, no need to compute mini points
             if (yakuRes.nbPoints >= 5) {
                 var total;
                 var totalPoint;
                 if (yakuRes.nbPoints === 5) {
-                    total = "MANGAN";
+                    total = 'MANGAN';
                     totalPoint = 2000;
                 } else if (yakuRes.nbPoints <= 7) {
-                    total = "HANEMAN";
+                    total = 'HANEMAN';
                     totalPoint = 3000;
                 } else if (yakuRes.nbPoints <= 10) {
-                    total = "BAIMAN";
+                    total = 'BAIMAN';
                     totalPoint = 4000;
                 } else if (yakuRes.nbPoints <= 12) {
-                    total = "SANBAIMAN";
+                    total = 'SANBAIMAN';
                     totalPoint = 6000;
                 } else if (yakuRes.nbPoints <= 25) {
-                    total = "YAKUMAN";
+                    total = 'YAKUMAN';
                     totalPoint = 8000;
                 } else  {
-                    total = "DOUBLE_YAKUMAN";
+                    total = 'DOUBLE_YAKUMAN';
                     totalPoint = 16000;
                 }
                 yakuRes.desc.push(strRes(total).format(yakuRes.nbPoints));
@@ -188,16 +188,16 @@ window.HandRulesRiichi = (function(hr) {
                 return yakuRes;
             }
 
-            yakuRes.desc.push(strRes("YAKU").format(yakuRes.nbPoints));
-            yakuRes.desc.push("");
-            yakuRes.desc.push(strRes("MINIPOINTS"));
+            yakuRes.desc.push(strRes('YAKU').format(yakuRes.nbPoints));
+            yakuRes.desc.push('');
+            yakuRes.desc.push(strRes('MINIPOINTS'));
             var miniRes = computeMinipoints(handIn, yakuRes);
             yakuRes.desc = yakuRes.desc.concat(miniRes.desc);
             var miniPoints = Math.ceil(miniRes.nbPoints/10) * 10;
             if (miniRes.nbPoints == 25) {
                 miniPoints = 25;
             }
-            yakuRes.desc.push(strRes("MINIPOINTS_TOTAL").format(miniRes.nbPoints, miniPoints));
+            yakuRes.desc.push(strRes('MINIPOINTS_TOTAL').format(miniRes.nbPoints, miniPoints));
 
             yakuRes.nbPoints = computePoints(yakuRes.nbPoints, miniPoints);
 
@@ -490,20 +490,20 @@ window.HandRulesRiichi = (function(hr) {
     ]);
 
     hr.registerDescriptions([
-        ["IPPATSU",         hrr.ippatsu],
-        ["DABURU_RIICHI",   hrr.daburuRiichi],
-        ["RIICHI",          hrr.riichi],
-        ["CONCEALED_BONUS", hrr.concealedBonus],
-        ["TANYAO_CHUU",     hrr.tanyaoChuu],
-        ["PINFU",           hrr.pinfu],
-        ["IIPEIKOU",        hrr.iipeikou],
-        ["JUNCHAN",         hrr.junchan],
-        ["RYAN_PEIKOU",     hrr.ryanPeikou],
-        ["TENHO",           hrr.tenho],
-        ["CHIHO",           hrr.chiho],
-        ["RENHO",           hrr.renho],
-        ["DORA",            hrr.dora],
-        ["URADORA",         hrr.uradora],
+        ['IPPATSU',         hrr.ippatsu],
+        ['DABURU_RIICHI',   hrr.daburuRiichi],
+        ['RIICHI',          hrr.riichi],
+        ['CONCEALED_BONUS', hrr.concealedBonus],
+        ['TANYAO_CHUU',     hrr.tanyaoChuu],
+        ['PINFU',           hrr.pinfu],
+        ['IIPEIKOU',        hrr.iipeikou],
+        ['JUNCHAN',         hrr.junchan],
+        ['RYAN_PEIKOU',     hrr.ryanPeikou],
+        ['TENHO',           hrr.tenho],
+        ['CHIHO',           hrr.chiho],
+        ['RENHO',           hrr.renho],
+        ['DORA',            hrr.dora],
+        ['URADORA',         hrr.uradora]
     ]);
 
     return hrr;

@@ -3,7 +3,7 @@
 
 
 window.Mahjong = (function() {
-    "use strict";
+    'use strict';
     
     var Mahjong = {};
 /*
@@ -85,7 +85,7 @@ window.Mahjong = (function() {
 
 */
     Mahjong.main = function() {
-	    I18N.loadAllTransationTables("mahjongStr", "En", "AU");
+	    I18N.loadAllTransationTables('mahjongStr', 'En', 'AU');
         MJUI.expandUI();
 
         // Show / hide sections depending on rules
@@ -94,7 +94,7 @@ window.Mahjong = (function() {
         MJUI.otherSample(0);
 
         // Display the page after all UI was created to avoid flickering
-        document.body.style.visibility = "visible";
+        document.body.style.visibility = 'visible';
 
         /*
 	    // Redirect alerts

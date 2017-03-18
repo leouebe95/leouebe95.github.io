@@ -1,29 +1,46 @@
-var tableId = "maintable";
-var modeId = "mode";
+
+/* eslint no-console: ["error", { allow: ["error", "log"] }] */
+
+var tableId = 'maintable';
+var modeId = 'mode';
 var nbColumns = 3;
 var maxGeneration = 2;
 
+/**
+    Helper method to format string from key/value objects. All
+    occurrences of {xxx} are replaced with the corresponding value
+    read from the 'values' object.
 
+    @param {String} msg Message to format.
+    @param {Object} values key/value object.
+    @return {String} The formatted string.
+*/
 function formatString(msg, values) {
-    "use strict";
+    'use strict';
+
     if (values) {
         for (var key in values) {
             if(values.hasOwnProperty(key)) {
                 var val = values[key];
-                if (typeof val === "undefined") {
-                    val = "undefined";
-                } else if (typeof val === "object") {
+                if (typeof val === 'undefined') {
+                    val = 'undefined';
+                } else if (typeof val === 'object') {
                     val = JSON.stringify(val);
                 }
-                msg = msg.replace("{"+key+"}", val.toString());
+                msg = msg.replace('{'+key+'}', val.toString());
             }
         }
     }
     return msg;
 }
+/**
+   Make sure the generation data is consistent.
 
+   @param {Object} dataObj Global database.
+*/
 function checkGeneration(dataObj) {
-    "use strict";
+    'use strict';
+
     var generationMax = [0, 151, 251, 386, 493, 649, 721, 802];
     var data = dataObj.species;
     for (var i=0 ; i<data.length ; i++) {
@@ -33,26 +50,33 @@ function checkGeneration(dataObj) {
                 var id = Number(stages[j].number);
                 var gen = stages[j].gen || 1;
                 if (id<=generationMax[gen-1]) {
-                    console.error("Gen too high: "+stages[j].name);
+                    console.error('Gen too high: '+stages[j].name);
                 } else if (id>generationMax[gen]) {
-                    console.error("Gen too low: "+stages[j].name);
+                    console.error('Gen too low: '+stages[j].name);
                 }
             }
         }
     }
 }
 
+/**
+    Return the hyper-link to the description of this Pokemon.
+
+    @param {String} name Pokemon name.
+    @return {String} the hyper-link
+*/
 function pokeLink(name) {
-    "use strict";
-    return formatString("http://bulbapedia.bulbagarden.net/wiki/{n}_(Pok%C3%A9mon)",
+    'use strict';
+    return formatString('http://bulbapedia.bulbagarden.net/wiki/{n}_(Pok%C3%A9mon)',
                         {n: name});
 }
 
-/*
+/**
   Build the index->name table
 */
 function buildIdIndex() {
-    "use strict";
+    'use strict';
+
     window.idIndex = {};
     var data = window.maintable.species;
     for (var i=0 ; i<data.length ; i++) {
@@ -65,10 +89,13 @@ function buildIdIndex() {
     }
 }
 
-/*
-   Debug function to dump cleaned up stats sorted in Id order
+/**
+   Debug function to dump cleaned up stats in the console, sorted in Id order.
+   @param {Boolean} [reset] When set to true, all candies values are reset.
 */
 function dumpStats(reset) {
+    'use strict';
+
     var ids = Object.keys(window.idIndex).sort();
     var res = 'window.stats = {\n';
     for (var i=0 ; i<ids.length ; i++) {
@@ -90,35 +117,49 @@ function dumpStats(reset) {
     console.log(res);
 }
 
-function dumpResetStats() {dumpStats(true); }
+/**
+   Dump stats in the console with all candies reset.
+*/
+function dumpResetStats() {
+    'use strict';
+    dumpStats(true);
+}
 
 /**
    Save the setting into local storage.
-   @return {undefined}
 */
 function saveSettings() {
+    'use strict';
     var settings = {};
     var modeElem = document.getElementById(modeId);
-    settings['mode'] = modeElem.options[modeElem.selectedIndex].value;
+    settings.mode = modeElem.options[modeElem.selectedIndex].value;
     localStorage.pokemonUIPrefs = JSON.stringify(settings);
-    localStorage.pokemonUIPrefsVersion = "1.0";
+    localStorage.pokemonUIPrefsVersion = '1.0';
 }
 
 /**
    Load the settings from local storage if they exist
-   @return {undefined}
 */
 function loadSettings() {
+    'use strict';
     if (localStorage.pokemonUIPrefs) {
         var settings =
             JSON.parse(localStorage.pokemonUIPrefs);
         var modeElem = document.getElementById(modeId);
-        modeElem.value = settings['mode']
+        modeElem.value = settings.mode;
     }
 }
 
+/**
+    Helper method to create a DOM element with text.
+
+    @param {String} tag Element TAG name.
+    @param {String} text The text to add.
+    @param {DOMelement} [parent] Parent element.
+    @return {DOMelement} The new DOM element.
+*/
 function makeElem(tag, text, parent) {
-    "use strict";
+    'use strict';
     var node = document.createElement(tag);
     var t = document.createTextNode(text);
     node.appendChild(t);
@@ -128,9 +169,16 @@ function makeElem(tag, text, parent) {
     return node;
 }
 
+/**
+   Check visibility of the whole Pokemon row based on UI settings.
+
+   @param {Object} data Object containing all data for this row.
+   @param {String} mode UI mode
+   @return {Boolean} True if this row is visible based on the user filters.
+*/
 function isRowVisible(data, mode) {
-    "use strict";
-    if (mode === "all") {
+    'use strict';
+    if (mode === 'all') {
         return true;
     }
 
@@ -148,44 +196,54 @@ function isRowVisible(data, mode) {
             custom = window.stats[elem.name];
         }
 
-        if ((mode === "have" && custom.got) ||
-            (mode === "missing" && (!custom.got) && (elem.gen <= maxGeneration)) ||
-            (mode === "evolve" && custom.candies >= candy)) {
+        if ((mode === 'have' && custom.got) ||
+            (mode === 'missing' && (!custom.got) && (elem.gen <= maxGeneration)) ||
+            (mode === 'evolve' && custom.candies >= candy)) {
             return true;
         }
     }
     return false;
 }
 
+/**
+   Append the Pokemon to the table.
+   @param {DOMelement} tr Table row to append to.
+   @param {Object} elem Pokemon data.
+   @param {Object} custom Pokemon custom data (caught and candies).
+   @param {Number} candy Number of candies required for evolution.
+   @return {Object} number of got, missing, and can evolve.
+*/
 function appendPokemon(tr, elem, custom, candy) {
+    'use strict';
+
     // Generation
     var gen = elem.gen || 1;
     candy = candy || 0;
     var res = {evolve: 0, got:0, miss: 0};
 
-    let td = makeElem("td", elem.name, tr);
-    makeElem("div", "(#"+elem.number+")", td);
+    let td = makeElem('td', elem.name, tr);
+    makeElem('div', '(#'+elem.number+')', td);
     if (custom.got) {
-        td.classList.add("found");
+        td.classList.add('found');
         res.got += 1;
     } else if (gen <= maxGeneration){
-        td.classList.add("missing");
+        td.classList.add('missing');
         res.miss += 1;
     }
-    td.classList.add("gen"+gen);
+    td.classList.add('gen'+gen);
 
     if (gen>maxGeneration) {
-        candy = 99999
+        candy = 99999;
     }
-    var div = document.createElement("div");
-    div.classList.add("under");
+    var div = document.createElement('div');
+    div.classList.add('under');
 
-    var anchor = document.createElement("a");
-    anchor.setAttribute("href", pokeLink(elem.name));
-    var img = document.createElement("img");
-    img.classList.add("pokemon");
-    img.setAttribute("src", "img/"+elem.number+".png");
-    img.setAttribute("title", elem.name);
+    var anchor = document.createElement('a');
+    anchor.setAttribute('href', pokeLink(elem.name));
+    var img = document.createElement('img');
+    img.classList.add('pokemon');
+    img.setAttribute('src', 'img/'+elem.number+'.png');
+    img.setAttribute('title', elem.name);
     anchor.appendChild(img);
     div.appendChild(anchor);
     td.insertBefore(div, td.firstChild);
@@ -196,21 +254,21 @@ function appendPokemon(tr, elem, custom, candy) {
         if (!elem.noevolve) {
             res.evolve += nbEvolve;
         }
-        img = document.createElement("img");
-        img.classList.add("over");
-        img.setAttribute("src", "img/evolve.png");
+        img = document.createElement('img');
+        img.classList.add('over');
+        img.setAttribute('src', 'img/evolve.png');
         div.appendChild(img);
-        var count = makeElem("div", String(nbEvolve));
-        count.classList.add("overnb");
+        var count = makeElem('div', String(nbEvolve));
+        count.classList.add('overnb');
         div.appendChild(count);
     }
-    
+
     if (gen>maxGeneration) {
-        var anchor = document.createElement("a");
-        anchor.setAttribute("href", pokeLink(elem.name));
-        img = document.createElement("img");
-        img.classList.add("lock");
-        img.setAttribute("src", "img/lock.png");
+        anchor = document.createElement('a');
+        anchor.setAttribute('href', pokeLink(elem.name));
+        img = document.createElement('img');
+        img.classList.add('lock');
+        img.setAttribute('src', 'img/lock.png');
         anchor.appendChild(img);
         div.appendChild(anchor);
     }
@@ -218,43 +276,50 @@ function appendPokemon(tr, elem, custom, candy) {
     return res;
 }
 
+/**
+   Append an entire row of Pokemons to the table.
+
+   @param {DOMelement} tr Table row to append to.
+   @param {Object} data Pokemon row data
+   @return {Object} number of got, missing, and can evolve.
+*/
 function appendRow(tr, data) {
-    "use strict";
+    'use strict';
     // skip all rows with no evolution
     var res = {evolve: 0, got:0, miss: 0};
 
     for (var i=0 ; i<3 ; i++) {
         if (i>=data.length) {
-            let td = makeElem("td", "", tr);
-            td.classList.add("empty");
-            td = makeElem("td", "", tr);
-            td.classList.add("empty");
+            let td = makeElem('td', '', tr);
+            td.classList.add('empty');
+            td = makeElem('td', '', tr);
+            td.classList.add('empty');
             continue;
         }
 
         var elem = data[i];
         if (elem.skip) {
             if (i>0) {
-                let td = makeElem("td", "", tr);
-                td.classList.add("empty");
+                let td = makeElem('td', '', tr);
+                td.classList.add('empty');
             }
-            let td = makeElem("td", "", tr);
-            td.classList.add("empty");
-            var img = document.createElement("img");
-            img.setAttribute("src", "img/arrow.png");
-            img.classList.add("pokemon");
+            let td = makeElem('td', '', tr);
+            td.classList.add('empty');
+            let img = document.createElement('img');
+            img.setAttribute('src', 'img/arrow.png');
+            img.classList.add('pokemon');
             td.appendChild(img);
             continue;
         }
 
         if (elem.noPokemon) {
-            let td = makeElem("td", "", tr);
-            td.classList.add("empty");
-            td = makeElem("td", "", tr);
-            td.classList.add("empty");
-            var img = document.createElement("img");
-            img.classList.add("pokemon");
-            img.setAttribute("src", "img/noPokemon.png");
+            let td = makeElem('td', '', tr);
+            td.classList.add('empty');
+            td = makeElem('td', '', tr);
+            td.classList.add('empty');
+            let img = document.createElement('img');
+            img.classList.add('pokemon');
+            img.setAttribute('src', 'img/noPokemon.png');
             td.appendChild(img);
             continue;
         }
@@ -270,12 +335,12 @@ function appendRow(tr, data) {
         }
 
         if (elem.candy>0) {
-            let td = makeElem("td", elem.candy, tr);
-            td.classList.add("large");
+            let td = makeElem('td', elem.candy, tr);
+            td.classList.add('large');
         }
         if (elem.candy<0) {
-            let td = makeElem("td", "?", tr);
-            td.classList.add("large");
+            let td = makeElem('td', '?', tr);
+            td.classList.add('large');
         }
         var tmpRes = appendPokemon(tr, elem, custom, candy);
         res.evolve += tmpRes.evolve;
@@ -285,25 +350,30 @@ function appendRow(tr, data) {
     return res;
 }
 
-/*
- */
-function makeSortedMissingChart(root, dataObj) {
+/**
+   Make a simplified chart with only the missing Pokemons sorted per
+   ID.
+   @param {DOMelement} root DOM element where to construct the table.
+*/
+function makeSortedMissingChart(root) {
+    'use strict';
+
     var ids = Object.keys(window.idIndex).sort();
-    var t = document.createElement("table");
-    var h = document.createElement("thead");
-    var tr = document.createElement("tr");
+    var t = document.createElement('table');
+    var h = document.createElement('thead');
+    var tr = document.createElement('tr');
     var nbCol = nbColumns*4;
     for (var i = 0 ; i<nbCol ; i++ ) {
-        makeElem("th", "Pokemon", tr);
+        makeElem('th', 'Pokemon', tr);
     }
     h.appendChild(tr);
     t.appendChild(h);
 
     // Find the missing pokemons
     var toDisplay = [];
-    for (var i=0 ; i<ids.length ; i++) {
-        var id = ids[i];
-        var name = window.idIndex[id].name;
+    for (let i=0 ; i<ids.length ; i++) {
+        let id = ids[i];
+        let name = window.idIndex[id].name;
         if (window.stats[name] &&
             (!window.stats[name].got) &&
             (window.idIndex[id].gen <= maxGeneration)) {
@@ -311,38 +381,42 @@ function makeSortedMissingChart(root, dataObj) {
         }
     }
     var nbRows = Math.ceil(toDisplay.length/nbCol);
-    var b = document.createElement("tbody");
+    var b = document.createElement('tbody');
     var indx = 0;
-    for (i=0 ; i<nbRows ; i++) {
-        tr = document.createElement("tr");
+    for (let i=0 ; i<nbRows ; i++) {
+        tr = document.createElement('tr');
         for (var j=0 ; j<nbCol ; j++ ) {
             if (indx >= toDisplay.length) {
                 break;
             }
-            var id = toDisplay[indx];
-            var name = window.idIndex[id].name;
+            let id = toDisplay[indx];
+            let name = window.idIndex[id].name;
             var custom = {};
             if (window.stats && window.stats[name]) {
                 custom = window.stats[name];
             }
-            var res = appendPokemon(tr, window.idIndex[id], custom);
+            appendPokemon(tr, window.idIndex[id], custom);
 
             indx++;
         }
         b.appendChild(tr);
     }
     t.appendChild(b);
-    makeElem("div", formatString("Missing {m}", {m: toDisplay.length}), root);
+    makeElem('div', formatString('Missing {m}', {m: toDisplay.length}), root);
 
     root.appendChild(t);
 
 }
 
-/*
+/**
+   Create the actual chart.
+
+   @param {String} id Unique id of the main table.
+   @param {Object} dataObj Global database.
 */
 function makechart(id, dataObj) {
-    "use strict";
-    var mode = "all";
+    'use strict';
+    var mode = 'all';
     var modeElem = document.getElementById(modeId);
     if (modeElem) {
         mode = modeElem.options[modeElem.selectedIndex].value;
@@ -350,33 +424,33 @@ function makechart(id, dataObj) {
 
     var root = document.getElementById(id);
     if (!root) {
-        var body = document.getElementsByTagName("body")[0];
+        var body = document.getElementsByTagName('body')[0];
         var error = 'Could not find element with ID "'+id+'"';
         console.error(error);
 
-        var d = makeElem("div", error);
-        d.classList.add("error");
+        var d = makeElem('div', error);
+        d.classList.add('error');
         body.insertBefore(d, body.firstChild);
         return;
     }
 
-    if (mode == 'sortedMissing') {
-        makeSortedMissingChart(root, dataObj);
+    if (mode === 'sortedMissing') {
+        makeSortedMissingChart(root);
         return;
     }
 
-    var t = document.createElement("table");
-    var h = document.createElement("thead");
-    var tr = document.createElement("tr");
-    for (var i = 0 ; i<nbColumns ; i++ ) {
-        makeElem("th", "Stage 1", tr);
-        makeElem("th", "Candies", tr);
-        makeElem("th", "Stage 2", tr);
-        makeElem("th", "Candies", tr);
-        makeElem("th", "Stage 3", tr);
+    var t = document.createElement('table');
+    var h = document.createElement('thead');
+    var tr = document.createElement('tr');
+    for (let i = 0 ; i<nbColumns ; i++ ) {
+        makeElem('th', 'Stage 1', tr);
+        makeElem('th', 'Candies', tr);
+        makeElem('th', 'Stage 2', tr);
+        makeElem('th', 'Candies', tr);
+        makeElem('th', 'Stage 3', tr);
         if (i<nbColumns-1) {
-            var sep = makeElem("th", "", tr);
-            sep.setAttribute("style", "width: 2em;");
+            var sep = makeElem('th', '', tr);
+            sep.setAttribute('style', 'width: 2em;');
         }
     }
     h.appendChild(tr);
@@ -386,25 +460,25 @@ function makechart(id, dataObj) {
 
     // Find the rows to display
     var rowToDisplay = [];
-    for (i=0 ; i<data.length ; i++) {
+    for (let i=0 ; i<data.length ; i++) {
         if (isRowVisible(data[i].stages, mode)) {
             rowToDisplay.push(i);
         }
     }
     var nbRows = Math.ceil(rowToDisplay.length/nbColumns);
 
-    var b = document.createElement("tbody");
+    var b = document.createElement('tbody');
     var total = {evolve: 0, got:0, miss: 0};
-    for (i=0 ; i<nbRows ; i++) {
-        tr = document.createElement("tr");
+    for (let i=0 ; i<nbRows ; i++) {
+        tr = document.createElement('tr');
         for (var j=0 ; j<nbColumns ; j++ ) {
             if (i + j*nbRows >= rowToDisplay.length) {
                 break;
             }
             var indx = rowToDisplay[i + j*nbRows];
             if (j>0) {
-                var td = makeElem("td", "", tr);
-                td.classList.add("separate");
+                var td = makeElem('td', '', tr);
+                td.classList.add('separate');
             }
             var res = appendRow(tr, data[indx].stages);
             total.evolve += res.evolve;
@@ -417,22 +491,27 @@ function makechart(id, dataObj) {
 
     t.appendChild(b);
 
-    makeElem("div", formatString("Total: {total}, missing {miss}, can evolve {evolve} (aim at 70)", total), root);
+    makeElem('div', formatString('Total: {total}, missing {miss}, can evolve {evolve} (aim at 70)', total), root);
 
     root.appendChild(t);
 }
 
+/**
+   Recompute the whole chart
+
+   @param {String} id Unique id of the main table.
+*/
 function refreshChart(id) {
-    "use strict";
+    'use strict';
     var root = document.getElementById(id);
     if (root) {
-        root.innerHTML = "";
+        root.innerHTML = '';
         makechart(id, window.maintable);
     }
 }
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    "use strict";
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
 
     buildIdIndex();
     checkGeneration(window.maintable);
@@ -442,11 +521,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     var modeElem = document.getElementById(modeId);
     if (modeElem) {
-        modeElem.addEventListener("change", function(changeEvent) {
+        modeElem.addEventListener('change', function() {
             saveSettings();
             refreshChart(tableId);
         });
     }
 
-    document.getElementById("reset").addEventListener("click", dumpResetStats);
+    document.getElementById('reset').addEventListener('click', dumpResetStats);
 });

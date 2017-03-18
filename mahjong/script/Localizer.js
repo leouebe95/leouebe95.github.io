@@ -7,11 +7,11 @@
    @return {String} The formatted string.
 */
 String.prototype.format = function() {
-    "use strict";
+    'use strict';
 
     var result = this;
     for (var i = 0; i < arguments.length; i++) {
-	    var reg = new RegExp("\\{" + (i+1) + "\\}", "gm");
+	    var reg = new RegExp('\\{' + (i+1) + '\\}', 'gm');
 	    result = result.replace(reg, String(arguments[i]));
     }
     return result;
@@ -33,7 +33,7 @@ I18N._currentResources = {};
   Global utility method to access localized resources.
  */
 function strRes(str) {
-    "use strict";
+    'use strict';
 
 	var resourceDB = I18N._currentResources;
 	if (resourceDB.hasOwnProperty(str)) {

@@ -230,7 +230,20 @@
         "no-continue": 0, // disallow continue statements
         "no-inline-comments": 0, // disallow inline comments after code
         "no-lonely-if": 0, // disallow if statements as the only statement in else blocks
-        "no-mixed-operators": 2, // disallow mixed binary operators
+        "no-mixed-operators": [ // disallow mixed binary operators
+            2,
+            {
+            "groups": [
+                ["+", "-"],
+                ["*", "/", "%", "**"],
+                ["&", "|", "^", "~", "<<", ">>", ">>>"],
+                ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+                ["&&", "||"],
+                ["in", "instanceof"]
+            ],
+            "allowSamePrecedence": false
+        }
+        ],
         "no-mixed-spaces-and-tabs": 0, // disallow mixed spaces and tabs for indentation
         "no-multi-assign": 0, // disallow use of chained assignment expressions
         "no-multiple-empty-lines": 0, // disallow multiple empty lines
