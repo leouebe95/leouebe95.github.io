@@ -939,7 +939,7 @@ window.maintable = {
         {
             stages: [
                 {number: "246", name: "Larvitar", candy: 0, gen: 2},
-                {number: "247", name: "Pupitar", candy: -1, gen: 2},
+                {number: "247", name: "Pupitar", candy: 25, gen: 2},
                 {number: "248", name: "Tyranitar", candy: -1, gen: 2}
             ]
         },

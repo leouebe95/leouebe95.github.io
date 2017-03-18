@@ -68,13 +68,17 @@ function buildIdIndex() {
 /*
    Debug function to dump cleaned up stats sorted in Id order
 */
-function dumpStats() {
+function dumpStats(reset) {
     var ids = Object.keys(window.idIndex).sort();
     var res = 'window.stats = {\n';
     for (var i=0 ; i<ids.length ; i++) {
         var id = ids[i];
         var name = window.idIndex[id].name;
         var line = window.stats[name];
+        if (line === undefined) { continue; }
+        if (reset && (line.candies !== undefined)) {
+            delete line.candies;
+        }
         if (line.candies === 0) {
             delete line.candies;
         }
@@ -86,6 +90,32 @@ function dumpStats() {
     console.log(res);
 }
 
+function dumpResetStats() {dumpStats(true); }
+
+/**
+   Save the setting into local storage.
+   @return {undefined}
+*/
+function saveSettings() {
+    var settings = {};
+    var modeElem = document.getElementById(modeId);
+    settings['mode'] = modeElem.options[modeElem.selectedIndex].value;
+    localStorage.pokemonUIPrefs = JSON.stringify(settings);
+    localStorage.pokemonUIPrefsVersion = "1.0";
+}
+
+/**
+   Load the settings from local storage if they exist
+   @return {undefined}
+*/
+function loadSettings() {
+    if (localStorage.pokemonUIPrefs) {
+        var settings =
+            JSON.parse(localStorage.pokemonUIPrefs);
+        var modeElem = document.getElementById(modeId);
+        modeElem.value = settings['mode']
+    }
+}
 
 function makeElem(tag, text, parent) {
     "use strict";
@@ -406,13 +436,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     buildIdIndex();
     checkGeneration(window.maintable);
+    loadSettings();
     makechart(tableId, window.maintable);
     // dumpStats();
 
     var modeElem = document.getElementById(modeId);
     if (modeElem) {
         modeElem.addEventListener("change", function(changeEvent) {
+            saveSettings();
             refreshChart(tableId);
         });
     }
+
+    document.getElementById("reset").addEventListener("click", dumpResetStats);
 });

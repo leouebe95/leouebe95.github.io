@@ -6,9 +6,10 @@
 // For eslint
 /* global Kana JapaneseDB:true */
 /* exported JapaneseDB */
+/* eslint no-console: ["error", { allow: ["error"] }] */
 
 JapaneseDB = (function() {
-	"use strict";
+	'use strict';
 
     // True if the DB is made of single Kanji, false if it is made of
     // sentences
@@ -34,7 +35,7 @@ JapaneseDB = (function() {
 	        this.__indexIndirect = [];
             for (var i = 0 ; i<__db.length ; i++) {
                 this.__good.push(0);
-				var key = __db[i][indx].replace(/ {2}/g, " ");
+				var key = __db[i][indx].replace(/ {2}/g, ' ');
                 if (lessons.indexOf(key) >= 0) {
                     this.__indexIndirect.push(i);
                 }
@@ -87,7 +88,7 @@ JapaneseDB = (function() {
         */
         static addToDB(entries) {
             if (__dbIsKanji) {
-                console.error("Cannot add normal entries to Kanjies");
+                console.error('Cannot add normal entries to Kanjies');
                 return;
             }
 			__db = __db.concat(entries);
@@ -110,71 +111,54 @@ JapaneseDB = (function() {
         */
 		static addKanjiToDB(entries) {
             if ((__db.length>0) && (!__dbIsKanji)) {
-                console.error("Cannot add Kanji entries to a normal database");
+                console.error('Cannot add Kanji entries to a normal database');
                 return;
             }
 			__db = __db.concat(entries);
             __dbIsKanji = true;
 		}
 
-        // TO REMOVE?
-	    static addKanjiStateToDB_UNUSED(entries) {
-			// Each element is an array [kanji, object]
-            // object defines levels 1 and 2 for each entries
-            if (__dbIsKanji) {
-                for (var i=0 ; i<entries.length ; i++ ) {
-                    var key = entries[i][0];
-                    for (var j=0 ; j<__db.length ; j++ ) {
-                        if (__db[j][0] === key) {
-                            __db[j].push(entries[i][1]);
-                            break;
-                        }
-                    }
-                }
-            }
-		}
-
 		/**
 		   @param {String} str The input encoded string.
 		   @return {String} The kana version of the string.
 		*/
-		toKana(str) {
+		static toKana(str) {
 			// Remove Romaji characters
-			var removeRoma = str.replace(/{[A-Za-z]+}/g, "");
+			var removeRoma = str.replace(/{[A-Za-z]+}/g, '');
 
 			// Replace grouped kanji with kana when there is an override
-			removeRoma = removeRoma.replace(/<[^<>]+>\[([^\x5D]+)\]/g, "$1");
+			removeRoma = removeRoma.replace(/<[^<>]+>\[([^\x5D]+)\]/g, '$1');
 			// Replace kanji with kana when there is an override
-			return removeRoma.replace(/.\[([^\x5D]+)\]/g, "$1");
+			return removeRoma.replace(/.\[([^\x5D]+)\]/g, '$1');
 		}
 
 		/**
 		   @param {String} str The input encoded string.
 		   @return {String} The kanji version of the string.
 		*/
-		toKanji(str) {
+		static toKanji(str) {
 			// Remove Romaji characters
-			var removeRoma = str.replace(/{[A-Za-z]+}/g, "");
+			var removeRoma = str.replace(/{[A-Za-z]+}/g, '');
 
 			// Remove Kanji grouping
-			removeRoma = removeRoma.replace(/[<>]/g, "");
+			removeRoma = removeRoma.replace(/[<>]/g, '');
 
 			// Remove the Kana phonetics
-			return removeRoma.replace(/\[[^\x5D]+\]/g, "");
+			return removeRoma.replace(/\[[^\x5D]+\]/g, '');
 		}
 
 		/**
 		   @param {String} str The input encoded string.
 		   @return {String} The romaji version of the string.
 		*/
-		toRoma(str) {
+		static toRoma(str) {
 			// Replace grouped kanji with kana when there is an override
-			var roma = str.replace(/<[^<>]+>\[([^\x5D]+)\]/g, "$1");
+			var roma = str.replace(/<[^<>]+>\[([^\x5D]+)\]/g, '$1');
 			// Replace kanji with kana when there is an override
-			roma = roma.replace(/.\[([^\x5D]+)\]/g, "$1");
+			roma = roma.replace(/.\[([^\x5D]+)\]/g, '$1');
 
 			// Replace kana with romaji when there is an override
-		    roma = roma.replace(/.{([A-Za-z]+)}/g, "$1");
+		    roma = roma.replace(/.{([A-Za-z]+)}/g, '$1');
 
 			// Remove the Kana phonetics
 			return Kana.toRomaji(roma);
@@ -200,10 +184,10 @@ JapaneseDB = (function() {
                     kanji: elem[0],
                     kun: elem[1],
 				    kunkata: Kana.toKana(elem[1], false),
-				    kunroma: this.toRoma(elem[1]),
+				    kunroma: this.constructor.toRoma(elem[1]),
                     on: elem[2],
 				    onhira: Kana.toKana(elem[2], true),
-				    onroma: this.toRoma(elem[2]),
+				    onroma: this.constructor.toRoma(elem[2]),
                     eng: elem[3],
                     grade: elem[4],
                     opt : options
@@ -213,9 +197,9 @@ JapaneseDB = (function() {
 			var jap = elem[0];
 			return {
 				orig: jap,
-				kanj: this.toKanji(jap),
+				kanj: this.constructor.toKanji(jap),
 				kana: this.toKana(jap),
-				roma: this.toRoma(jap),
+				roma: this.constructor.toRoma(jap),
 				eng:  elem[1],
 
 				lesson: elem[2],
@@ -233,39 +217,39 @@ JapaneseDB = (function() {
 		   to render. If not set, the current element is rendered.
            @return {undefined}
 		*/
-		renderKanji(rootDiv, elemId) {
+		static renderKanji(rootDiv, elemId) {
 			elemId = elemId || __index; // Set default value
 			var elem = __db[elemId];
 			var jap = elem[0];
-			var html = "";
+			var html = '';
 
 			// Remove Romaji characters
-			jap = jap.replace(/{[A-Za-z]+}/g, "");
+			jap = jap.replace(/{[A-Za-z]+}/g, '');
 
 			// Insert ~ around kanji with phonetics to be able to use
 			// split later.
 
 			// Simple case: One kanji E.g. 私[わたし]
 			// \x5D == ]
-			jap = jap.replace(/([^<>]\[[^\x5D]+\])/g, "~$1~");
+			jap = jap.replace(/([^<>]\[[^\x5D]+\])/g, '~$1~');
 			// Complex case: multiple kanji. E.g. <明日>[あした]
-			jap = jap.replace(/<([^<>]+)>\[([^\x5D]+)\]/g, "~$1[$2]~");
-			var parts = jap.split("~");
+			jap = jap.replace(/<([^<>]+)>\[([^\x5D]+)\]/g, '~$1[$2]~');
+			var parts = jap.split('~');
 			// html += "!!!"+jap+"!!!"  // DEBUG
 			for (var i = 0; i < parts.length; i++) {
 				var token = parts[i];
 				if (/\[/.test(token)) {
 					// If part has phonetics, print as a vertical
 					// array
-					var kanji = token.replace(/\[[^\x5D]+\]/g, "");
-					var phonetics = token.replace(/.*\[([^\x5D]+)\]/g, "$1");
-					html += '<table class="layout"><tr class="over"><td>'+phonetics+"</td></tr><tr> <td>"+kanji+"</td></tr></table>";
+					var kanji = token.replace(/\[[^\x5D]+\]/g, '');
+					var phonetics = token.replace(/.*\[([^\x5D]+)\]/g, '$1');
+					html += '<table class="layout"><tr class="over"><td>'+phonetics+'</td></tr><tr> <td>'+kanji+'</td></tr></table>';
 				} else {
 					// If part has no phonetics, print as is
 					html += token;
 				}
 			}
-			rootDiv.html('<span class="kanji">'+html+"</span>");
+			rootDiv.html('<span class="kanji">'+html+'</span>');
 		}
 
 		/**
@@ -278,7 +262,7 @@ JapaneseDB = (function() {
             if (JPvoice === undefined) {
                 speech = window.speechSynthesis;
                 // Find a Japanese voice
-                JPvoice = speech.getVoices().filter(function (voice) { return voice.lang === "ja-JP"; })[0];
+                JPvoice = speech.getVoices().filter(function (voice) { return voice.lang === 'ja-JP'; })[0];
             }
 
 			elemId = elemId || __index; // Set default value
@@ -293,8 +277,8 @@ JapaneseDB = (function() {
 			// ji-ya. Katakana does not have the issue for some
 			// reason... So fix up the string a little bit
 			var phonetic = this.toKana(jap).
-				replace("じゃあ", "ジャア").
-				replace("じゃ", "ジャ");
+				replace('じゃあ', 'ジャア').
+				replace('じゃ', 'ジャ');
 
 			var utterance = new SpeechSynthesisUtterance(phonetic);
 			utterance.voice = JPvoice;
@@ -348,7 +332,7 @@ JapaneseDB = (function() {
 		   @return {String[]} A sorted array of all known categories.
 		*/
 		static categories() {
-			var array = new Array();
+			var array = [];
 			for (var i = 0 ; i<__db.length ; i++) {
 				var category = __db[i][3];
 				if (array.indexOf(category) < 0) {
@@ -361,7 +345,7 @@ JapaneseDB = (function() {
 		}
 
 		static lessons() {
-			var array = new Array();
+			var array = [];
 			for (var i = 0 ; i<__db.length ; i++) {
 				var lesson = __db[i][2];
 				if (array.indexOf(lesson) < 0) {
@@ -374,9 +358,9 @@ JapaneseDB = (function() {
 		}
 
 		static grades() {
-			var array = new Array();
+			var array = [];
             if (__dbIsKanji) {
-			    for (var i = 0 ; i<__db.length ; i++) {
+			    for (let i = 0 ; i<__db.length ; i++) {
 				    var grade = __db[i][4];
 				    if (array.indexOf(grade) < 0) {
 					    array.push(grade);
@@ -384,8 +368,8 @@ JapaneseDB = (function() {
 			    }
             }
 			array.sort();
-			for (i = 0 ; i<array.length ; i++) {
-				array[i] = array[i].replace(/ {2}/g, " ");
+			for (let i = 0 ; i<array.length ; i++) {
+				array[i] = array[i].replace(/ {2}/g, ' ');
             }
 			return array;
 		}
