@@ -34,26 +34,25 @@ function formatString(msg, values) {
     return msg;
 }
 /**
-   Make sure the generation data is consistent.
+   Set the Generation to the proper value
 
    @param {Object} dataObj Global database.
 */
-function checkGeneration(dataObj) {
+function setGeneration(dataObj) {
     'use strict';
 
-    var generationMax = [0, 151, 251, 386, 493, 649, 721, 802];
+    var generationMax = [1, 152, 252, 387, 494, 650, 722, 803, 99999];
     var data = dataObj.species;
     for (var i=0 ; i<data.length ; i++) {
         var stages = data[i].stages;
         for (var j=0 ; j<stages.length ; j++) {
             if (stages[j].number) {
                 var id = Number(stages[j].number);
-                var gen = stages[j].gen || 1;
-                if (id<=generationMax[gen-1]) {
-                    console.error('Gen too high: '+stages[j].name);
-                } else if (id>generationMax[gen]) {
-                    console.error('Gen too low: '+stages[j].name);
+                var gen = 1;
+                while (id>=generationMax[gen]) {
+                    gen += 1;
                 }
+                stages[j].gen = gen;
             }
         }
     }
@@ -514,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     buildIdIndex();
-    checkGeneration(window.maintable);
+    setGeneration(window.maintable);
     loadSettings();
     makechart(tableId, window.maintable);
     // dumpStats();
