@@ -286,7 +286,14 @@ function appendRow(tr, data) {
     'use strict';
     // skip all rows with no evolution
     var res = {evolve: 0, got:0, miss: 0};
-
+    var itemName = {
+        rock: "King's rock",
+        sun: 'Sun stone',
+        metal: 'Metal coat',
+        dragon: 'Dragon scale',
+        upgrade: 'Upgrade'
+    };
+    
     for (var i=0 ; i<3 ; i++) {
         if (i>=data.length) {
             let td = makeElem('td', '', tr);
@@ -335,6 +342,15 @@ function appendRow(tr, data) {
 
         if (elem.candy>0) {
             let td = makeElem('td', elem.candy, tr);
+            if (elem.item) {
+                var br = document.createElement('br');
+                td.appendChild(br);
+                var img = document.createElement('img');
+                img.classList.add('item');
+                img.setAttribute('src', 'img/'+elem.item+'.png');
+                img.setAttribute('title', itemName[elem.item]);
+                td.appendChild(img);
+            }
             td.classList.add('large');
         }
         if (elem.candy<0) {

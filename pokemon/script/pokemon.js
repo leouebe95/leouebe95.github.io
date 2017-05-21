@@ -130,7 +130,7 @@ window.maintable = {
             stages: [
                 {skip: true},
                 {skip: true},
-                {number: '182', name: 'Bellossom', candy: 100}
+                {number: '182', name: 'Bellossom', candy: 100, item: 'sun'}
             ]
         },
         {
@@ -193,7 +193,7 @@ window.maintable = {
             stages: [
                 {skip: true},
                 {skip: true},
-                {number: '186', name: 'Politoed', candy: 100}
+                {number: '186', name: 'Politoed', candy: 100, item: 'rock'}
             ]
         },
         {
@@ -248,7 +248,7 @@ window.maintable = {
         {
             stages: [
                 {skip: true},
-                {number: '199', name: 'Slowking', candy: 50},
+                {number: '199', name: 'Slowking', candy: 50, item: 'rock'},
                 {noPokemon:true}
             ]
         },
@@ -304,7 +304,7 @@ window.maintable = {
         {
             stages: [
                 {number: '095', name: 'Onix', candy: 0},
-                {number: '208', name: 'Steelix', candy: 50},
+                {number: '208', name: 'Steelix', candy: 50, item: 'metal'},
                 {noPokemon:true}
             ]
         },
@@ -410,7 +410,7 @@ window.maintable = {
             stages: [
                 {number: '116', name: 'Horsea', candy: 0},
                 {number: '117', name: 'Seadra', candy: 50},
-                {number: '230', name: 'Kingdra', candy: 100}
+                {number: '230', name: 'Kingdra', candy: 100, item: 'dragon'}
             ]
         },
         {
@@ -437,7 +437,7 @@ window.maintable = {
         {
             stages: [
                 {number: '123', name: 'Scyther', candy: 0},
-                {number: '212', name: 'Scizor', candy: 50},
+                {number: '212', name: 'Scizor', candy: 50, item: 'metal'},
                 {noPokemon:true}
             ]
         },
@@ -535,7 +535,7 @@ window.maintable = {
         {
             stages: [
                 {number: '137', name: 'Porygon', candy: 0},
-                {number: '233', name: 'Porygon2', candy: -1},
+                {number: '233', name: 'Porygon2', candy: 50, item: 'upgrade'},
                 {number: '474', name: 'Porygon-Z', candy: -1, gen: 4}
             ]
         },
@@ -613,21 +613,21 @@ window.maintable = {
             stages: [
                 {number: '152', name: 'Chikorita', candy: 0},
                 {number: '153', name: 'Bayleef', candy: 25},
-                {number: '154', name: 'Meganium', candy: -1}
+                {number: '154', name: 'Meganium', candy: 100}
             ]
         },
         {
             stages: [
                 {number: '155', name: 'Cyndaquil', candy: 0},
-                {number: '156', name: 'Quilava', candy: -1},
-                {number: '157', name: 'Typhlosion', candy: -1}
+                {number: '156', name: 'Quilava', candy: 25},
+                {number: '157', name: 'Typhlosion', candy: 100}
             ]
         },
         {
             stages: [
                 {number: '158', name: 'Totodile', candy: 0},
                 {number: '159', name: 'Croconaw', candy: 25},
-                {number: '160', name: 'Feraligatr', candy: -1}
+                {number: '160', name: 'Feraligatr', candy: 100}
             ]
         },
         {
@@ -661,7 +661,7 @@ window.maintable = {
         {
             stages: [
                 {number: '170', name: 'Chinchou', candy: 0},
-                {number: '171', name: 'Lanturn', candy: -1},
+                {number: '171', name: 'Lanturn', candy: 50},
                 {noPokemon:true}
             ]
         },
@@ -682,8 +682,8 @@ window.maintable = {
         {
             stages: [
                 {number: '179', name: 'Mareep', candy: 0},
-                {number: '180', name: 'Flaaffy', candy: -1},
-                {number: '181', name: 'Ampharos', candy: -1}
+                {number: '180', name: 'Flaaffy', candy: 25},
+                {number: '181', name: 'Ampharos', candy: 100}
             ]
         },
         {
@@ -717,7 +717,7 @@ window.maintable = {
         {
             stages: [
                 {number: '191', name: 'Sunkern', candy: 0},
-                {number: '192', name: 'Sunflora', candy: 50},
+                {number: '192', name: 'Sunflora', candy: 50, item: 'sun'},
                 {noPokemon:true}
             ]
         },
@@ -792,7 +792,7 @@ window.maintable = {
         {
             stages: [
                 {number: '209', name: 'Snubbull', candy: 0},
-                {number: '210', name: 'Granbull', candy: -1},
+                {number: '210', name: 'Granbull', candy: 50},
                 {noPokemon:true}
             ]
         },
@@ -855,7 +855,7 @@ window.maintable = {
         {
             stages: [
                 {number: '223', name: 'Remoraid', candy: 0},
-                {number: '224', name: 'Octillery', candy: -1},
+                {number: '224', name: 'Octillery', candy: 50},
                 {noPokemon:true}
             ]
         },
@@ -883,14 +883,14 @@ window.maintable = {
         {
             stages: [
                 {number: '228', name: 'Houndour', candy: 0},
-                {number: '229', name: 'Houndoom', candy: -1},
+                {number: '229', name: 'Houndoom', candy: 50},
                 {noPokemon:true}
             ]
         },
         {
             stages: [
                 {number: '231', name: 'Phanpy', candy: 0},
-                {number: '232', name: 'Donphan', candy: -1},
+                {number: '232', name: 'Donphan', candy: 50},
                 {noPokemon:true}
             ]
         },
@@ -940,7 +940,7 @@ window.maintable = {
             stages: [
                 {number: '246', name: 'Larvitar', candy: 0},
                 {number: '247', name: 'Pupitar', candy: 25},
-                {number: '248', name: 'Tyranitar', candy: -1}
+                {number: '248', name: 'Tyranitar', candy: 100}
             ]
         },
         {

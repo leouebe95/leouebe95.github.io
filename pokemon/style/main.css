@@ -56,6 +56,10 @@ img.pokemon {
   width: 64px;
 }
 
+img.item {
+  width: 32px;
+}
+
 div.under {
   position: relative;
 }
