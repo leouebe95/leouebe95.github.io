@@ -20,7 +20,7 @@ function formatString(msg, values) {
 
     if (values) {
         for (var key in values) {
-            if(values.hasOwnProperty(key)) {
+            if (values.hasOwnProperty(key)) {
                 var val = values[key];
                 if (typeof val === 'undefined') {
                     val = 'undefined';
@@ -293,7 +293,7 @@ function appendRow(tr, data) {
         dragon: 'Dragon scale',
         upgrade: 'Upgrade'
     };
-    
+
     for (var i=0 ; i<3 ; i++) {
         if (i>=data.length) {
             let td = makeElem('td', '', tr);

@@ -963,6 +963,6 @@ window.maintable = {
                 {noPokemon:true},
                 {noPokemon:true}
             ]
-        }  
+        }
     ]
 };
