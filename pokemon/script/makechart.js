@@ -34,7 +34,8 @@ function formatString(msg, values) {
     return msg;
 }
 /**
-   Set the Generation to the proper value
+   Set the Generation to the proper value. Also add the MAX CP value
+   to the datamodel.
 
    @param {Object} dataObj Global database.
 */
@@ -53,6 +54,11 @@ function setGeneration(dataObj) {
                     gen += 1;
                 }
                 stages[j].gen = gen;
+                if (window.maxCP[id] === undefined) {
+                    stages[j].maxCP = '?';
+                } else {
+                    stages[j].maxCP = window.maxCP[id];
+                }
             }
         }
     }
@@ -85,6 +91,20 @@ function buildIdIndex() {
                 window.idIndex[stages[j].number] = stages[j];
             }
         }
+    }
+}
+
+/**
+  Build the index->maxCP table
+*/
+function buildMaxCP() {
+    'use strict';
+
+    window.maxCP = {};
+    var data = window.maxCPinputData;
+    for (var i=0 ; i<data.length ; i++) {
+        var id = data[i][0];
+        window.maxCP[id] = data[i][4];
     }
 }
 
@@ -195,10 +215,23 @@ function isRowVisible(data, mode) {
             custom = window.stats[elem.name];
         }
 
-        if ((mode === 'have' && custom.got) ||
-            (mode === 'missing' && (!custom.got) && (elem.gen <= maxGeneration)) ||
-            (mode === 'evolve' && custom.candies >= candy)) {
-            return true;
+        switch (mode) {
+        case 'have':
+            if (custom.got) {return true;}
+            break;
+        case 'missingevolve':
+            if (i===0) {
+                if (!custom.got) {return false;}
+                break;
+            }
+        case 'missing':
+            if ((!custom.got) && (elem.gen <= maxGeneration)) {
+                return true;
+            }
+            break;
+        default: // case 'evolve':
+            if (custom.candies >= candy) { return true;}
+            break;
         }
     }
     return false;
@@ -217,11 +250,12 @@ function appendPokemon(tr, elem, custom, candy) {
 
     // Generation
     var gen = elem.gen || 1;
-    candy = candy || 0;
+    candy = candy || 9999999;
     var res = {evolve: 0, got:0, miss: 0};
 
     let td = makeElem('td', elem.name, tr);
     makeElem('div', '(#'+elem.number+')', td);
+    makeElem('div', 'MaxCP '+elem.maxCP, td);
     if (custom.got) {
         td.classList.add('found');
         res.got += 1;
@@ -366,14 +400,16 @@ function appendRow(tr, data) {
 }
 
 /**
-   Make a simplified chart with only the missing Pokemons sorted per
-   ID.
-   @param {DOMelement} root DOM element where to construct the table.
+   Make a flat sorted chart of pokemon, from the id list.
+
+   @param {DOMElement} root whre to build the table
+   @param {IntArray} toDisplay List of IDs to display
+   @param {Strinf} feedback Lne ti display with the number of pokemon found
+   @return {undefined}
 */
-function makeSortedMissingChart(root) {
+function makeSortedChart(root, toDisplay, feedback) {
     'use strict';
 
-    var ids = Object.keys(window.idIndex).sort();
     var t = document.createElement('table');
     var h = document.createElement('thead');
     var tr = document.createElement('tr');
@@ -384,17 +420,6 @@ function makeSortedMissingChart(root) {
     h.appendChild(tr);
     t.appendChild(h);
 
-    // Find the missing pokemons
-    var toDisplay = [];
-    for (let i=0 ; i<ids.length ; i++) {
-        let id = ids[i];
-        let name = window.idIndex[id].name;
-        if (window.stats[name] &&
-            (!window.stats[name].got) &&
-            (window.idIndex[id].gen <= maxGeneration)) {
-            toDisplay.push(id);
-        }
-    }
     var nbRows = Math.ceil(toDisplay.length/nbCol);
     var b = document.createElement('tbody');
     var indx = 0;
@@ -417,11 +442,64 @@ function makeSortedMissingChart(root) {
         b.appendChild(tr);
     }
     t.appendChild(b);
-    makeElem('div', formatString('Missing {m}', {m: toDisplay.length}), root);
+
+    makeElem('div', formatString(feedback, {l: toDisplay.length}), root);
 
     root.appendChild(t);
-
 }
+
+/**
+   Make a simplified chart with only the caught Pokemons sorted per
+   max CP.
+   @param {DOMelement} root DOM element where to construct the table.
+   @param {Boolean} all when true, all pokemons are displayed, no just
+   the caught ones.
+*/
+function makeHaveCPChart(root, all) {
+    'use strict';
+    // Find the missing pokemons
+    var toDisplay = [];
+    var ids = Object.keys(window.idIndex);
+    for (let i=0 ; i<ids.length ; i++) {
+        let id = ids[i];
+        let name = window.idIndex[id].name;
+        if (window.stats[name] &&
+            (all || window.stats[name].got) &&
+            (window.idIndex[id].gen <= maxGeneration)) {
+            toDisplay.push(id);
+        }
+    }
+
+    toDisplay.sort(function(x, y) {
+        // swap x, y to do a reverse sort
+        return window.maxCP[Number(y)] - window.maxCP[Number(x)];
+    });
+    var feedback = all ? 'All {l}' : 'Caught {l}';
+    makeSortedChart(root, toDisplay, feedback);
+}
+
+/**
+   Make a simplified chart with only the missing Pokemons sorted per
+   ID.
+   @param {DOMelement} root DOM element where to construct the table.
+*/
+function makeSortedMissingChart(root) {
+    'use strict';
+    // Find the missing pokemons
+    var toDisplay = [];
+    var ids = Object.keys(window.idIndex).sort();
+    for (let i=0 ; i<ids.length ; i++) {
+        let id = ids[i];
+        let name = window.idIndex[id].name;
+        if (window.stats[name] &&
+            (!window.stats[name].got) &&
+            (window.idIndex[id].gen <= maxGeneration)) {
+            toDisplay.push(id);
+        }
+    }
+    makeSortedChart(root, toDisplay, 'Missing {l}');
+}
+
 
 /**
    Create the actual chart.
@@ -451,6 +529,14 @@ function makechart(id, dataObj) {
 
     if (mode === 'sortedMissing') {
         makeSortedMissingChart(root);
+        return;
+    }
+    if (mode === 'allCP') {
+        makeHaveCPChart(root, true);
+        return;
+    }
+    if (mode === 'haveCP') {
+        makeHaveCPChart(root);
         return;
     }
 
@@ -528,6 +614,7 @@ function refreshChart(id) {
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
+    buildMaxCP();
     buildIdIndex();
     setGeneration(window.maintable);
     loadSettings();
