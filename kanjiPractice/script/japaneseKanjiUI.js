@@ -115,7 +115,7 @@
             }
         }
 
-        for(var child=elem.firstChild; child!==null; child=child.nextSibling) {
+        for (var child=elem.firstChild; child!==null; child=child.nextSibling) {
             fixSVGColor(child);
         }
     }
@@ -171,9 +171,12 @@
 
         var xhr = new XMLHttpRequest();
         xhr.addEventListener('load', function() {
-            node.appendChild(fixSVG(this.responseXML.documentElement));
+            if (this.status === 200) {
+                node.appendChild(fixSVG(this.responseXML.documentElement));
+            }
         });
-        xhr.open('GET', 'kanjiStrokeOrder/'+code+'.svg');
+        var gradefolder = data.grade.toLowerCase().replace(/\s+/, '-');
+        xhr.open('GET', 'kanjiStrokeOrder/'+gradefolder+'/kanji/'+code+'.svg');
         xhr.send();
 
         document.getElementById('results').innerText = 'Good answers: '+nbGood+'/'+(nbGood+nbBad);
@@ -231,7 +234,7 @@
         return child;
     }
 
-    /** 
+    /**
         Expand all the pseudo web component HTML button syntax
     */
     function expandButtonUI() {
@@ -250,14 +253,14 @@
 	    }
     }
 
-    /** 
+    /**
         Expand all the pseudo web component HTML syntax
     */
     function expandUI() {
         expandButtonUI();
     }
-    
-    /** 
+
+    /**
         Main entry point for the page.
     */
 	function main() {

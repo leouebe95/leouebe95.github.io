@@ -8,7 +8,7 @@
 
 Kana = (function() {
 	'use strict';
-    
+
     // Add a replace all method to Strings
     String.prototype.replaceAll = function (find, replace) {
         var str = this;
@@ -202,7 +202,7 @@ Kana = (function() {
 	    */
 	    static canonicalRomaji(romaStr) {
 		    romaStr = romaStr.toLowerCase();
-		    for(var key in __longVowels) {
+		    for (var key in __longVowels) {
 			    romaStr = romaStr.replaceAll(key, __longVowels[key]);
 		    }
 		    return romaStr;
@@ -225,7 +225,7 @@ Kana = (function() {
 		    });
 
 		    // Punctuation
-		    for(let key in __punct) {
+		    for (let key in __punct) {
 			    inStr = inStr.replaceAllEscape(key, __punct[key]);
 		    }
 
@@ -233,7 +233,7 @@ Kana = (function() {
 		    inStr = inStr.replace(/(.)ー/g, '$1$1');
 
 		    // Finally remap long vowels
-		    for(let key in __long) {
+		    for (let key in __long) {
 			    inStr = inStr.replaceAll(__long[key], key);
 		    }
 		    inStr = inStr.replaceAll('oo', 'ō');
@@ -252,7 +252,7 @@ Kana = (function() {
 		    inStr = this.canonicalRomaji(inStr);
 
 		    // Expand long vowels
-		    for(let key in __longVowels) {
+		    for (let key in __longVowels) {
 			    inStr = inStr.replaceAll(key, __longVowels[key]);
 		    }
 
@@ -272,7 +272,7 @@ Kana = (function() {
 		    });
 
 		    // Punctuation
-		    for(let key in __punct) {
+		    for (let key in __punct) {
 			    inStr = inStr.replaceAllEscape(__punct[key], key);
 		    }
 
