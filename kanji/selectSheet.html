@@ -1,0 +1,58 @@
+<html>
+  <head>
+	<meta http-equiv="Content-Type"
+		  content="application/xhtml+xml; charset=UTF-8">
+	<link rel="stylesheet" href="style/sheet.css"></link>
+	<script src="script/selectSheet.js"></script>
+	<script src="script/collapsible.js"></script>
+  </head>
+  <body>
+
+	<div id="controls">
+	  <div class="collapsible" title="Help">
+		<div>
+		  Select practice sentences
+		</div>
+		<div>
+		  For reference, list of grade 1 kanjies:<br/>
+
+		  一七三上下中九二五人休先入八六円出力十千口右名四土夕大天女子字学小山川左年手文日早月木本村林校森正気水火犬玉王生田男町白百目石空立竹糸耳花草虫見貝赤足車金雨青音
+		</div>
+		<div>
+		  Select the kanjies to practice. Up to 20 sentences with those
+		  characters will be displayed.
+		</div>
+	  </div>
+
+	  <div class="collapsible" title="Input">
+		<table>
+		  <tr>
+			<td style="vertical-align:top">
+			  <table>
+				<tr>
+				  <td>
+					Display mode:
+					<select id="mode" style="vertical-align: top;">
+					  <option value="incl">Contains</option>
+					  <option value="excl">Does not contain</option>
+					</select>
+				  </td>
+				  <td style="padding-left:20px">
+					<input type="text" id="kanjies"/>
+				  </td>
+				  <td style="padding-left:40px">
+					<button id="refresh">Get new sentences</button>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <hr/>
+	</div>
+	<div id="result"></div>
+	<div id="translation">
+	</div>
+  </body>
+</html>

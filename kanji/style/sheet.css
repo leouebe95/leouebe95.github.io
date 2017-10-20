@@ -1,0 +1,106 @@
+div.collapsed div {
+  display: none;
+}
+
+div.collapsible.collapsed img {
+  content: url("../img/Collapsible-collapsed.png");
+}
+div.collapsible.collapsed img:hover {
+  content: url("../img/Collapsible-collapsed-hover.png");
+}
+div.collapsible img {
+  content: url("../img/Collapsible-expanded.png");
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+div.collapsible img:hover {
+  content: url("../img/Collapsible-expanded-hover.png");
+}
+
+h1:hover {
+  background-color: #dcebf5;
+}
+
+h1 {
+  background-color: #f5f5dc;
+  font-size: 125%;
+}
+
+hr {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+div.flushright  {
+  text-align: right;
+}
+
+div.blank  {
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+}
+
+span.practice {
+  font-size: 275%;
+  writing-mode: vertical-rl;
+  vertical-align: top;
+  text-align: center;
+}
+
+span.normal {
+  font-size: 30%;
+  writing-mode: horizontal-tb;
+  color: #A0A0A0; 
+}
+
+table.halfborder {
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  background-color: #F8FFFF;
+}
+
+dt {
+  font-weight: bold;
+}
+
+/* Decrease the default kana size to allow 3 kana */
+ruby rt {
+  font-size: 33%;
+}
+
+rt {
+  border: 1px solid rgba(0, 0, 0, 0);
+}
+rb {
+  border: 1px solid rgba(0, 0, 0, 0);
+}
+
+/* ---- hide kanji ---- */
+
+div.kanji rb {
+  border: 1px solid blue;
+  color: rgba(0, 0, 0, 0);
+}
+
+/* ---- Trace kanji ---- */
+
+div.trace rb {
+  border: 1px solid blue;
+  color: #E0E0E0;
+}
+
+/* ---- hide phonetics ---- */
+
+div.phonetics rt {
+  border: 1px solid blue;
+  color: rgba(0, 0, 0, 0);
+}
+
+/* ---- hide controls for printing ---- */
+@media print {
+  .noprint, .noprint * {
+    display: none !important;
+  }
+}

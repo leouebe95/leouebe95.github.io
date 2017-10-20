@@ -113,7 +113,7 @@ window.HandRulesInternational = (function(hr) {
     var hri = class {
         constructor() {
         }
-        
+
 	    /**
 	       Compute all rules for the hand, and determines which ones score
 	       @param {Hand} handIn Hand to test.

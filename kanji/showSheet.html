@@ -1,0 +1,66 @@
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html;UTF-8">
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="style/sheet.css"></link>
+	<script src="script/showSheet.js"></script>
+	<script src="script/collapsible.js"></script>
+  </head>
+  <body>
+
+	<div id="controls" class="noprint">
+	  <div class="collapsible" title="Help">
+		<p>
+		  Display short sentences to practice kanji reading and
+		  writing. This page is meant to be printed in landscape mode
+		  for practice.
+
+		  Sentences can be selected from the database from this page XXX
+	  </p>
+
+	  <p>
+		There are 4 display modes:
+		<ul>
+		  <li><b>Kanji</b>: Find the right kanji to fill the blanks. </li>
+		  <li><b>Trace</b>: Kanji is displayed in gray to practice writing</li>
+		  <li><b>Kana</b>: Find the phonetic kana for all the kanji</li>
+		  <li><b>Solution</b>: Display both the kanji and phonetic kana</li>
+		</ul>
+	  </p>
+	  </div>
+
+	  <div class="collapsible" title="Input">
+		<table>
+		  <tr>
+			<td style="vertical-align:top">
+			  <table>
+				<tr>
+				  <td style="padding-right:40px">
+					Display mode:
+					<select id="mode" style="vertical-align: top;">
+					  <option value="kanji">Kanji</option>
+					  <option value="trace">Trace</option>
+					  <option value="phonetics">Kana</option>
+					  <option value="solution">Solution</option>
+					</select>
+				  </td>
+				  <td style="padding-right:40px">
+					<input type="checkbox" id="shuffle"
+					checked="true"> Shuffle all sentences randomly
+				  </td>
+				  <td style="padding-right:40px">
+					<input type="checkbox" id="english" checked="true"> Show English translations
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <hr/>
+	</div>
+	<div id="result"></div>
+	<div id="translation">
+	</div>
+  </body>
+</html>

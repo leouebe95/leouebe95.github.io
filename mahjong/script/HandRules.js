@@ -69,7 +69,7 @@ window.HandRules = (function() {
 			for (let i = 0; i<count.length ; i++ ) {
 				var suit = Math.floor(i/8);
 				var num = i-8*suit;
-				switch(count[i]) {
+				switch (count[i]) {
 				case 1: // Can only match a CHOW
 					if ((suit>3) || (num>7) ||
 						(count[i+1]===0) || (count[i+2]===0)) {

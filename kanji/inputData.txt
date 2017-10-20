@@ -1,41 +1,83 @@
-﻿足（あし）のつめ
-文（ぶん）をよむ
-ひげの男（おとこ）
-ほそい糸（いと）
-虫（むし）がとんだ
-ひかる石（いし）
-はこに入（い）れる
-土（つち）をほる
-町（まち）のはずれ
-花（はな）をつむ
-車（くるま）のうんてん
-みんなで学（まな）ぶ
-白（しろ）いこな
-力（ちから）くらべ
-耳（みみ）がかゆい
-竹（たけ）をほる
-どうぶつの本（ほん）
-子（こ）ブタ
-みどりの草（くさ）
-つめたい川（かわ）
-
-百（ひゃく）円（えん）です
-林（はやし）でころんだ
-かおが小（ちい）さい
-田（た）んぼ
-目（め）をあける
-かべが青（あお）い
-水（みず）のながれ
-山（やま）をあるく
-早（はや）くれる
-赤（あか）いスカート
-パンダが立（た）つ
-空（そら）を見（み）る
-正（ただ）しいこたえ
-六（ろく）月（がつ）生（う）まれ
-はこから出（だ）す
-左（ひだり）のくつ
-お名（な）まえは？
-おふろの中（なか）
-気（き）がのびる
-犬（いぬ）のはな
+ID	NIHONGO	ENGLISH	GRADE	
+	足（あし）のつめ	Toenail	1	
+	文（ぶん）をよむ	Read a sentence	1	
+	ひげの男（おとこ）	Man's beard	1	
+	ほそい糸（いと）	Thin thread	1	
+	虫（むし）がとんだ	The insect flew	1	?
+	ひかる石（いし）	Shining stone	1	?
+	はこに入（い）れる	To put in a box	1	
+	土（つち）をほる	To dig the ground	1	
+	町（まち）のはずれ	Town's outskirts	1	
+	花（はな）をつむ	To pick a flower	1	
+	車（くるま）のうんてん	Driving a car	1	
+	みんなで学（まな）ぶ	To study with everyone	1	
+	白（しろ）いこな	White flour	1	
+	力（ちから）くらべ	Strength contest	1	
+	耳（みみ）がかゆい	Itchy ear	1	
+	竹（たけ）をほる	To carve / dig bamboo	1	?
+	どうぶつの本（ほん）	Animal book	1	
+	子（こ）ブタ	Piglet	1	
+	みどりの草（くさ）	Green grass	1	
+	つめたい川（かわ）	Cold river	1	
+				
+	百（ひゃく）円（えん）です	It's 100 Yen	1	
+	林（はやし）でころんだ	I fell in the forest	1	
+	かおが小（ちい）さい	Small face	1	
+	田（た）んぼ	Paddy field	1	
+	目（め）をあける	I could open my eyes	1	
+	かべが青（あお）い	A blue wall	1	
+	水（みず）のながれ	Water flow	1	
+	山（やま）をあるく	To walk in mountains	1	
+	早（はや）くれる		1	
+	赤（あか）いスカート	Red skirt	1	
+	パンダが立（た）つ	The panda stands up	1	
+	空（そら）を見（み）る	I look at the sky	1	
+	正（ただ）しいこたえ	Correct answer	1	
+	六（ろく）月（がつ）生（う）まれ	Born in June	1	
+	はこから出（だ）す		1	
+	左（ひだり）のくつ	Left shoe	1	
+	お名（な）まえは？	Your name?	1	
+	おふろの中（なか）		1	
+	気（き）がのびる		1	
+	犬（いぬ）のはな	Dog's nose	1	
+				
+	気（き）ほつける	To be careful	1	
+	あたまの上（うえ）	Top of the head	1	
+	森（もり）のたんけん	Exploration of forest	1	
+	字（じ）をならう	To imitate a character	1	
+	貝（かい）をひろった	I picked a shellfish	1	
+	年（とし）をたずねる	Asking the year	1	
+	先（さき）にたべる	Eat first	1	
+	大（おお）きなトラ	Big tiger	1	
+	手（て）をまるめる	To make hand round	1	
+	パンが五（ご）こ	Five breads	1	
+	女（おんな）の子（こ）	Girl	1	
+	三のゆびわ	Ring of three	1	???
+	しずかな村（むら）	Quiet village	1	
+	お月（つき）さま	The majesty of the moon	1	
+	月（がつ）校（こう）へむかう	To go to school on Monday	1	???
+	夕（ゆう）はんですよ	It's dinner	1	
+	王（おう）さまになる	To become king	1	
+	口（くち）をゆすぐ	To rince mouth	1	
+	お休（やす）みします	To take holiday	1	
+	天（てん）のめぐみ	Divine grace	1	
+				
+	青（あおい）いリンゴ	Green apple	1	
+	車（くるま）にのる	Ride in a care	1	
+	一（いち）年（ねん）生（せい）	First year student	1	
+	へやに入（はい）る	Enter the room	1	
+	赤（あか）えんびつ	Red pencil	1	
+	さかなの目（め）玉（だま）	Fish eyball	1	
+	テーブリの下（した）	Under the table	1	
+	つよい雨（あめ）	Strong rain	1	
+	タバコの火（ひ）	Cigarette fire	1	
+	ピアノの音（おと）	Sound of piano	1	
+	千（せん）円（えん）をはらう	Pay 1000 Yen	1	
+	もう夕（ゆう）がただ		1	
+	お金（かね）もち	Insect cage	1	
+	えんそくの日（ひ）	Day trip	1	
+	竹（たけ）のつつ	Bamboo tube	1	
+	本（ほん）の大きさ	Book size	1	
+	花（はな）のかおり	Flower scent	1	
+	まわりを見（み）て	Look around	1	
+	しめった土（つち）	Damp soil	1	

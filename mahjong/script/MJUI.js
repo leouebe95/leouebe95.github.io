@@ -360,7 +360,7 @@ window.MJUI = (function() {
         @return {undefined}
     */
     function UIhasChanged(event) {
-        switch(event.target.id) {
+        switch (event.target.id) {
         case 'SelfDrawn':
             currentHand._selfDrawn = event.target.checked;
             break;

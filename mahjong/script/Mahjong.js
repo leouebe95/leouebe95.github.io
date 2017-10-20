@@ -4,7 +4,7 @@
 
 window.Mahjong = (function() {
     'use strict';
-    
+
     var Mahjong = {};
 /*
     function info(msg) {

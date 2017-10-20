@@ -144,7 +144,7 @@ class Tile {
 
         return type.name+'_'+type.ext[num-1];
     }
-    
+
 	/**
         @return {String} the file name for the given tile. Return
 	    "empty" if the tile is not valid.

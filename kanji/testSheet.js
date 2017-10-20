@@ -1,6 +1,6 @@
 (function() {
     'use strict';
-    
+
     /**
        Recompute the final sheet based on user parameters.
 
@@ -21,7 +21,7 @@
             '〕': ')',
             '】': ')'
         };
-        for(var key in remap) {
+        for (var key in remap) {
             inputString = inputString.replace(new RegExp(key, 'g'), remap[key]);
         }
 
@@ -125,7 +125,7 @@
 
     /**
        Setup the page: configure UI callbacks and expand the web
-       components. 
+       components.
     */
     function setup() {
         var data;

@@ -4,7 +4,7 @@
 var tableId = 'maintable';
 var modeId = 'mode';
 var nbColumns = 3;
-var maxGeneration = 2;
+var maxGeneration = 3;
 
 /**
     Helper method to format string from key/value objects. All
@@ -33,6 +33,42 @@ function formatString(msg, values) {
     }
     return msg;
 }
+
+/**
+   make sure all indices are set once andonly once.
+  
+   @param {Object} dataObj entire database
+*/
+
+function checkDB(data) {
+    var max = 803;
+    var found = Array(max).fill(0);
+    data.species.forEach(x => {
+        if (x.stages) {
+            x.stages.forEach(entry => {
+                if (entry.number) {
+                    var indx = parseInt(entry.number);
+                    if (indx <= 0) {
+                        console.error('Bad index', indx);
+                    } else if (indx >= max) {
+                        console.error('Bad index', indx);
+                    } else {
+                        found[indx] ++;
+                    }
+                }
+            });
+        }
+    });
+
+    for (var i=1 ; i<max ; i++) {
+        if (found[i] === 0) {
+            console.error('Missing', i);
+        } else if (found[i] > 1) {
+            console.error('Multiple entry', i, found[i]);
+        }
+    }
+}
+
 /**
    Set the Generation to the proper value. Also add the MAX CP value
    to the datamodel.
@@ -620,7 +656,8 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     makechart(tableId, window.maintable);
     // dumpStats();
-
+    checkDB(window.maintable);
+    
     var modeElem = document.getElementById(modeId);
     if (modeElem) {
         modeElem.addEventListener('change', function() {

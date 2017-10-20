@@ -28,7 +28,7 @@ class Hand {
 		result._tenho               = this._tenho;
 		result._chiho               = this._chiho;
 		result._renho               = this._renho;
-        
+
 		result._tableWind			= this._tableWind.clone();
 		result._playerWind			= this._playerWind.clone();
 		result._dora            	= this._dora.clone();
@@ -557,7 +557,7 @@ class Hand {
 		result._tenho	= simplified.tenho;
 		result._chiho	= simplified.chiho;
 		result._renho	= simplified.renho;
-        
+
         if (simplified.dora) {
 		    result._dora    		= Tile.fromSimplifiedJSON(simplified.dora);
         }

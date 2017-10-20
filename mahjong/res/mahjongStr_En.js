@@ -152,7 +152,7 @@ I18N._currentResources = {
 
     'MINIPOINTS':       'Minipoints:',
     'MINIPOINTS_TOTAL': '{1} Minipoints, rounded to {2}',
-    
+
     'SEVEN_PAIRS_MINI': 'Seven pairs',
     'CONCEALED_ON_DISCARD': 'Concealed hand, finishing on a discard',
     'DEFAULT_MINI':     'Open hand and/or self-drawn',
