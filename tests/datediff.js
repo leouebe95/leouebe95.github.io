@@ -7,9 +7,9 @@ function formatDate(diffId, dateId, now, target) {
 
     if (diffId) {
         let diffMilli = Math.abs(target - now);
-        let diffSec   = Math.ceil(diffMilli/1000);
+        let diffSec   = Math.floor(diffMilli/1000);
         
-        let diffMin   = Math.ceil(diffSec/60);
+        let diffMin   = Math.floor(diffSec/60);
         let diffHour  = Math.floor(diffMin/60);
         diffMin = diffMin - diffHour*60;
         let diffDay   = Math.floor(diffHour/24);
@@ -17,15 +17,21 @@ function formatDate(diffId, dateId, now, target) {
 
         let diffText = document.getElementById(diffId);
         // xdiffText.textContent = `min=${diffMin} hour=${diffHour} day=${diffDay}`;
-    
-        diffText.textContent = `${diffDay} days, ${diffHour} hours and ${diffMin} minutes`;   }
+
+        let mplural = diffMin  > 1 ? 's' : '';
+        let hplural = diffHour > 1 ? 's' : '';
+        let dplural = diffDay  > 1 ? 's' : '';
+        
+        diffText.textContent =
+            `${diffDay} day${dplural}, ${diffHour} hour${hplural} and ${diffMin} minute${mplural}`;
+    }
 }
 
 function bootStrap() {
     const now = new Date(Date.now());
-    const target1 = new Date('September 19, 2023, 07:15:00 (CEST)');
-    const target2 = new Date('September 19, 2023, 10:20:00 (CEST)');
-    const target3 = new Date('September 19, 2023, 21:50:00 (CEST)');
+    const target1 = new Date('September 18, 2023, 07:15:00 (CEST)');
+    const target2 = new Date('September 18, 2023, 10:20:00 (CEST)');
+    const target3 = new Date('September 18, 2023, 21:50:00 (CEST)');
 
     formatDate(null, 'now', now, now);
     formatDate('diff1', 'date1', now, target1);
