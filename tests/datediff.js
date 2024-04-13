@@ -29,9 +29,9 @@ function formatDate(diffId, dateId, now, target) {
 
 function bootStrap() {
     const now = new Date(Date.now());
-    const target1 = new Date('September 18, 2023, 07:15:00 (CEST)');
-    const target2 = new Date('September 18, 2023, 10:20:00 (CEST)');
-    const target3 = new Date('September 18, 2023, 21:50:00 (CEST)');
+    const target1 = new Date('April 14, 2024, 07:10:00 (CEST)');
+    const target2 = new Date('April 14, 2024, 10:15:00 (CEST)');
+    const target3 = new Date('April 14, 2024, 21:45:00 (CEST)');
 
     formatDate(null, 'now', now, now);
     formatDate('diff1', 'date1', now, target1);
