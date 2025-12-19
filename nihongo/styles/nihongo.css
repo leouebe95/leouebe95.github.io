@@ -1,0 +1,106 @@
+:root {
+  --card-fontsize: 40px;
+  --card-large-fontsize: 80px;
+  --sheet-fontsize: 12px;
+  --sheet-large-fontsize: 18px;
+}
+
+body {
+  font-family: "Verdana", Helvetica, sans-serif;
+}
+
+div.flip-card {
+  width:500px;
+  margin: 20px;
+}
+
+#Kana {
+  height:40px;
+  line-height: 40px;
+  font-size:24px;
+}
+
+#Romaji {
+  height:40px;
+  line-height: 40px;
+  font-size:24px;
+}
+
+#Kanji {
+  height:80px;
+  line-height: 80px;
+  font-size:48px;
+}
+
+#English {
+  height:40px;
+  line-height: 40px;
+  font-size:24px;
+}
+
+/* --------------------------------- */
+button.large {
+  width: 70px;
+  margin: 5px;
+}
+
+button.large img {
+  height: 32px;
+}
+
+button:focus-within {
+  border-color: #404080;
+  background-color: #FFFFD0;
+  outline: 0;
+}
+
+button {
+  font-size:16px;
+  border-color: #80C0E0;
+  border-style: solid;
+  border-width: 3px;
+  border-radius: 5px;
+}
+
+/* --------------------------------- */
+
+div.horizontal {
+  display: flex;
+}
+
+div.pad{
+  padding: 10px;
+}
+
+#messageBox {
+  height:24px;
+  line-height:24px;
+  font-size:16px;
+  background-color: #F0F8FF;
+  border: 1px solid #C0D0F0;
+  color: #808080;
+  border-radius: 5px;
+  margin-top: 10px;
+  padding-left: 10px;
+}
+
+div.small {
+  font-size:12px;
+}
+
+@media print {
+  .noprint {
+	display: none;
+  }
+
+  @page {
+	size: A4 landscape;
+  }
+}
+
+@media screen {
+  .noprint {
+	background: #E0F0FF;
+  }
+}
+

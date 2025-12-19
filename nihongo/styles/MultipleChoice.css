@@ -1,0 +1,30 @@
+/* The Multiple choice container */
+
+div.multiple-choice {
+  border: 3px solid #E0E0E0;
+  border-radius: 10px;
+  margin: 5px;
+  padding: 10px;
+  /* Minimal width to make sure both buttons stay on the same line */
+  min-width: 120px;
+}
+
+div.multiple-choice .title {
+  font-size: 18px;
+  text-align: center;
+}
+
+div.multiple-choice img {
+  height: 24px;
+  vertical-align: middle;
+}
+
+div.multiple-choice button {
+  width: 50px;
+  height: 36px;
+  margin: 5px;
+}
+
+div.multiple-choice #all {
+  margin-right: 5px;
+}

@@ -1,0 +1,42 @@
+
+/* --------------------------------- */
+.wordList {
+  display: flex;
+  /* make the height minimal, to avoid stretching the last column */
+  height: 1px;
+}
+
+.wordList .even tr:nth-child(even) {background: #F0F0F0}
+.wordList .odd tr:nth-child(odd) {background: #F0F0F0}
+
+.wordList td.English {
+  font-size: var(--sheet-fontsize);
+  font-weight: bold;
+  padding-left: 10px;
+}
+
+.wordList td.Kanji {
+  font-size: var(--sheet-large-fontsize);
+  padding-left: 10px;
+}
+
+.wordList td.Kana {
+  font-size: var(--sheet-fontsize);
+  padding-left: 10px;
+}
+
+.wordList td.Romaji {
+  font-size: var(--sheet-fontsize);
+  color:#C0C0C0;
+  padding-left: 10px;
+}
+
+.wordList a:not(:hover){
+  text-decoration: none;
+  color: black;
+}
+
+.wordList a:hover {
+  color: #C040C0;
+  font-weight: bold;
+}
