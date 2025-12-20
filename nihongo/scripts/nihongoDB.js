@@ -1,7 +1,6 @@
 // -*- coding: utf-8 -*-
 
-// ============================================================================
-/**
+/* ============================================================================
    Database holding the vocabulary list
 */
 class NihongoDB {
@@ -14,28 +13,88 @@ class NihongoDB {
         "English": "No element match this filter",
     };
 
-    // ------------------------------------------------------------------------
-    constructor(data) {
-        var url = 'https://docs.google.com/spreadsheets/d/1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI/gviz/tq?sheet=Vocabulary';
-        NihongoDB.getDB(url);// FIXME
-        this._data = NihongoDB.fixDB(data);
+    /* ------------------------------------------------------------------------
+       Constructor.
+       cb is the callback called when the database is ready.
+       Argument is the loaded database object (this)
+    */
+    constructor(cb) {
+        var sheetId = '1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI'; // FIXME
+        var tabName = 'Vocabulary';
+        // var tabName = 'Sentences';
+        var query = 'SELECT A,B,C,D,E,F,G,H';
+        //var gvizAPI = `gviz/tq?tqx=out:csv&tq=${query}`;
+        var gvizAPI = `gviz/tq?tq=${query}`;
+        var url = `https://docs.google.com/spreadsheets/d/${sheetId}/${gvizAPI}&sheet=${tabName}`;
+
+        // this.setDB(data);
+        this.getDB(url, cb);
+    }
+
+    /* ------------------------------------------------------------------------
+       Fix and store the database
+    */
+    setDB(db) {
+        this._data = NihongoDB.fixDB(db);
         this._filteredData = [];
         this.initLabels();
     }
 
-    
+    /* ------------------------------------------------------------------------
+       Extract the DB from the payload and store it in the current object
+    */
+    storeDB(payload) {
+        var payload = payload.split("setResponse(")[1].slice(0,-2);
+        var obj = JSON.parse(payload);
+
+        /* Extract the names from the column definition
+           obj.table.cols is an array of hash tables, the "label" entry is
+           the column name.
+        */
+        var colNames = obj.table.cols.map(x => x.label);
+
+        var db = [];
+        // Read each row
+        for(let row of obj.table.rows) {
+            let elem = {};
+            for (let i=0 ; i<colNames.length ; i++) {
+                let value = '';
+                var x = row['c'][i];
+                // If the column is not empty
+                if (x != null) {
+
+                    // If this is a formatted cell, read the formatted value from "f"
+                    if ('f' in x) { value = x["f"]; }
+                    else value = x["v"];
+                }
+                elem[colNames[i]] = value;
+            }
+
+            // There is a special row with '@' and a fake date to work around a google sheet API bug.
+            if (elem["Kanji"] != '@') {
+                db.push(elem);
+            }
+        }
+
+        this.setDB(db);
+        var dbSize = this._data.length;
+        console.log(`Database finished loading (${dbSize} entries)`);
+    }
+
     // ------------------------------------------------------------------------
     /**
        Read the entire vocabulary database from a spreadsheet
     */
-    static getDB(url) {
+    getDB(url, cb) {
         fetch(url)
-            .then(response => console.log(response))
+            .then(response => response.text())
+            .then(data => this.storeDB(data))
+            .then(() => cb())
             .catch(err => console.log(err));
     }
-    
+
     // ------------------------------------------------------------------------
-    /**
+    /*
        Fix some inconsistencies in the Database
     */
     static fixDB(data) {
@@ -58,7 +117,7 @@ class NihongoDB {
     }
 
     // ------------------------------------------------------------------------
-    /**
+    /*
        Compute all possible filter values
     */
     initLabels() {
@@ -75,7 +134,7 @@ class NihongoDB {
     }
 
     // ------------------------------------------------------------------------
-    /**
+    /*
        Select all data elements matching the filter
        filter is a dictionary key: Set
 
@@ -133,7 +192,7 @@ class NihongoDB {
 
 
     // ------------------------------------------------------------------------
-    /**
+    /*
        Sort the database by the given key.
 
        Useful before calling pickOne(true, 0)
@@ -145,7 +204,7 @@ class NihongoDB {
     }
 
     // ------------------------------------------------------------------------
-    /**
+    /*
        Select a random element in the filtered array
        If remove is set to true, then the element is removed from the
        array

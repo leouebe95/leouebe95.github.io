@@ -49,9 +49,7 @@
     /**
         Main entry point for the page.
     */
-    function main() {
-        db = new NihongoDB(__data__);
-
+    function start() {
         // Start the app with only the 'practice' vocabulary
         var defaultFilter = {'Proficiency': new Set(['3-practice'])}
 
@@ -73,6 +71,13 @@
         }
 
         createPrintSheet();
+    }
+
+    /**
+        Main entry point for the page.
+    */
+    function main() {
+        db = new NihongoDB(start);
     }
 
     document.addEventListener('DOMContentLoaded', main);
