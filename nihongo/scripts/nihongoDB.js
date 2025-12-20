@@ -70,8 +70,8 @@ class NihongoDB {
                 elem[colNames[i]] = value;
             }
 
-            // There is a special row with '@' and a fake date to work around a google sheet API bug.
-            if (elem["Kanji"] != '@') {
+            // There is a special row with '!' and a fake date to work around a google sheet API bug.
+            if (elem["Kanji"] != '!') {
                 db.push(elem);
             }
         }
