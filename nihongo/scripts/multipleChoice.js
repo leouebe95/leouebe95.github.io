@@ -77,7 +77,7 @@ class MultipleChoice {
         var inputs = this._htmlRoot.querySelectorAll('input[type="checkbox"]');
         for (let input of inputs) {
             if (input.checked) {
-                res.add(inputs[i].getAttribute('name'));
+                res.add(input.getAttribute('name'));
             }
         }
         return res;
