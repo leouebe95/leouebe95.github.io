@@ -18,8 +18,8 @@ class MultipleChoice {
      */
     changeAll(select) {
         let inputs = this._htmlRoot.querySelectorAll('input[type="checkbox"]');
-	    for (let i=0 ; i<inputs.length ; i++) {
-            inputs[i].checked = select;
+        for (let input of inputs) {
+            input.checked = select;
         }
 
         this._htmlRoot.dispatchEvent(new Event('change'));
@@ -61,8 +61,8 @@ class MultipleChoice {
 
         // listen to change event and re-fire at the container level
         let inputs = this._htmlRoot.querySelectorAll('input[type="checkbox"]');
-	    for (let i=0 ; i<inputs.length ; i++) {
-            inputs[i].addEventListener('change', () => {
+        for (let input of inputs) {
+            input.addEventListener('change', () => {
                 that._htmlRoot.dispatchEvent(new Event('change'));
             });
         }
@@ -75,8 +75,8 @@ class MultipleChoice {
     get value() {
         var res = new Set();
         var inputs = this._htmlRoot.querySelectorAll('input[type="checkbox"]');
-	    for (let i=0 ; i<inputs.length ; i++) {
-            if (inputs[i].checked) {
+        for (let input of inputs) {
+            if (input.checked) {
                 res.add(inputs[i].getAttribute('name'));
             }
         }
@@ -89,12 +89,12 @@ class MultipleChoice {
     */
     select(values) {
         var inputs = this._htmlRoot.querySelectorAll('input[type="checkbox"]');
-	    for (let i=0 ; i<inputs.length ; i++) {
-            let name = inputs[i].getAttribute('name');
+        for (let input of inputs) {
+            let name = input.getAttribute('name');
             if (values.has(name)) {
-                inputs[i].checked = true;
+                input.checked = true;
             } else {
-                inputs[i].checked = false;
+                input.checked = false;
             }
         }
     }
@@ -108,5 +108,4 @@ class MultipleChoice {
         root._myClass = new MultipleChoice(root);
         root._myClass.reset(title, choices)
     }
-
 }

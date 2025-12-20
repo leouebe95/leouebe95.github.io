@@ -5,7 +5,7 @@
 
 (function() {
     const filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
-    var db = null;
+    var __db = null;
 
     /**
      */
@@ -19,9 +19,9 @@
     function createPrintSheet() {
         var wordTableRoot = document.getElementById('words');
 
-        var wordMgr = new WordTable(db.numLeft, 2);
-        while (db.numLeft > 0) {
-            var item = db.pickOne(true, 0);
+        var wordMgr = new WordTable(__db.numLeft, 2);
+        while (__db.numLeft > 0) {
+            var item = __db.pickOne(true, 0);
             wordMgr.addLine(item);
         }
 
@@ -41,8 +41,8 @@
             filter[f] = values;
         }
 
-        db.filterBy(filter);
-        db.sortBy('Kana');
+        __db.filterBy(filter);
+        __db.sortBy('Kana');
         createPrintSheet();
     }
 
@@ -53,13 +53,13 @@
         // Start the app with only the 'practice' vocabulary
         var defaultFilter = {'Proficiency': new Set(['3-practice'])}
 
-        db.filterBy(defaultFilter);
-        db.sortBy('Kana');
+        __db.filterBy(defaultFilter);
+        __db.sortBy('Kana');
 
         // All filters
         for (let f of filters) {
             let choiceDOM = document.getElementById(f);
-            let values = Array.from(db.labels[f]).sort();
+            let values = Array.from(__db.labels[f]).sort();
             let choiceData = values.map(x => ({'UIname': x}));
             MultipleChoice.init(choiceDOM, f, choiceData);
             choiceDOM.addEventListener('change', applyFilter);
@@ -77,7 +77,7 @@
         Main entry point for the page.
     */
     function main() {
-        db = new NihongoDB(start);
+        __db = new NihongoDB(start);
     }
 
     document.addEventListener('DOMContentLoaded', main);

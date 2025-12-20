@@ -4,10 +4,14 @@
 */
 
 (function() {
-    const filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
-    const nextContent = '<img src="img/next.png" title="Next Card"/>Next</button>'
-    const revealContent = '<img src="img/show.png" title="Show Answers"/>Reveal</button>'
-    var db = null;
+    const __filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
+    const __cards = ['Kanji', 'Kana', 'Romaji', 'English'];
+    const __cardTitles = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ',
+                          'Romaji': 'Romaji', 'English': 'English'};
+
+    const __nextContent = '<img src="img/next.png" title="Next Card"/>Next</button>'
+    const __revealContent = '<img src="img/show.png" title="Show Answers"/>Reveal</button>'
+    var __db = null;
 
     /**
      */
@@ -19,12 +23,10 @@
        Set values to a new card
      */
     function setCard(item) {
-        document.getElementById('Kanji')._myClass.setText(item['Kanji'], '漢字');
-        document.getElementById('Kana')._myClass.setText(item['Kana'], 'ひらがな / カタカナ');
-        document.getElementById('Romaji')._myClass.setText(item['Romaji'], 'Romaji');
-        document.getElementById('English')._myClass.setText(item['English'], 'English');
-
-        document.getElementById('numWords').innerText = db.numLeft;
+        for (let card of __cards) {
+            document.getElementById(card)._myClass.setText(item[card], __cardTitles[card]);
+        }
+        document.getElementById('numWords').innerText = __db.numLeft;
 
         var kanji = item['Kanji'];
         var link1 = `https://www.nihongomaster.com/japanese/dictionary?query=${kanji}`;
@@ -42,11 +44,29 @@
         var visiElem = document.getElementById('VisibleChoice');
         var checked = visiElem._myClass.value;
 
-        for (let card of ['Kana', 'Romaji', 'Kanji', 'English']) {
+        for (let card of __cards) {
             var isChecked = checked.has(card);
             let cardElem = document.getElementById(card);
             cardElem._myClass.visible = isChecked;
         }
+
+        var nextButton = document.getElementById('next');
+        resetNextButton(nextButton);
+    }
+
+    /**
+       True if all the cards are visible
+     */
+    function isAllVisible() {
+        var visiElem = document.getElementById('VisibleChoice');
+        var checked = visiElem._myClass.value;
+
+        for (let card of __cards) {
+            if (!checked.has(card)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -54,7 +74,7 @@
      */
     function makeAllVisible() {
         //
-        for (let card of ['Kana', 'Romaji', 'Kanji', 'English']) {
+        for (let card of __cards) {
             let cardElem = document.getElementById(card);
             cardElem._myClass.visible = true;
         }
@@ -66,23 +86,27 @@
     function applyFilter() {
         var filter = {}
 
-        for (let f of filters) {
+        for (let f of __filters) {
             elemDOM = document.getElementById(f);
             values = elemDOM._myClass.value;
             filter[f] = values;
         }
 
-        db.filterBy(filter, true);
+        __db.filterBy(filter, true);
         var nextButton = document.getElementById('next');
         resetNextButton(nextButton);
-        setCard(db.pickOne(true), db);
+        setCard(__db.pickOne(true), __db);
     }
 
     /**
        Reset the "next" button to its default state
      */
     function resetNextButton(nextButton) {
-        nextButton.innerHTML = revealContent;
+        if (isAllVisible()) {
+            nextButton.innerHTML = __nextContent;
+        } else {
+            nextButton.innerHTML = __revealContent;
+        }
         nextButton._isReveal = true;
     }
 
@@ -92,9 +116,10 @@
      */
     function nextAction(event) {
 
-        // First click is a "reveal; show all answers
-        if (this._isReveal) {
-            this.innerHTML = nextContent;
+        // First click is a "reveal; show all answers.
+        // except if all aswers are already shown
+        if ((!isAllVisible()) && this._isReveal) {
+            this.innerHTML = __nextContent;
             this._isReveal = false;
             makeAllVisible();
         } else {
@@ -102,15 +127,19 @@
             resetNextButton(this);
             applyVisibility();
 
-            // Wait 1s, for the card animation to finish
+            // Wait 0.8s, for the card animation to finish, unless all cards are visible
+            var timeOutMillisec = 800;
+            if (isAllVisible()) {
+                timeOutMillisec = 0;
+            }
             setTimeout(() => {
-                if (db.numLeft > 0) {
-                    setCard(db.pickOne(true), db);
+                if (__db.numLeft > 0) {
+                    setCard(__db.pickOne(true), __db);
                 } else {
                     applyFilter();
                     setMessage('All words practiced, starting over');
                 }
-            }, 800);
+            }, timeOutMillisec);
         }
     }
 
@@ -122,7 +151,7 @@
         var defaultFilter = {'Proficiency': new Set(['3-practice'])}
 
         // Start the app with only the 'practice' vocabulary
-        db.filterBy(defaultFilter, true);
+        __db.filterBy(defaultFilter, true);
 
         // Build / style the cards
         var cards = document.getElementsByClassName('flip-card');
@@ -146,9 +175,9 @@
         visiChoice.addEventListener('change', applyVisibility);
 
         // All filters
-        for (let f of filters) {
+        for (let f of __filters) {
             let choiceDOM = document.getElementById(f);
-            let values = Array.from(db.labels[f]).sort();
+            let values = Array.from(__db.labels[f]).sort();
             let choiceData = values.map(x => ({'UIname': x}));
             MultipleChoice.init(choiceDOM, f, choiceData);
             choiceDOM.addEventListener('change', applyFilter);
@@ -161,8 +190,9 @@
 
         // Bind the Next button
         var nextButton = document.getElementById('next');
-        resetNextButton(nextButton)
-        nextButton.addEventListener('click', nextAction)
+        resetNextButton(nextButton);
+        nextButton.addEventListener('click', nextAction);
+        nextButton.focus();
 
         // Bind the Shuffle button
         var nextButton = document.getElementById('shuffle');
@@ -173,16 +203,15 @@
 
         applyVisibility();
 
-        setCard(db.pickOne(true), db);
+        setCard(__db.pickOne(true), __db);
     }
 
     /**
         Main entry point for the page.
     */
     function main() {
-        db = new NihongoDB(start);
+        __db = new NihongoDB(start);
     }
 
     document.addEventListener('DOMContentLoaded', main);
 })();
-
