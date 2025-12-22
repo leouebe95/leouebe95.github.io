@@ -5,6 +5,10 @@
 
 (function() {
     const filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
+    const __fields = ['Kanji', 'Kana', 'Romaji', 'English'];
+    const __fieldLabels = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ',
+                          'Romaji': 'Romaji', 'English': 'English'};
+
     var __db = null;
 
     /**
@@ -18,6 +22,8 @@
      */
     function createPrintSheet() {
         var wordTableRoot = document.getElementById('words');
+        var wordCount = document.getElementById('wordCount');
+        wordCount.innerText = `Showing ${__db.numLeft} words.`;
 
         var wordMgr = new WordTable(__db.numLeft, 2);
         while (__db.numLeft > 0) {
@@ -32,7 +38,7 @@
     /**
        Bind the callbacks to all UI elements
      */
-    function applyFilter() {
+    function applyFilter(event) {
         var filter = {}
 
         for (let f of filters) {
@@ -43,7 +49,24 @@
 
         __db.filterBy(filter);
         __db.sortBy('Kana');
-        createPrintSheet();
+        if (event) { // If directly called from the UI
+            createPrintSheet();
+        }
+    }
+
+    /**
+        Called when the sort radio button changed
+    */
+    function sortChanged() {
+        applyFilter(); // Reset the filtered data
+        for (let field of __fields) {
+            var input = document.getElementById(`${field}Input`);
+            if (input.checked) {
+                __db.sortBy(field);
+            }
+        }
+
+        createPrintSheet(); // recreate the sheet
     }
 
     /**
@@ -52,9 +75,6 @@
     function start() {
         // Start the app with only the 'practice' vocabulary
         var defaultFilter = {'Proficiency': new Set(['3-practice'])}
-
-        __db.filterBy(defaultFilter);
-        __db.sortBy('Kana');
 
         // All filters
         for (let f of filters) {
@@ -70,7 +90,22 @@
             }
         }
 
-        createPrintSheet();
+        var sortDOM = document.getElementById('sortBy');
+        for (let field of __fields) {
+            var div = document.createElement("div");
+            var isChecked = '';
+            if (field == 'Kana') {isChecked = ' checked';}
+            let content = `
+            <input type="radio" id="${field}Input" name="sortBy" value="${field}"${isChecked} />
+		        <label for="${field}">${__fieldLabels[field]}</label>`
+            div.innerHTML = content;
+            sortDOM.appendChild(div);
+
+            var input = document.getElementById(`${field}Input`);
+            input.addEventListener("input", sortChanged);
+        }
+
+        sortChanged();
     }
 
     /**
