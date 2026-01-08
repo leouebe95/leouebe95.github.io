@@ -68,6 +68,21 @@
     }
 
     /**
+        Called when the font size check box changes
+    */
+    function setFontSize() {
+
+        var largeDOM = document.getElementById('largeFont');
+        if (largeDOM.checked) {
+            document.documentElement.style.setProperty("--sheet-fontsize", "18px");
+            document.documentElement.style.setProperty("--sheet-large-fontsize", "28px");
+        } else {
+            document.documentElement.style.setProperty("--sheet-fontsize", "12px");
+            document.documentElement.style.setProperty("--sheet-large-fontsize", "18px");
+        }
+    }
+
+    /**
         Main entry point for the page.
     */
     function start() {
@@ -104,6 +119,9 @@
             var input = document.getElementById(`${field}Input`);
             input.addEventListener("input", applyFilter);
         }
+
+        var largeDOM = document.getElementById('largeFont');
+        largeDOM.addEventListener("input", setFontSize);
 
         applyFilter();
     }

@@ -47,7 +47,7 @@ class MultipleChoice {
             var UIname  = choice["UIname"];
             var keyName = choice["keyName"] ? choice["keyName"] : UIname;
             var checked = choice["checked"] ? ' checked="true"' : '';
-		    let input = `<div><input type="checkbox" name="${keyName}"${checked}/>${UIname}</div>`;
+		    let input = `<div><input type="checkbox" name="${keyName}"${checked} />${UIname}</div>`;
             content = content + input
         }
 
