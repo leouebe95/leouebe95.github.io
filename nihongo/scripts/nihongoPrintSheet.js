@@ -5,9 +5,8 @@
 
 (function() {
     const filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
-    const __fields = ['Kanji', 'Kana', 'Romaji', 'English'];
-    const __fieldLabels = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ',
-                          'Romaji': 'Romaji', 'English': 'English'};
+    const __fields = ['Random', 'Kanji', 'Kana', 'Romaji', 'English'];
+    const __fieldLabels = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ'};
 
     var __db = null;
 
@@ -38,7 +37,7 @@
     /**
        Bind the callbacks to all UI elements
      */
-    function applyFilter(event) {
+    function applyFilter() {
         var filter = {}
 
         for (let f of filters) {
@@ -48,25 +47,24 @@
         }
 
         __db.filterBy(filter);
-        __db.sortBy('Kana');
-        if (event) { // If directly called from the UI
-            createPrintSheet();
-        }
+        sortChanged();
+        createPrintSheet();
     }
 
     /**
         Called when the sort radio button changed
     */
     function sortChanged() {
-        applyFilter(); // Reset the filtered data
         for (let field of __fields) {
             var input = document.getElementById(`${field}Input`);
             if (input.checked) {
-                __db.sortBy(field);
+                if (field == 'Random') {
+                    __db.randomize(field);
+                } else {
+                    __db.sortBy(field);
+                }
             }
         }
-
-        createPrintSheet(); // recreate the sheet
     }
 
     /**
@@ -74,7 +72,7 @@
     */
     function start() {
         // Start the app with only the 'practice' vocabulary
-        var defaultFilter = {'Proficiency': new Set(['3-practice'])}
+        var defaultFilter = {'Proficiency': new Set(['5-new'])}
 
         // All filters
         for (let f of filters) {
@@ -95,17 +93,19 @@
             var div = document.createElement("div");
             var isChecked = '';
             if (field == 'Kana') {isChecked = ' checked';}
+            var labelText = field;
+            if (field in __fieldLabels) {labelText = __fieldLabels[field];}
             let content = `
             <input type="radio" id="${field}Input" name="sortBy" value="${field}"${isChecked} />
-		        <label for="${field}">${__fieldLabels[field]}</label>`
+		        <label for="${field}">${labelText}</label>`
             div.innerHTML = content;
             sortDOM.appendChild(div);
 
             var input = document.getElementById(`${field}Input`);
-            input.addEventListener("input", sortChanged);
+            input.addEventListener("input", applyFilter);
         }
 
-        sortChanged();
+        applyFilter();
     }
 
     /**

@@ -40,7 +40,7 @@ class MultipleChoice {
         let that = this;
         var iconAll = '<img src="img/check.png" title="Select All"/>';
         var iconNone = '<img src="img/uncheck.png" title="Select None"/>';
-        var content = `<div class="title">${title}</div><hr/><button id="all">${iconAll}</button><button id="none">${iconNone}</button><hr/>`;
+        var content = `<legend>${title}</legend><button id="all">${iconAll}</button><button id="none">${iconNone}</button><hr/>`;
 
         // add select all / none
         for (let choice of choices) {
@@ -51,7 +51,8 @@ class MultipleChoice {
             content = content + input
         }
 
-        this._htmlRoot.innerHTML = content;
+        var inner = `<fieldset class="choice">${content}</fieldset>`
+        this._htmlRoot.innerHTML = inner;
 
         // Listen to the button press events
         let allButton = this._htmlRoot.querySelector('#all');

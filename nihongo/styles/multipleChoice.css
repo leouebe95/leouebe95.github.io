@@ -1,17 +1,25 @@
 /* The Multiple choice container */
 
-div.multiple-choice {
+fieldset.choice {
   border: 3px solid #E0E0E0;
   border-radius: 10px;
   margin: 5px;
   padding: 10px;
-  /* Minimal width to make sure both buttons stay on the same line */
-  min-width: 120px;
+  min-height: calc(100% - 35px);
 }
 
-div.multiple-choice .title {
+fieldset {
+
+}
+
+fieldset.choice legend {
   font-size: 18px;
-  text-align: center;
+  padding-inline: 8px;
+}
+
+div.multiple-choice {
+  /* Minimal width to make sure both buttons stay on the same line */
+  min-width: 120px;
 }
 
 div.multiple-choice img {

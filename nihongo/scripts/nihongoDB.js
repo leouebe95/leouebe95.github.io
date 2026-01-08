@@ -71,7 +71,7 @@ class NihongoDB {
             }
 
             // There is a special row with '!' and a fake date to work around a google sheet API bug.
-            if (elem["Kanji"] != '!') {
+            if (elem["Romaji"] != '!') {
                 db.push(elem);
             }
         }
@@ -201,6 +201,21 @@ class NihongoDB {
         this._filteredData.sort( (a, b) => {
             return a[key].localeCompare(b[key]);
         })
+    }
+
+    // ------------------------------------------------------------------------
+    /*
+       Randomize the database.
+
+       Useful before calling pickOne(true, 0)
+    */
+    randomize() {
+        var shuffled = [];
+        while (this.numLeft > 0) {
+            shuffled.push(this.pickOne(true));
+        }
+        
+        this._filteredData = shuffled;
     }
 
     // ------------------------------------------------------------------------
