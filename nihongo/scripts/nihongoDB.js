@@ -70,7 +70,8 @@ class NihongoDB {
                 elem[colNames[i]] = value;
             }
 
-            // There is a special row with '!' and a fake date to work around a google sheet API bug.
+            // There is a special row with '!' and a fake date to work
+            // around a google sheet API bug.
             if (elem["Romaji"] != '!') {
                 db.push(elem);
             }
@@ -82,7 +83,7 @@ class NihongoDB {
     }
 
     // ------------------------------------------------------------------------
-    /**
+    /*!
        Read the entire vocabulary database from a spreadsheet
     */
     getDB(url, cb) {

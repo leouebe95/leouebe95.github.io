@@ -1,10 +1,10 @@
 // -*- coding: utf-8 -*-
 
-/**
+/*!
   Card that can be flipped
  */
 class Card {
-    /**
+    /*!
        Constructor
        @param root DOM root of the control
        @param getDefaultVisibility Function callback returning true (is the card
@@ -51,7 +51,7 @@ class Card {
         this.visible = this._getDefaultVisibility();
     }
 
-    /**
+    /*!
        Create the DOM under the card element and attach the JS object
        to it
        @param root the DOM root under which to create the control

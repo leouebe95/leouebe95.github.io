@@ -1,7 +1,7 @@
 // -*- coding: utf-8 -*-
 
 // ============================================================================
-/**
+/*!
  * Converts Hiragana and Katakana to Romaji.
  * Use as a custom function: =ROMAJI(A1)
  * or via the custom menu "Romaji Converter".
@@ -90,7 +90,7 @@ class Romaji {
         'oo': 'ō', 'ou': 'ō'
     };
 
-    /**
+    /*!
      * Replace long vowels with macron accents
      */
     static normalizeRomaji(text) {

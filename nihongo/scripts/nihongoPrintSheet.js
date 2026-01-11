@@ -1,5 +1,5 @@
 // -*- coding: utf-8 -*-
-/**
+/*!
    @fileOverview Main file for japanese vocabulary flashcards
 */
 
@@ -10,13 +10,13 @@
 
     var __db = null;
 
-    /**
+    /*!
      */
     function setMessage(msg) {
         document.getElementById('messageBox').innerText = msg;
     }
 
-    /**
+    /*!
        Generate all the data to print
      */
     function createPrintSheet() {
@@ -34,7 +34,7 @@
         wordMgr.addTable(wordTableRoot);
     }
 
-    /**
+    /*!
        Bind the callbacks to all UI elements
      */
     function applyFilter() {
@@ -51,7 +51,7 @@
         createPrintSheet();
     }
 
-    /**
+    /*!
         Called when the sort radio button changed
     */
     function sortChanged() {
@@ -67,7 +67,7 @@
         }
     }
 
-    /**
+    /*!
         Called when the font size check box changes
     */
     function setFontSize() {
@@ -82,7 +82,7 @@
         }
     }
 
-    /**
+    /*!
         Main entry point for the page.
     */
     function start() {
@@ -126,7 +126,7 @@
         applyFilter();
     }
 
-    /**
+    /*!
         Main entry point for the page.
     */
     function main() {

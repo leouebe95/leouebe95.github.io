@@ -1,10 +1,10 @@
 // -*- coding: utf-8 -*-
 
-/**
+/*!
   Input primitive to select mutiple choices out of a list
  */
 class MultipleChoice {
-    /**
+    /*!
        Constructor
        @param root DOM root of the control
      */
@@ -12,7 +12,7 @@ class MultipleChoice {
         this._htmlRoot = root;
     }
 
-    /**
+    /*!
        Change all toggles to true or false
        @param select when true selects everything, else deselect everything
      */
@@ -25,7 +25,7 @@ class MultipleChoice {
         this._htmlRoot.dispatchEvent(new Event('change'));
     }
 
-    /**
+    /*!
        Reset the list of UI input for the choices
        @param title the main title for the whole multipel choice input
        @param definition of the choices to expose in the UI. Array of
@@ -69,7 +69,7 @@ class MultipleChoice {
         }
     }
 
-    /**
+    /*!
        return the multiple choice values in form of a Set of all the
        checked values
     */
@@ -84,7 +84,7 @@ class MultipleChoice {
         return res;
     }
 
-    /**
+    /*!
        Select all the valuse give in the set
        checked values
     */
@@ -100,7 +100,7 @@ class MultipleChoice {
         }
     }
 
-    /**
+    /*!
        Create the DOM under the card element and attach the JS object
        to it
        @param root the DOM root under which to create the control

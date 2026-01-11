@@ -1,7 +1,7 @@
 // -*- coding: utf-8 -*-
 
 // ============================================================================
-/**
+/*!
    Formats a wordlist into a table suitable for printing
 */
 class WordTable {
@@ -35,7 +35,7 @@ class WordTable {
     }
 
     // ------------------------------------------------------------------------
-    /**
+    /*!
        Add all the table content to the given DOM root
     */
     addTable(root) {
@@ -50,7 +50,7 @@ class WordTable {
     }
 
     // ------------------------------------------------------------------------
-    /**
+    /*!
        Add a new item in the current Column, move the to the next
        column when it is full.
     */

@@ -1,5 +1,5 @@
 // -*- coding: utf-8 -*-
-/**
+/*!
    @fileOverview Main file for japanese vocabulary flashcards
 */
 
@@ -13,13 +13,13 @@
     const __revealContent = '<img src="img/show.png" title="Show Answers"/>Reveal</button>'
     var __db = null;
 
-    /**
+    /*!
      */
     function setMessage(msg) {
         document.getElementById('messageBox').innerText = msg;
     }
 
-    /**
+    /*!
        Set values to a new card
      */
     function setCard(item) {
@@ -37,7 +37,7 @@
         setMessage('');
     }
 
-    /**
+    /*!
        Apply the category filter
      */
     function applyVisibility() {
@@ -54,7 +54,7 @@
         resetNextButton(nextButton);
     }
 
-    /**
+    /*!
        True if all the cards are visible
      */
     function isAllVisible() {
@@ -69,7 +69,7 @@
         return true;
     }
 
-    /**
+    /*!
        Reveal all cards
      */
     function makeAllVisible() {
@@ -80,7 +80,7 @@
         }
     }
 
-    /**
+    /*!
        Bind the callbacks to all UI elements
      */
     function applyFilter() {
@@ -98,7 +98,7 @@
         setCard(__db.pickOne(true), __db);
     }
 
-    /**
+    /*!
        Reset the "next" button to its default state
      */
     function resetNextButton(nextButton) {
@@ -110,7 +110,7 @@
         nextButton._isReveal = true;
     }
 
-    /**
+    /*!
        The next button is a two step action. First "reveal" then
        "next card"
      */
@@ -143,7 +143,7 @@
         }
     }
 
-    /**
+    /*!
         Main entry point for the page.
     */
     function start() {
@@ -206,7 +206,7 @@
         setCard(__db.pickOne(true), __db);
     }
 
-    /**
+    /*!
         Main entry point for the page.
     */
     function main() {
