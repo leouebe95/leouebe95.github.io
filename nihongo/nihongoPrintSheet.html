@@ -7,12 +7,14 @@
 
 	<link type="text/css" rel="stylesheet" href="styles/nihongo.css" />
 	<link type="text/css" rel="stylesheet" href="styles/card.css" />
+	<link type="text/css" rel="stylesheet" href="styles/collapsibleDiv.css" />
 	<link type="text/css" rel="stylesheet" href="styles/multipleChoice.css" />
 	<link type="text/css" rel="stylesheet" href="styles/wordTable.css" />
 
 	<script type="text/javascript" src="scripts/nihongoPrintSheet.js"></script>
 	<script type="text/javascript" src="scripts/wordTable.js"></script>
 	<script type="text/javascript" src="scripts/card.js"></script>
+	<script type="text/javascript" src="scripts/collapsibleDiv.js"></script>
 	<script type="text/javascript" src="scripts/multipleChoice.js"></script>
 	<script type="text/javascript" src="scripts/romaji.js"></script>
 	<script type="text/javascript" src="scripts/nihongoDB.js"></script>
@@ -32,27 +34,29 @@
   </head>
   <body>
 	<div id="UI" class="noprint">
+	  <div class="collapsible">
+		<legend>User interface Controls</legend>
 
-	  <div class="horizontal">
-		<div class="multiple-choice" id="Category"></div>
-		<div class="multiple-choice" id="isKana"></div>
-		<div class="multiple-choice" id="Date"></div>
-		<div class="multiple-choice" id="Proficiency"></div>
-		<div class="multiple-choice" id="Source"></div>
+		<div class="horizontal">
+		  <div class="multiple-choice" id="Category"></div>
+		  <div class="multiple-choice" id="isKana"></div>
+		  <div class="multiple-choice" id="Date"></div>
+		  <div class="multiple-choice" id="Proficiency"></div>
+		  <div class="multiple-choice" id="Source"></div>
 
-		<fieldset class="choice" id="sortBy">
-		  <legend>Sort by</legend>
-		</fieldset>
+		  <fieldset class="choice" id="sortBy">
+			<legend>Sort by</legend>
+		  </fieldset>
+		</div>
+		<div>
+		  <input type="checkbox" id="largeFont" />
+		  Large Font
+		</div>
 	  </div>
-
-	  <div>
-		<input type="checkbox" id="largeFont" />
-		Large Font
-	  </div>
-
-	  <hr/>
 
 	</div>
+
+	<div style="margin-bottom: 10px">&nbsp;</div>
 
 	<div id="wordCount" class="small"></div>
 	<div id="words" style="width=100%">

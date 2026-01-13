@@ -130,6 +130,7 @@
         Main entry point for the page.
     */
     function main() {
+        CollapsibleDiv.makeAllCollapsible();
         __db = new NihongoDB(start);
     }
 

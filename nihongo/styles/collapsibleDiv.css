@@ -1,0 +1,34 @@
+/* Interactively collapsible div */
+
+div.collapsed div.content {
+  display: none;
+}
+
+div.collapsible div.title {
+  display: flex;
+  padding-bottom: 1em;
+}
+
+div.collapsible.collapsed img.collapsible {
+  content: url("../img/Collapsible-collapsed.png");
+}
+div.collapsible.collapsed img.collapsible:hover {
+  content: url("../img/Collapsible-collapsed-hover.png");
+}
+div.collapsible img.collapsible {
+  content: url("../img/Collapsible-expanded.png");
+  padding-left: 10px;
+  padding-right: 16px;
+}
+
+div.collapsible img.collapsible:hover {
+  content: url("../img/Collapsible-expanded-hover.png");
+}
+
+div.collapsible legend:hover {
+  color: #4080c0;
+}
+
+div.collapsible legend {
+  font-size: 125%;
+}
