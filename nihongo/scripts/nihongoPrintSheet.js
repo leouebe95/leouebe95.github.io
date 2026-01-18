@@ -35,7 +35,61 @@
     }
 
     /*!
-       Bind the callbacks to all UI elements
+       Generate all the data in python format
+     */
+    function pythonOutput() {
+        var wordTableRoot = document.getElementById('words');
+        var wordCount = document.getElementById('wordCount');
+        wordCount.innerText = `Showing ${__db.numLeft} words.`;
+
+        // Output format is a dictionary, split per Date
+
+        // First load the data in a formatted dictionary
+        var prof = {
+            "0": "Practice",
+            "1": "Practice",
+            "2": "Practice",
+            "3": "Practice",
+            "4": "learn",
+            "5": "learn",
+            "6": "new"
+        };
+
+        var outData = {};
+        while (__db.numLeft > 0) {
+            var item = __db.pickOne(true, 0);
+            var proficiency = prof[item.Proficiency.slice(0,1)]
+            var fileName = `jp_${item.Date}_${proficiency}`
+
+            if (!outData.hasOwnProperty(fileName)) {
+                outData[fileName] = [];
+            }
+
+            outData[fileName].push([item.English, item.Kana]);
+        }
+
+        // Output everything
+        var text = '{\n';
+        var files =  Array.from(Object.keys(outData)).sort();
+        for (var fileName of files) {
+            var value = outData[fileName];
+            text += `  "${fileName}": [\n`;
+            for (const entry of value) {
+                text += `    ("${entry[0]}", "${entry[1]}"),\n`;
+            }
+            text += '  ],\n';
+        }
+        text +=
+'}\n';
+
+        var pre = document.createElement("pre");
+        pre.innerText = text;
+        wordTableRoot.innerText = '';
+        wordTableRoot.appendChild(pre);
+    }
+
+    /*!
+       callback for all UI elements
      */
     function applyFilter() {
         var filter = {}
@@ -48,7 +102,12 @@
 
         __db.filterBy(filter);
         sortChanged();
-        createPrintSheet();
+        var isPython = document.getElementById('pythonOutput');
+        if (isPython.checked) {
+            pythonOutput();
+        } else {
+            createPrintSheet();
+        }
     }
 
     /*!
@@ -74,11 +133,15 @@
 
         var largeDOM = document.getElementById('largeFont');
         if (largeDOM.checked) {
-            document.documentElement.style.setProperty("--sheet-fontsize", "18px");
-            document.documentElement.style.setProperty("--sheet-large-fontsize", "28px");
+            document.documentElement.style.setProperty(
+                "--sheet-fontsize", "18px");
+            document.documentElement.style.setProperty(
+                "--sheet-large-fontsize", "28px");
         } else {
-            document.documentElement.style.setProperty("--sheet-fontsize", "12px");
-            document.documentElement.style.setProperty("--sheet-large-fontsize", "18px");
+            document.documentElement.style.setProperty(
+                "--sheet-fontsize", "12px");
+            document.documentElement.style.setProperty(
+                "--sheet-large-fontsize", "18px");
         }
     }
 
@@ -122,6 +185,9 @@
 
         var largeDOM = document.getElementById('largeFont');
         largeDOM.addEventListener("input", setFontSize);
+
+        var largeDOM = document.getElementById('pythonOutput');
+        largeDOM.addEventListener("input", applyFilter);
 
         applyFilter();
     }

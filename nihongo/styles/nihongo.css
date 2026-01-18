@@ -101,6 +101,9 @@ div.small {
 @media screen {
   .noprint {
 	background: #E0F0FF;
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
   }
 }
 

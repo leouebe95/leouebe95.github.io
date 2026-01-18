@@ -28,9 +28,6 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<link rel="apple-touch-icon" href="img/place.jpg" />
 
-	<!--
-	<link rel="apple-touch-startup-image" href="img/splash.png" />
-	-->
   </head>
   <body>
 	<div id="UI" class="noprint">
@@ -49,11 +46,17 @@
 		  </fieldset>
 		</div>
 		<div>
-		  <input type="checkbox" id="largeFont" />
-		  Large Font
+		  <span>
+			<input type="checkbox" id="largeFont" />
+			Larger Font (not suitable to print)
+		  </span>
+		  <span style="margin-left: 10px">&nbsp;</span>
+		  <span>
+			<input type="checkbox" id="pythonOutput" />
+			Python format
+		  </span>
 		</div>
 	  </div>
-
 	</div>
 
 	<div style="margin-bottom: 10px">&nbsp;</div>

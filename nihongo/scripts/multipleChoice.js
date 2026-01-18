@@ -48,10 +48,10 @@ class MultipleChoice {
             var keyName = choice["keyName"] ? choice["keyName"] : UIname;
             var checked = choice["checked"] ? ' checked="true"' : '';
 		    let input = `<div><input type="checkbox" name="${keyName}"${checked} />${UIname}</div>`;
-            content = content + input
+            content = content + input;
         }
 
-        var inner = `<fieldset class="choice">${content}</fieldset>`
+        var inner = `<fieldset class="choice">${content}</fieldset>`;
         this._htmlRoot.innerHTML = inner;
 
         // Listen to the button press events
@@ -107,6 +107,6 @@ class MultipleChoice {
      */
     static init(root, title, choices) {
         root._myClass = new MultipleChoice(root);
-        root._myClass.reset(title, choices)
+        root._myClass.reset(title, choices);
     }
 }
