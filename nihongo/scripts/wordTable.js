@@ -55,23 +55,31 @@ class WordTable {
        column when it is full.
     */
     addLine(item) {
-
+        console.log(item)
         var newLine = document.createElement("tr");
         var kanji = item['Kanji'];
-        var kanjiElem = '';
+        var kana  = item['Kana'];
+        var ref   = kanji;
 
-        if (kanji == item['Kana']) {
+        if (kanji == kana) {
             kanji = '&nbsp;';
-            kanjiElem = kanji;
+            ref = kana;
+            var link = `https://jisho.org/search/${kana}`;
         } else {
             var link = `https://jisho.org/search/${kanji}`;
-            kanjiElem = `<a target="_new" href="${link}">${kanji}</a>`;
+            kanji = `<a target="_new" href="${link}">${kanji}</a>`;
+        }
+
+        if (item['Category'].startsWith('verb')) {
+            var shortRef = ref.split('・')[0]
+            var link = encodeURI(`https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${shortRef}&Go=Conjugate`);
+            kanji = `<a target="_new" href="${link}">&#x21DB;</a> ` + kanji;
         }
 
         newLine.innerHTML = `
-		  <td class="Kanji">${kanjiElem}</td>
+		  <td class="Kanji">${kanji}</td>
 		  <td class="English">${item['English']}</td>
-		  <td class="Kana">${item['Kana']}</td>
+		  <td class="Kana">${kana}</td>
 		  <td class="Romaji">${item['Romaji']}</td>
 `;
 

@@ -29,10 +29,23 @@
         document.getElementById('numWords').innerText = __db.numLeft;
 
         var kanji = item['Kanji'];
-        var link1 = `https://www.nihongomaster.com/japanese/dictionary?query=${kanji}`;
-        var link2 = `https://jisho.org/search/${kanji}`;
-        document.getElementById('nihongomaster').setAttribute('href', encodeURI(link1));
-        document.getElementById('jisho').setAttribute('href', encodeURI(link2));
+        var link = encodeURI(`https://www.nihongomaster.com/japanese/dictionary?query=${kanji}`);
+        document.getElementById('nihongomaster').setAttribute('href', link);
+
+        link = encodeURI(`https://jisho.org/search/${kanji}`);
+        document.getElementById('jisho').setAttribute('href', link);
+
+        var conj = document.getElementById('conjugate')
+        var conjSpan = document.getElementById('conjugate-span')
+        if (item['Category'].startsWith('verb')) {
+            var shortRef = kanji.split('・')[0]
+            link = encodeURI(`https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${shortRef}&Go=Conjugate`);
+            conj.setAttribute('href', link);
+            conjSpan.style.display = "flex";
+        } else {
+            conj.setAttribute('href', '');
+            conjSpan.style.display = "none";
+        }
 
         setMessage('');
     }
