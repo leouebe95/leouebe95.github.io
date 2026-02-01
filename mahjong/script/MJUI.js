@@ -349,7 +349,7 @@ window.MJUI = (function() {
         updateHandValue(currentHand);
     }
 
-    function langHasChanged(event) {
+    function langHasChanged(/* event */) {
         console.error('NOT IMPLEMENTED');
     }
 

@@ -21,7 +21,7 @@ String.prototype.format = function() {
    Define internationalization methods.
  */
 class I18N {
-    static loadAllTransationTables(base, lang, country) {
+    static loadAllTransationTables(/* base, lang, country*/) {
         // FIXME
     }
 }

@@ -209,7 +209,7 @@
         for (i=0 ; i<inputs.length ; i++) {
             if (values.hasOwnProperty(inputs[i])) {
                 val = parseInt(values[inputs[i]]);
-                var data = document.getElementById(inputs[i]).checked = val;
+                document.getElementById(inputs[i]).checked = val;
             }
         }
 

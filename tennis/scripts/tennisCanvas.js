@@ -3,7 +3,7 @@
 /*!
   Manage a tennis canvas
  */
-class tennisCanvas {
+class tennisCanvas { // eslint-disable-line no-unused-vars
     static __prop = {
         color_out:  '#3593db',
         color_in:   '#24bd5e',
