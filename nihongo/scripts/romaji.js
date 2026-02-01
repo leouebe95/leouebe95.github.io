@@ -7,7 +7,7 @@
  * or via the custom menu "Romaji Converter".
  */
 
-class Romaji {
+class Romaji { // eslint-disable-line no-unused-vars
 
     // Mapping for compound sounds (Yoon) - Must be checked first
     static compounds = {

@@ -4,7 +4,7 @@
 /*!
   Setup div withe collapsible class as interactively collapsible
  */
-class CollapsibleDiv {
+class CollapsibleDiv { // eslint-disable-line no-unused-vars
     /*!
        Constructor
        @param root DOM root of the control

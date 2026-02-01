@@ -1,9 +1,13 @@
 // -*- coding: utf-8 -*-
 
+
+// Tell eslint about classes defined elsewhere
+/* global Romaji */
+
 /* ============================================================================
    Database holding the vocabulary list
 */
-class NihongoDB {
+class NihongoDB { // eslint-disable-line no-unused-vars
     static filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
 
     static defaultEntry = {
@@ -43,8 +47,8 @@ class NihongoDB {
     /* ------------------------------------------------------------------------
        Extract the DB from the payload and store it in the current object
     */
-    storeDB(payload) {
-        var payload = payload.split("setResponse(")[1].slice(0,-2);
+    storeDB(payloadData) {
+        var payload = payloadData.split("setResponse(")[1].slice(0,-2);
         var obj = JSON.parse(payload);
 
         /* Extract the names from the column definition

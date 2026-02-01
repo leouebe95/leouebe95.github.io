@@ -3,7 +3,7 @@
 /*!
   Input primitive to select mutiple choices out of a list
  */
-class MultipleChoice {
+class MultipleChoice { // eslint-disable-line no-unused-vars
     /*!
        Constructor
        @param root DOM root of the control

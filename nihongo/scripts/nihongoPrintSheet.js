@@ -3,18 +3,15 @@
    @fileOverview Main file for japanese vocabulary flashcards
 */
 
+// Tell eslint about classes defined elsewhere
+/* global MultipleChoice NihongoDB WordTable CollapsibleDiv */
+
 (function() {
     const filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
     const __fields = ['Random', 'Kanji', 'Kana', 'Romaji', 'English'];
     const __fieldLabels = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ'};
 
     var __db = null;
-
-    /*!
-     */
-    function setMessage(msg) {
-        document.getElementById('messageBox').innerText = msg;
-    }
 
     /*!
        Generate all the data to print
@@ -59,9 +56,9 @@
         while (__db.numLeft > 0) {
             var item = __db.pickOne(true, 0);
             var proficiency = prof[item.Proficiency.slice(0,1)]
-            var fileName = `jp_${item.Date}_${proficiency}`
+            let fileName = `jp_${item.Date}_${proficiency}`
 
-            if (!outData.hasOwnProperty(fileName)) {
+            if (!Object.hasOwn(outData, fileName)) {
                 outData[fileName] = [];
             }
 
@@ -71,7 +68,7 @@
         // Output everything
         var text = '{\n';
         var files =  Array.from(Object.keys(outData)).sort();
-        for (var fileName of files) {
+        for (let fileName of files) {
             var value = outData[fileName];
             text += `  "${fileName}": [\n`;
             for (const entry of value) {
@@ -95,8 +92,8 @@
         var filter = {}
 
         for (let f of filters) {
-            elemDOM = document.getElementById(f);
-            values = elemDOM._myClass.value;
+            var elemDOM = document.getElementById(f);
+            var values = elemDOM._myClass.value;
             filter[f] = values;
         }
 
@@ -186,8 +183,8 @@
         var largeDOM = document.getElementById('largeFont');
         largeDOM.addEventListener("input", setFontSize);
 
-        var largeDOM = document.getElementById('pythonOutput');
-        largeDOM.addEventListener("input", applyFilter);
+        var pythonDOM = document.getElementById('pythonOutput');
+        pythonDOM.addEventListener("input", applyFilter);
 
         applyFilter();
     }

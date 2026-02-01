@@ -3,6 +3,9 @@
    @fileOverview Main file for japanese vocabulary flashcards
 */
 
+// Tell eslint about classes defined elsewhere
+/* global Card MultipleChoice NihongoDB */
+
 (function() {
     const __filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
     const __cards = ['Kanji', 'Kana', 'Romaji', 'English'];
@@ -100,8 +103,8 @@
         var filter = {}
 
         for (let f of __filters) {
-            elemDOM = document.getElementById(f);
-            values = elemDOM._myClass.value;
+            var elemDOM = document.getElementById(f);
+            var values = elemDOM._myClass.value;
             filter[f] = values;
         }
 
@@ -127,7 +130,7 @@
        The next button is a two step action. First "reveal" then
        "next card"
      */
-    function nextAction(event) {
+    function nextAction(/* event */) {
 
         // First click is a "reveal; show all answers.
         // except if all aswers are already shown
@@ -208,8 +211,8 @@
         nextButton.focus();
 
         // Bind the Shuffle button
-        var nextButton = document.getElementById('shuffle');
-        nextButton.addEventListener('click', () => {
+        var shuffleButton = document.getElementById('shuffle');
+        shuffleButton.addEventListener('click', () => {
             applyFilter();
             setMessage('Starting over again');
         });

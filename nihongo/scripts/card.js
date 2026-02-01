@@ -3,7 +3,7 @@
 /*!
   Card that can be flipped
  */
-class Card {
+class Card {// eslint-disable-line no-unused-vars
     /*!
        Constructor
        @param root DOM root of the control

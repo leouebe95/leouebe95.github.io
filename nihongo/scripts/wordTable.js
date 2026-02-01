@@ -4,7 +4,7 @@
 /*!
    Formats a wordlist into a table suitable for printing
 */
-class WordTable {
+class WordTable { // eslint-disable-line no-unused-vars
 
     // ------------------------------------------------------------------------
     constructor(wordLen, nbCol=2) {
@@ -60,19 +60,20 @@ class WordTable {
         var kanji = item['Kanji'];
         var kana  = item['Kana'];
         var ref   = kanji;
+        var link = null;
 
         if (kanji == kana) {
             kanji = '&nbsp;';
             ref = kana;
-            var link = `https://jisho.org/search/${kana}`;
+            link = `https://jisho.org/search/${kana}`;
         } else {
-            var link = `https://jisho.org/search/${kanji}`;
+            link = `https://jisho.org/search/${kanji}`;
             kanji = `<a target="_new" href="${link}">${kanji}</a>`;
         }
 
         if (item['Category'].startsWith('verb')) {
             var shortRef = ref.split('・')[0]
-            var link = encodeURI(`https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${shortRef}&Go=Conjugate`);
+            link = encodeURI(`https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${shortRef}&Go=Conjugate`);
             kanji = `<a target="_new" href="${link}">&#x21DB;</a> ` + kanji;
         }
 
