@@ -72,9 +72,11 @@ class WordTable { // eslint-disable-line no-unused-vars
         }
 
         if (item['Category'].startsWith('verb')) {
+            // In the Web page, display a link to the verb conjugation page.
+            // mark it as no-print.
             var shortRef = ref.split('・')[0]
             link = encodeURI(`https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${shortRef}&Go=Conjugate`);
-            kanji = `<a target="_new" href="${link}">&#x21DB;</a> ` + kanji;
+            kanji = `<a class="noprint" target="_new" href="${link}">&#x24CB;</a> ` + kanji;
         }
 
         newLine.innerHTML = `
