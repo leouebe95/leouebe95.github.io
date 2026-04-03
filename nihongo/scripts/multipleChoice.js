@@ -85,7 +85,7 @@ class MultipleChoice { // eslint-disable-line no-unused-vars
     }
 
     /*!
-       Select all the valuse give in the set
+       Select all the values given in the set
        checked values
     */
     select(values) {
