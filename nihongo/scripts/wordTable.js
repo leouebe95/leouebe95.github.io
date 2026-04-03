@@ -85,15 +85,14 @@ class WordTable { // eslint-disable-line no-unused-vars
             link = encodeURI(prefix.url.replace('${shortRef}', shortRef));
             var icon = prefix.icon;
 
-            kanji = `<a class="noprint" target="_new" href="${link}">${icon}</a> ` + kanji;
+            kanji = kanji + ` <a class="noprint" target="_new" href="${link}">${icon}</a>`;
         }
 
         newLine.innerHTML = `
 		  <td class="Kanji">${kanji}</td>
 		  <td class="English">${item['English']}</td>
 		  <td class="Kana">${kana}</td>
-		  <td class="Romaji">${item['Romaji']}</td>
-`;
+		  <td class="Romaji">${item['Romaji']}</td>`;
 
         this._columns[this._colIndx].appendChild(newLine);
         this._rowIndx++;
