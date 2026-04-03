@@ -113,3 +113,12 @@ div.small {
     padding-bottom: 0px;
   }
 }
+
+.message {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background-color: yellow;
+  padding: 5px;
+  border: 1px solid black;
+}
