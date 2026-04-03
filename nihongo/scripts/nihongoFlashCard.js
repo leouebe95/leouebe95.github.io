@@ -8,6 +8,7 @@
 
 (function() {
     const __filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
+    const __UIchoices = ['Visible'].concat(__filters);
     const __cards = ['Kanji', 'Kana', 'Romaji', 'English'];
     const __cardTitles = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ',
                           'Romaji': 'Romaji', 'English': 'English'};
@@ -20,6 +21,61 @@
      */
     function setMessage(msg) {
         document.getElementById('messageBox').innerText = msg;
+    }
+
+    /*!
+       Get current UI configuration and return it in an object
+     */
+    function getUIState() {
+        let state = {};
+        for (let f of __UIchoices) {
+            let DOM = document.getElementById(f);
+            if (DOM && DOM._myClass) {
+                state[f] = Array.from(DOM._myClass.value);
+            }
+        }
+        return state;
+    }
+
+    /*!
+       Set the UI configuration from values saved in an object
+     */
+    function setUIState(val) {
+        for (let f of __UIchoices) {
+            try {
+                var uiState = new Set(val[f]);
+                let DOM = document.getElementById(f);
+                if (DOM && DOM._myClass) {
+                    DOM._myClass.select(uiState);
+                }
+            }
+            catch(e) {
+                // If the UI state was not saved, just ignore
+            }
+        }
+    }
+
+    /*!
+       Save current UI configuration to localStorage
+     */
+    function saveState() {
+        localStorage.setItem('nihongoFlashCardState',
+                             JSON.stringify(getUIState()));
+    }
+
+    /*!
+       Restore last UI values if some were saved
+     */
+    function restoreState() {
+        let savedStr = localStorage.getItem('nihongoFlashCardState');
+        if (savedStr) {
+            try {
+                let savedUIState = JSON.parse(savedStr);
+                setUIState(savedUIState);
+            } catch(e) {
+                // Just ignore the saved UI state are use defaults
+            }
+        }
     }
 
     /*!
@@ -57,7 +113,7 @@
        Apply the category filter
      */
     function applyVisibility() {
-        var visiElem = document.getElementById('VisibleChoice');
+        var visiElem = document.getElementById('Visible');
         var checked = visiElem._myClass.value;
 
         for (let card of __cards) {
@@ -68,13 +124,14 @@
 
         var nextButton = document.getElementById('next');
         resetNextButton(nextButton);
+        saveState();
     }
 
     /*!
        True if all the cards are visible
      */
     function isAllVisible() {
-        var visiElem = document.getElementById('VisibleChoice');
+        var visiElem = document.getElementById('Visible');
         var checked = visiElem._myClass.value;
 
         for (let card of __cards) {
@@ -112,6 +169,7 @@
         var nextButton = document.getElementById('next');
         resetNextButton(nextButton);
         setCard(__db.pickOne(true), __db);
+        saveState();
     }
 
     /*!
@@ -165,6 +223,7 @@
     function start() {
         // Start the app with only the 'practice' vocabulary
         var defaultFilter = {'Proficiency': new Set(['3-practice'])}
+        var defaultVisible = new Set(['Kana', 'Romaji', 'English']);
 
         // Start the app with only the 'practice' vocabulary
         __db.filterBy(defaultFilter, true);
@@ -173,7 +232,7 @@
         var cards = document.getElementsByClassName('flip-card');
 	    for (let i=0 ; i<cards.length ; i++) {
 		    Card.init(cards[i], () => {
-                var visiElem = document.getElementById('VisibleChoice');
+                var visiElem = document.getElementById('Visible');
                 var checked = visiElem._myClass.value;
                 return checked.has(cards[i].id);
             });
@@ -182,7 +241,7 @@
         // Build / style the mutiple choices
 
         // Default visibility
-        var visiChoice = document.getElementById('VisibleChoice');
+        var visiChoice = document.getElementById('Visible');
 	    MultipleChoice.init(visiChoice, 'Visible', [
             {'UIname': 'Kanji'},
             {'UIname': 'Kana', 'checked': true},
@@ -203,6 +262,9 @@
                 choiceDOM._myClass.select(defaultFilter[f]);
             }
         }
+
+        // Restore last UI values if some were saved
+        restoreState();
 
         // Bind the Next button
         var nextButton = document.getElementById('next');

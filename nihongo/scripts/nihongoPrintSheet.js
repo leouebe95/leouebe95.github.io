@@ -10,8 +10,93 @@
     const filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
     const __fields = ['Random', 'Kanji', 'Kana', 'Romaji', 'English'];
     const __fieldLabels = {'Kanji': '漢字', 'Kana': 'ひらがな / カタカナ'};
-
+    const __checkBox = ['largeFont', 'pythonOutput'];
     var __db = null;
+
+    /*!
+       Get current UI configuration and return it in an object
+     */
+    function getUIState() {
+        let state = {};
+        for (let f of filters) {
+            let DOM = document.getElementById(f);
+            if (DOM && DOM._myClass) {
+                state[f] = Array.from(DOM._myClass.value);
+            }
+        }
+
+        for (let field of __fields) {
+            let input = document.getElementById(`${field}Input`);
+            if (input && input.checked) state.sortBy = field;
+        }
+
+        for (let f of __checkBox) {
+            let DOM = document.getElementById(f);
+            if (DOM) {
+                state[f] = DOM.checked;
+            }
+        }
+
+        return state;
+    }
+
+    /*!
+       Set the UI configuration from values saved in an object
+     */
+    function setUIState(val) {
+        for (let f of filters) {
+            try {
+                var uiState = new Set(val[f]);
+                let DOM = document.getElementById(f);
+                if (DOM && DOM._myClass) {
+                    DOM._myClass.select(uiState);
+                }
+            }
+            catch(e) {
+                // If the UI state was not saved, just ignore
+            }
+        }
+
+        if (val.sortBy) {
+            var field = val.sortBy;
+            let DOM = document.getElementById(`${field}Input`);
+            if (DOM) {
+                DOM.checked = true;
+            }
+        }
+
+        //
+        for (let f of __checkBox) {
+            if (val[f] !== undefined) {
+                let DOM = document.getElementById(f);
+                DOM.checked = val[f];
+            }
+        }
+    }
+
+    /*!
+       Save current UI configuration to localStorage
+     */
+    function saveState() {
+        localStorage.setItem('nihongoPrintSheetState',
+                             JSON.stringify(getUIState()));
+    }
+
+    /*!
+       Restore last UI values if some were saved
+     */
+    function restoreState() {
+        let savedStr = localStorage.getItem('nihongoPrintSheetState');
+        if (savedStr) {
+            try {
+                let savedUIState = JSON.parse(savedStr);
+                setUIState(savedUIState);
+            } catch(e) {
+                // console.log(e);
+                // Just ignore the saved UI state are use defaults
+            }
+        }
+    }
 
     /*!
        Generate all the data to print
@@ -105,6 +190,7 @@
         } else {
             createPrintSheet();
         }
+        saveState();
     }
 
     /*!
@@ -121,6 +207,7 @@
                 }
             }
         }
+        saveState();
     }
 
     /*!
@@ -140,6 +227,7 @@
             document.documentElement.style.setProperty(
                 "--sheet-large-fontsize", "18px");
         }
+        saveState();
     }
 
     /*!
@@ -186,6 +274,9 @@
         var pythonDOM = document.getElementById('pythonOutput');
         pythonDOM.addEventListener("input", applyFilter);
 
+        restoreState();
+
+        setFontSize();
         applyFilter();
     }
 
