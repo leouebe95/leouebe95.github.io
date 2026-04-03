@@ -5,7 +5,8 @@
    Formats a wordlist into a table suitable for printing
 */
 class WordTable { // eslint-disable-line no-unused-vars
-    static verbURL = 'https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${shortRef}&Go=Conjugate';
+    static verbURL = 'https://www.japaneseverbconjugator.com/VerbDetails.asp?txtVerb=${ref}&Go=Conjugate';
+    static dictURL = 'https://jisho.org/search/${ref}';
     static prefixes =
         {
             'verb (1 dan)': { icon: '&#x2460;', url: WordTable.verbURL }, // ①
@@ -65,24 +66,21 @@ class WordTable { // eslint-disable-line no-unused-vars
         var newLine = document.createElement("tr");
         var kanji = item['Kanji'];
         var kana = item['Kana'];
-        var ref = kanji;
-        var link = null;
+        var ref = kanji.split('・')[0];
+        var link = WordTable.dictURL.replace('${ref}', ref);
 
         if (kanji == kana) {
-            kanji = '&nbsp;';
-            ref = kana;
-            link = `https://jisho.org/search/${kana}`;
+            kanji = '';
         } else {
-            link = `https://jisho.org/search/${kanji}`;
             kanji = `<a target="_new" href="${link}">${kanji}</a>`;
         }
+        kana = `<a target="_new" href="${link}">${kana}</a>`;
 
         if (item['Category'] in WordTable.prefixes) {
             var prefix = WordTable.prefixes[item['Category']];
             // In the Web page, display a link to the verb conjugation page.
             // mark it as no-print.
-            var shortRef = ref.split('・')[0]
-            link = encodeURI(prefix.url.replace('${shortRef}', shortRef));
+            link = encodeURI(prefix.url.replace('${ref}', ref));
             var icon = prefix.icon;
 
             kanji = kanji + ` <a class="noprint" target="_new" href="${link}">${icon}</a>`;
