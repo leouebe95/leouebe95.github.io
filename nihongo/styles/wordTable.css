@@ -1,4 +1,3 @@
-
 /* --------------------------------- */
 .wordList {
   display: flex;
@@ -6,8 +5,13 @@
   height: 1px;
 }
 
-.wordList .even tr:nth-child(even) {background: #F0F0F0}
-.wordList .odd tr:nth-child(odd) {background: #F0F0F0}
+.wordList .even tr:nth-child(even) {
+  background: #F0F0F0
+}
+
+.wordList .odd tr:nth-child(odd) {
+  background: #F0F0F0
+}
 
 .wordList td.English {
   font-size: var(--sheet-fontsize);
@@ -27,13 +31,17 @@
 
 .wordList td.Romaji {
   font-size: var(--sheet-fontsize);
-  color:#C0C0C0;
+  color: #C0C0C0;
   padding-left: 10px;
 }
 
-.wordList a:not(:hover){
+.wordList a:not(:hover) {
   text-decoration: none;
   color: black;
+}
+
+.wordList a.noprint:not(:hover) {
+  color: rgb(117, 177, 216);
 }
 
 .wordList a:hover {

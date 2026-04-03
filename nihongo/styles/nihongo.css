@@ -10,32 +10,32 @@ body {
 }
 
 div.flip-card {
-  width:500px;
+  width: 500px;
   margin: 20px;
 }
 
 #Kana {
-  height:40px;
+  height: 40px;
   line-height: 40px;
-  font-size:24px;
+  font-size: 24px;
 }
 
 #Romaji {
-  height:40px;
+  height: 40px;
   line-height: 40px;
-  font-size:24px;
+  font-size: 24px;
 }
 
 #Kanji {
-  height:80px;
+  height: 80px;
   line-height: 80px;
-  font-size:48px;
+  font-size: 48px;
 }
 
 #English {
-  height:40px;
+  height: 40px;
   line-height: 40px;
-  font-size:24px;
+  font-size: 24px;
 }
 
 /* --------------------------------- */
@@ -55,7 +55,7 @@ button:focus-within {
 }
 
 button {
-  font-size:16px;
+  font-size: 16px;
   border-color: #80C0E0;
   border-style: solid;
   border-width: 3px;
@@ -68,14 +68,14 @@ div.horizontal {
   display: flex;
 }
 
-div.pad{
+div.pad {
   padding: 10px;
 }
 
 #messageBox {
-  height:24px;
-  line-height:24px;
-  font-size:16px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 16px;
   background-color: #F0F8FF;
   border: 1px solid #C0D0F0;
   color: #808080;
@@ -85,28 +85,31 @@ div.pad{
 }
 
 div.small {
-  font-size:12px;
+  font-size: 12px;
 }
 
 @media print {
   .noprint {
-	display: none;
+    display: none;
   }
 
   @page {
-	size: A4 landscape;
+    size: A4 landscape;
   }
 }
 
 @media screen {
   .noprint {
-	background: #E0F0FF;
-	padding-left: 10px;
-	padding-top: 10px;
-	padding-bottom: 10px;
+    background: #E0F0FF;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
+
   a.noprint {
-	background: none;
+    background: none;
+    padding-left: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
 }
-
