@@ -22,7 +22,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
        cb is the callback called when the database is ready.
        Argument is the loaded database object (this)
     */
-    constructor(cb) {
+    constructor(cb, refreshCb) {
         var sheetId = '1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI'; // FIXME
         var tabName = 'Vocabulary';
         // var tabName = 'Sentences';
@@ -32,7 +32,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         var url = `https://docs.google.com/spreadsheets/d/${sheetId}/${gvizAPI}&sheet=${tabName}`;
 
         // this.setDB(data);
-        this.getDB(url, cb);
+        this.getDB(url, cb, refreshCb);
     }
 
     /* ------------------------------------------------------------------------
@@ -86,16 +86,69 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         console.log(`Database finished loading (${dbSize} entries)`);
     }
 
+    showCacheMessage(msg) {
+        let div = document.getElementById('localCacheMsg');
+        if (!div) {
+            div = document.createElement('div');
+            div.id = 'localCacheMsg';
+            div.className = 'noprint message';
+            document.body.appendChild(div);
+        }
+        div.innerText = msg;
+        div.style.display = 'block';
+    }
+
+    hideCacheMessage() {
+        let div = document.getElementById('localCacheMsg');
+        if (div) {
+            div.style.display = 'none';
+        }
+    }
+
     // ------------------------------------------------------------------------
     /*!
        Read the entire vocabulary database from a spreadsheet
     */
-    getDB(url, cb) {
-        fetch(url)
+    getDB(url, cb, refreshCb) {
+        let cached = localStorage.getItem('nihongo_db_cache');
+        if (cached) {
+            this.showCacheMessage("Using local cached vocabulary");
+            this.storeDB(cached);
+            setTimeout(cb, 0);
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        fetch(url, { signal: controller.signal })
             .then(response => response.text())
-            .then(data => this.storeDB(data))
-            .then(() => cb())
-            .catch(err => console.log(err));
+            .then(data => {
+                clearTimeout(timeoutId);
+                let isFirstLoad = !cached;
+                if (!isFirstLoad) {
+                    if (cached === data) {
+                        this.hideCacheMessage();
+                        return; // No change
+                    }
+                }
+                localStorage.setItem('nihongo_db_cache', data);
+                
+                if (isFirstLoad) {
+                    this.storeDB(data);
+                    cb();
+                } else {
+                    this.storeDB(data);
+                    if (refreshCb) refreshCb();
+                    this.hideCacheMessage();
+                }
+            })
+            .catch(err => {
+                clearTimeout(timeoutId);
+                console.log(err);
+                if (cached) {
+                    this.showCacheMessage("no network access, using local cache");
+                }
+            });
     }
 
     // ------------------------------------------------------------------------

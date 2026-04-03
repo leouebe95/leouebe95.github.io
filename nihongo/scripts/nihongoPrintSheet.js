@@ -194,7 +194,7 @@
     */
     function main() {
         CollapsibleDiv.makeAllCollapsible();
-        __db = new NihongoDB(start);
+        __db = new NihongoDB(start, applyFilter);
     }
 
     document.addEventListener('DOMContentLoaded', main);
