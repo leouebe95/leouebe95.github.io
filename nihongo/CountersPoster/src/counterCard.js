@@ -20,6 +20,59 @@ class counterCard {
         this._mode = mode;
     }
 
+    // Add coloring to the suffix part of the text for both kana and roma
+    colorSuffixSingle(text, suffix) {
+        var pattern = {};
+        pattern[suffix] = `<span class="suff">${suffix}</span>`;
+
+        var remap = {
+            "が": "か",
+            "げ": "け",
+            "ぞ": "そ",
+            "び": "ひ",
+            "ぴ": "ひ",
+            "ば": "は",
+            "ぱ": "は",
+            "ぼ": "ほ",
+            "ぽ": "ほ",
+
+            "ga": "ka",
+            "ge": "ke",
+            "zo": "so",
+            "ba": "ha",
+            "pa": "ha",
+            "bi": "hi",
+            "pi": "hi",
+            "bo": "ho",
+            "po": "ho"
+        }
+
+        for (var r in remap) {
+            if (suffix.startsWith(remap[r])) {
+                var suff2 = suffix.replace(remap[r], r);
+                pattern[suff2] = `<span class="suff2">${suff2}</span>`;
+            }
+        }
+
+        for (var prop in pattern) {
+            if (text.endsWith(prop)) {
+                return text.replace(new RegExp(prop+"$"), pattern[prop]);
+            }
+        }
+        return text;
+    }
+
+    // Add coloring to the suffix part of the text for both kana and roma
+    colorSuffix(text, suffix) {
+        var k = this.colorSuffixSingle(text["kana"], suffix["kana"]);
+        var r = this.colorSuffixSingle(text["roma"], suffix["roma"]);
+
+        return {
+            "kana": k,
+            "roma": r
+        }
+    }
+
     tableLine2(text, suffix="") {
         var k = text["kana"]+suffix;
         var r = text["roma"]+suffix;
@@ -40,6 +93,10 @@ class counterCard {
         var classes = [];
         var text1 = cardData[num1.toString()];
         var text2 = cardData[num2.toString()];
+        var suff = cardData["suffix"];
+
+        text1 = this.colorSuffix(text1, suff);
+        text2 = this.colorSuffix(text2, suff);
 
         switch (this._mode) {
         case counterCard.MODES.KANA:

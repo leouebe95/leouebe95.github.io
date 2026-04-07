@@ -1,6 +1,6 @@
 body {
-  width: 28cm;
-  height: 40cm;
+  width: 28.7cm;
+  height: 41cm;
   font-size: 12px;
   text-align: center;
 }
@@ -39,14 +39,16 @@ div.card {
 }
 
 td.roma.large, td.kana.large {
-  font-size: 200%;
+  font-size: 28px;
   background-color: rgba(0,0,0,0); /* transparent */
   padding-left: 0px;
+  padding-top: 8px;
+  padding-bottom: 5px;
   text-align: center;
 }
 
 div.compact td.roma.large, div.compact td.kana.large {
-  font-size: 150%;
+  font-size: 20px;
 }
 
 td.roma, td.kana {
@@ -54,20 +56,45 @@ td.roma, td.kana {
   padding-left: 8px;
   text-align: left;
   border-radius: 100px;
-  font-size: 120%;
+  font-size: 16px;
 }
 td.roma {
-  font-size: 140%;
+  font-size: 18px;
 }
 
 div.compact td.roma, div.compact td.kana {
-  font-size: 80%;
+  font-size: 11px;
   padding-left: 5px;
 }
 
 td.num {
   color: #808080;
   text-align: right;
+}
+
+div.header {
+  background-color: #bbdbe9;
+  width: 100%;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.header span.right {
+  position: absolute;
+  right: 20px;
+}
+
+span.suff {
+  color: blue;
+}
+
+span.suff2 {
+  color: red;
 }
 
 @media print {

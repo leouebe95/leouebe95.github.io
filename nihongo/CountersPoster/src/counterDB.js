@@ -38,6 +38,16 @@ class counterDB {
                 }
             }
 
+            // compute one mode entry. Suffix.
+            var counter = obj["counter"];
+            var regExp = new RegExp("[\\(（](.+)[\\)）]");
+            var matchesKana = regExp.exec(counter["kana"]);
+            var matchesRoma = regExp.exec(counter["roma"]);
+            obj["suffix"] = {
+                "kana": matchesKana ? matchesKana[1] : counter["kana"],
+                "roma": matchesRoma ? matchesRoma[1] : counter["roma"],
+            };
+
             res[cat] = obj;
         }
         return res;

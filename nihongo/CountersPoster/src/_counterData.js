@@ -411,7 +411,7 @@ counterData = {
     "small": "個（こ）",
     "small2": "個（ko）",
     "thing": "つ",
-    "thing2": "tsu",
+    "thing2": "つ (tsu)",
     "people": "人（にん）",
     "people2": "人（nin）",
     "floor": "階（かい）",
