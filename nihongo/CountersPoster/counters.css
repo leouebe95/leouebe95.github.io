@@ -38,22 +38,36 @@ div.card {
   background-color: #f0f0f0;
 }
 
-td.roma.large, td.kana.large{
+td.roma.large, td.kana.large {
   font-size: 200%;
   background-color: rgba(0,0,0,0); /* transparent */
   padding-left: 0px;
   text-align: center;
 }
 
-td.num {
-  color: #808080;
-  text-align: right;
+div.compact td.roma.large, div.compact td.kana.large {
+  font-size: 150%;
 }
 
 td.roma, td.kana {
   background-color: white;
-  padding-left: 5px;
+  padding-left: 8px;
   text-align: left;
+  border-radius: 100px;
+  font-size: 120%;
+}
+td.roma {
+  font-size: 140%;
+}
+
+div.compact td.roma, div.compact td.kana {
+  font-size: 80%;
+  padding-left: 5px;
+}
+
+td.num {
+  color: #808080;
+  text-align: right;
 }
 
 @media print {

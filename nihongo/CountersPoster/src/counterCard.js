@@ -78,11 +78,16 @@ class counterCard {
             val += this.tableLine4(cardData, i, i+5);
         }
 
-        val += this.tableLine2(cardData["?"], " ?");
+        val += this.tableLine2(cardData["?"], " ？");
         val += '</table>';
 
         var res = document.createElement("div");
         res.classList.add("card");
+
+        // Need to compress a bit more in 'Both' mode
+        if (this._mode == counterCard.MODES.BOTH) {
+            res.classList.add("compact");
+        }
         res.innerHTML = val;
         return res;
     }
