@@ -56,3 +56,8 @@ td.roma, td.kana {
   text-align: left;
 }
 
+@media print {
+  .noprint {
+    display: none;
+  }
+}

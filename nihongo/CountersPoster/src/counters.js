@@ -1,12 +1,10 @@
+let db;
 
+function buildTable(root, mode) {
+    root.innerHTML = '';
+    var cards = new counterCard(mode);
 
-function buildTable(root, db) {
-
-    //var cards = new counterCard(counterCard.MODES.ROMA);
-    var cards = new counterCard(counterCard.MODES.KANA);
-    //var cards = new counterCard(counterCard.MODES.BOTH);
-
-    topics = [
+    var topics = [
         ["thing", "small", "people", "age"],
         ["floor", "order", "frequency", "animal"],
         ["flat", "long", "book", "drink"],
@@ -17,12 +15,29 @@ function buildTable(root, db) {
     root.appendChild(content);
 }
 
+function handleModeChange(event) {
+    const selectedModeStr = event.target.value;
+    localStorage.setItem('counterPosterMode', selectedModeStr);
+    
+    var main = document.getElementById("mainId");
+    buildTable(main, counterCard.MODES[selectedModeStr]);
+}
 
 function bootStrap() {
     db = new counterDB(counterData);
 
+    // Initialize UI from local storage
+    let savedModeStr = localStorage.getItem('counterPosterMode') || "KANA";
+    if (!counterCard.MODES.hasOwnProperty(savedModeStr)) {
+        savedModeStr = "KANA";
+    }
+
+    const modeSelect = document.getElementById('modeSelect');
+    modeSelect.value = savedModeStr;
+    modeSelect.addEventListener('change', handleModeChange);
+
     var main = document.getElementById("mainId");
-    buildTable(main, db);
+    buildTable(main, counterCard.MODES[savedModeStr]);
 }
 
 window.addEventListener('DOMContentLoaded', bootStrap);
