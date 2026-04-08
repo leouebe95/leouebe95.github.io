@@ -56,13 +56,16 @@ div.compact td.kana.large {
 
 td.roma,
 td.kana {
-  background-color: white;
+  background-color: #f8f8f8;
   padding-left: 8px;
   padding-right: 8px;
   text-align: right;
   border-radius: 100px;
   font-size: 16px;
   white-space: nowrap;
+  border-color:#f8f8f8;
+  border-style: solid;
+  border-width: 1px;
 }
 
 td.roma {
@@ -100,6 +103,11 @@ div.header {
 div.header span.right {
   position: absolute;
   right: 20px;
+}
+
+td.except {
+  background-color: #f4f9d0;
+  border-color: #b8cf10;
 }
 
 span.suff {

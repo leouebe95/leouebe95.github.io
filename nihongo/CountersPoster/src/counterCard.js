@@ -10,6 +10,32 @@ class counterCard {
         BOTH: 2,
     };
 
+    static RENDAKU = {
+        "が": "か", "ga": "ka",
+        "げ": "け", "ge": "ke",
+        "ぞ": "そ", "zo": "so",
+        "び": "ひ", "ba": "ha",
+        "ぴ": "ひ", "pa": "ha",
+        "ば": "は", "bi": "hi",
+        "ぱ": "は", "pi": "hi",
+        "ぼ": "ほ", "bo": "ho",
+        "ぽ": "ほ", "po": "ho"
+    };
+
+    static NUMBERS_KANA = [
+        {kana: 'ゼロ',   roma: 'zero'}, // Used only to shift indices
+        {kana: 'いち',   roma: 'ichi'},  // 1
+        {kana: 'に',     roma: 'ni'},    // 2
+        {kana: 'さん',   roma: 'san'},   // 3
+        {kana: 'よん',   roma: 'yon'},   // 4
+        {kana: 'ご',     roma: 'go'},    // 5
+        {kana: 'ろく',   roma: 'roku'},  // 6
+        {kana: 'なな',   roma: 'nana'},  // 7
+        {kana: 'はち',   roma: 'hachi'}, // 8
+        {kana: 'きゅう', roma: 'kyū'},   // 9
+        {kana: 'じゅう', roma: 'jū'},    // 10
+    ];
+
     /*! Constructor
      */
     constructor(mode) {
@@ -21,35 +47,13 @@ class counterCard {
     }
 
     // Add coloring to the suffix part of the text for both kana and roma
-    colorSuffixSingle(text, suffix) {
+    colorSingle(text, suffix) {
         var pattern = {};
         pattern[suffix] = `<span class="suff">${suffix}</span>`;
 
-        var remap = {
-            "が": "か",
-            "げ": "け",
-            "ぞ": "そ",
-            "び": "ひ",
-            "ぴ": "ひ",
-            "ば": "は",
-            "ぱ": "は",
-            "ぼ": "ほ",
-            "ぽ": "ほ",
-
-            "ga": "ka",
-            "ge": "ke",
-            "zo": "so",
-            "ba": "ha",
-            "pa": "ha",
-            "bi": "hi",
-            "pi": "hi",
-            "bo": "ho",
-            "po": "ho"
-        }
-
-        for (var r in remap) {
-            if (suffix.startsWith(remap[r])) {
-                var suff2 = suffix.replace(remap[r], r);
+        for (var r in counterCard.RENDAKU) {
+            if (suffix.startsWith(counterCard.RENDAKU[r])) {
+                var suff2 = suffix.replace(counterCard.RENDAKU[r], r);
                 pattern[suff2] = `<span class="suff2">${suff2}</span>`;
             }
         }
@@ -63,14 +67,24 @@ class counterCard {
     }
 
     // Add coloring to the suffix part of the text for both kana and roma
-    colorSuffix(text, suffix) {
-        var k = this.colorSuffixSingle(text["kana"], suffix["kana"]);
-        var r = this.colorSuffixSingle(text["roma"], suffix["roma"]);
+    colorize(text, suffix, num) {
+        var k = this.colorSingle(text["kana"], suffix["kana"]);
+        var r = this.colorSingle(text["roma"], suffix["roma"]);
 
         return {
             "kana": k,
             "roma": r
         }
+    }
+
+    // return trure if the number is an exception
+    isExeption(text, num) {
+        var prefix = counterCard.NUMBERS_KANA[num]
+
+        if (text["kana"].startsWith(prefix["kana"])) {
+            return false;
+        }
+        return true;
     }
 
     tableLine2(text, suffix = "") {
@@ -96,24 +110,32 @@ class counterCard {
         var text2 = cardData[num2.toString()];
         var suff = cardData["suffix"];
 
-        text1 = this.colorSuffix(text1, suff);
-        text2 = this.colorSuffix(text2, suff);
+        var except1 = "";
+        var except2 = "";
+
+        if (this.isExeption(text1, num1)) { except1 = " except"; }
+        if (this.isExeption(text2, num2)) { except2 = " except"; }
+
+        text1 = this.colorize(text1, suff, num1);
+        text2 = this.colorize(text2, suff, num2);
 
         switch (this._mode) {
             case counterCard.MODES.KANA:
-                classes = ["stretch", "num", "kana", "stretch", "num", "kana", "stretch"];
-                items = ["", num1, text1["kana"], "", num2, text2["kana"], ""];
+                classes = ["num", "kana"+except1, "num", "kana"+except2];
+                items = [num1, text1["kana"], num2, text2["kana"]];
                 break;
             case counterCard.MODES.ROMA:
-                classes = ["stretch", "num", "roma", "stretch", "num", "roma", "stretch"];
-                items = ["", num1, text1["roma"], "", num2, text2["roma"], ""];
+                classes = ["num", "kana"+except1, "num", "kana"+except2];
+                items = [num1, text1["roma"], num2, text2["roma"]];
                 break
             default:
-                classes = ["stretch", "kana", "kana", "stretch", "roma", "roma", "stretch"];
-                items = ["", text1["kana"], text2["kana"], "", text1["roma"], text2["roma"], ""];
+                classes = ["kana"+except1, "kana"+except2, "roma"+except1, "roma"+except2];
+                items = [text1["kana"], text2["kana"], text1["roma"], text2["roma"]];
                 break;
         }
 
+        classes = ["stretch"].concat(classes.slice(0, 2), ["stretch"], classes.slice(-2), ["stretch"]);
+        items = [""].concat(items.slice(0, 2), [""], items.slice(-2), [""]);
         var res = '<tr>';
         for (let i = 0; i < 7; i++) {
             res += `<td class="${classes[i]}">${items[i]}</td>`;
