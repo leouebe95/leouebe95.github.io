@@ -1,0 +1,5 @@
+/nihongo/CountersPoster/img/ORIG
+/node_modules
+package-lock.json
+package.json
+tests/eslint.config.mjs
