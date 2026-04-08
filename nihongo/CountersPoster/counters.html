@@ -2,8 +2,13 @@
 <html lang="en">
   <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&display=swap" rel="stylesheet">
+
 	<link rel="stylesheet" href="./counters.css">
-	
+
 	<script src="./src/counterData.js"></script>
 	<script src="./src/counterDB.js"></script>
 	<script src="./src/counterCard.js"></script>
@@ -12,7 +17,7 @@
 	<title>Counter suffixes</title>
   </head>
 
-  <body>
+  <body id="body">
 	<div id="UI" class="header noprint">
 	  <span class="center">
 		<label for="modeSelect"><strong>Display Mode: </strong></label>
@@ -21,7 +26,9 @@
 		  <option value="ROMA">Romaji</option>
 		  <option value="BOTH">Both</option>
 		</select>
-		<span>&nbsp;</span>
+
+		<span style="width: 1cm; display: inline-flex; "></span>
+
 		<label for="dirSelect"><strong>Direction: </strong></label>
 		<select id="dirSelect">
 		  <option value="VERT">Vertical</option>

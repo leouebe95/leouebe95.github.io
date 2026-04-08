@@ -1,8 +1,11 @@
 body {
-  width: 28.7cm;
-  height: 41cm;
   font-size: 12px;
   text-align: center;
+
+  font-family: "M PLUS 2", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
 }
 
 table {
@@ -11,9 +14,14 @@ table {
 
 div.card {
   padding-top: 1px;
-  padding-bottom: 12px;
+  padding-bottom: 1px;
   padding-left: 8px;
   padding-right: 8px;
+  border-style: solid;
+  border-color: #e0e0e0;
+  border-width: 1px;
+  border-radius: 12px;
+  background-color: #f0f0f0;
 }
 
 img.card {
@@ -24,28 +32,19 @@ img.card {
 }
 
 div.cardTitle {
-  font-size: 200%;
-  padding-top: 8px;
+  font-size: 14px;
   padding-bottom: 8px;
-}
-
-div.card {
-  border-style: solid;
-  border-color: #e0e0e0;
-  border-width: 1px;
-  border-radius: 12px;
-  margin-bottom: 1cm;
-  background-color: #f0f0f0;
 }
 
 td.roma.large,
 td.kana.large {
-  font-size: 28px;
+  font-size: 20px;
   background-color: rgba(0, 0, 0, 0);
   /* transparent */
   padding-left: 0px;
-  padding-top: 8px;
-  padding-bottom: 5px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   text-align: center;
 }
 
@@ -119,7 +118,16 @@ span.suff2 {
 }
 
 @media print {
-  .noprint {
+  div.header.noprint {
     display: none;
+	visibility: hidden;
   }
 }
+
+/* 
+@media screen {
+  body {
+	border: solid 1px red;
+  }
+}
+*/

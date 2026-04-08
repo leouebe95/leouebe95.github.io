@@ -38,11 +38,11 @@ class counterCard {
 
     /*! Constructor
      */
-    constructor(mode) {
+    constructor(mode, question) {
         if (!(mode in Object.values(counterCard.MODES))) {
             mode = counterCard.MODES.BOTH;
         }
-
+        this._question = question; // True is we want a line for the question
         this._mode = mode;
     }
 
@@ -87,19 +87,19 @@ class counterCard {
         return true;
     }
 
-    tableLine2(text, suffix = "") {
+    tableLine2(text, suffix = "", size = "") {
         var k = text["kana"] + suffix;
         var r = text["roma"] + suffix;
 
         switch (this._mode) {
             case counterCard.MODES.KANA:
-                return `<tr><td class="kana large" colspan="7">${k}</td></tr>`;
+                return `<tr><td class="kana ${size}" colspan="7">${k}</td></tr>`;
             case counterCard.MODES.ROMA:
-                return `<tr><td class="roma large" colspan="7">${r}</td></tr>`;
+                return `<tr><td class="roma ${size}" colspan="7">${r}</td></tr>`;
             default:
-                return `<tr><td></td><td class="kana large" colspan="2">${k}</td>` +
+                return `<tr><td></td><td class="kana ${size}" colspan="2">${k}</td>` +
                     '<td></td>' +
-                    `<td class="roma large" colspan="2">${r}</td><td></td></tr>`;
+                    `<td class="roma ${size}" colspan="2">${r}</td><td></td></tr>`;
         }
     }
 
@@ -151,13 +151,15 @@ class counterCard {
         val += `<img class="card" src="./img/${cardData["image"]}" />`;
 
         val += '<table>';
-        val += this.tableLine2(cardData["counter"]);
+        val += this.tableLine2(cardData["counter"], "", "large");
 
         for (let i = 1; i < 6; i++) {
             val += this.tableLine4(cardData, i, i + 5);
         }
 
-        val += this.tableLine2(cardData["?"], " ？");
+        if (this._question) {
+            val += this.tableLine2(cardData["?"], " ？");
+        }
         val += '</table>';
 
         var res = document.createElement("div");
