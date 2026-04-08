@@ -130,8 +130,8 @@ counterData = {
     "age2": "yonsai",
     "book": "よんさつ",
     "book2": "yonsatsu",
-    "sock": "とんそく",
-    "sock2": "tonsoku",
+    "sock": "よんそく",
+    "sock2": "yonsoku",
     "clothe": "よんちゃく",
     "clothe2": "yonchaku"
   },
