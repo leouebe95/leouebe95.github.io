@@ -56,7 +56,7 @@ class counterCard {
 
         for (var prop in pattern) {
             if (text.endsWith(prop)) {
-                return text.replace(new RegExp(prop+"$"), pattern[prop]);
+                return text.replace(new RegExp(prop + "$"), pattern[prop]);
             }
         }
         return text;
@@ -73,18 +73,19 @@ class counterCard {
         }
     }
 
-    tableLine2(text, suffix="") {
-        var k = text["kana"]+suffix;
-        var r = text["roma"]+suffix;
+    tableLine2(text, suffix = "") {
+        var k = text["kana"] + suffix;
+        var r = text["roma"] + suffix;
 
         switch (this._mode) {
-        case counterCard.MODES.KANA:
-            return `<tr><td class="kana large" colspan="4">${k}</td></tr>`;
-        case counterCard.MODES.ROMA:
-            return `<tr><td class="roma large" colspan="4">${r}</td></tr>`;
-        default:
-            return `<tr><td class="kana large" colspan="2">${k}</td>`+
-                `<td class="roma large" colspan="2">${r}</td></tr>`;
+            case counterCard.MODES.KANA:
+                return `<tr><td class="kana large" colspan="7">${k}</td></tr>`;
+            case counterCard.MODES.ROMA:
+                return `<tr><td class="roma large" colspan="7">${r}</td></tr>`;
+            default:
+                return `<tr><td></td><td class="kana large" colspan="2">${k}</td>` +
+                    '<td></td>' +
+                    `<td class="roma large" colspan="2">${r}</td><td></td></tr>`;
         }
     }
 
@@ -99,23 +100,22 @@ class counterCard {
         text2 = this.colorSuffix(text2, suff);
 
         switch (this._mode) {
-        case counterCard.MODES.KANA:
-            classes = ["num", "kana", "num", "kana"];
-            items = [num1, text1["kana"], num2, text2["kana"]];
-            break;
-        case counterCard.MODES.ROMA:
-            classes = ["num", "roma", "num", "roma"];
-            items = [num1, text1["roma"], num2, text2["roma"]];
-            break
-        default:
-            classes = ["kana", "kana", "roma", "roma"];
-            items = [text1["kana"], text2["kana"],
-                     text1["roma"], text2["roma"]];
-            break;
+            case counterCard.MODES.KANA:
+                classes = ["stretch", "num", "kana", "stretch", "num", "kana", "stretch"];
+                items = ["", num1, text1["kana"], "", num2, text2["kana"], ""];
+                break;
+            case counterCard.MODES.ROMA:
+                classes = ["stretch", "num", "roma", "stretch", "num", "roma", "stretch"];
+                items = ["", num1, text1["roma"], "", num2, text2["roma"], ""];
+                break
+            default:
+                classes = ["stretch", "kana", "kana", "stretch", "roma", "roma", "stretch"];
+                items = ["", text1["kana"], text2["kana"], "", text1["roma"], text2["roma"], ""];
+                break;
         }
 
         var res = '<tr>';
-        for (let i = 0 ; i < 4 ; i++ ) {
+        for (let i = 0; i < 7; i++) {
             res += `<td class="${classes[i]}">${items[i]}</td>`;
         }
         res += '</tr>';
@@ -131,8 +131,8 @@ class counterCard {
         val += '<table>';
         val += this.tableLine2(cardData["counter"]);
 
-        for (let i = 1 ; i < 6 ; i++ ) {
-            val += this.tableLine4(cardData, i, i+5);
+        for (let i = 1; i < 6; i++) {
+            val += this.tableLine4(cardData, i, i + 5);
         }
 
         val += this.tableLine2(cardData["?"], " ？");
@@ -151,10 +151,10 @@ class counterCard {
 
     makeCards(db, topics) {
         var table = document.createElement("table");
-        for (let i = 0 ; i < topics.length ; i++ ) {
+        for (let i = 0; i < topics.length; i++) {
             var line = topics[i];
             var row = document.createElement("tr");
-            for (let j = 0 ; j < line.length ; j++ ) {
+            for (let j = 0; j < line.length; j++) {
                 var cell = document.createElement("td");
                 var item = line[j];
                 cell.appendChild(this.makeCard(db._data[item]));
