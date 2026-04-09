@@ -2,56 +2,51 @@ let db;
 
 function setPageSize(dir) {
     var width, height;
-    switch (dir) {
-    case "VERT":
-        width  = "28.7cm";
-        height = "41cm";
-        break;
-    default:
-        height = "28.7cm";
-        width  = "41cm";
-        break;
-    }
+
+    // Indexed by counterCard.LAYOUT
+    PAGE_SIZES = [
+        {width: "28.7cm", height: "41cm"},
+        {width: "41cm", height: "28.7cm"},
+        {width: "28.7cm", height: "20cm"}
+    ];
+
+    var size = PAGE_SIZES[dir];
 
     const body = document.getElementById('body');
-    body.style.width = width;
-    body.style.height = height;
+    body.style.width = size.width;
+    body.style.height = size.height;
 }
 
 function buildTable(root, mode, dir) {
     root.innerHTML = '';
-    var cards = new counterCard(mode);
-    var topics, question;
-    switch (dir) {
-    case "VERT":
-        topics = [
+    var cards = new counterCard(mode, dir);
+
+    // Indexed by counterCard.LAYOUT
+    var TOPICS = [
+        [ // VERT
             ["thing", "small", "people", "age"],
             ["floor", "order", "frequency", "animal"],
             ["flat", "long", "book", "drink"],
             ["vehicle", "house", "sock", "clothe"]
-        ];
-        question = true;
-        break;
-    default:
-        topics = [
-            ["thing", "small", "people", "age", "floor", "order", "frequency", "animal"],
-            ["flat", "long", "book", "drink", "vehicle", "house", "sock", "clothe"]
-        ];
-        topics = [
+        ], [ // HORIZ
             ["thing", "small", "people", "age", "floor"],
             ["order", "frequency", "animal", "flat", "long"],
             ["book", "drink", "house", "sock", "clothe"]
-        ];
-        question = false;
-        break;
-    }
+        ], [ // 2xA4
+            ["thing", "small", "people", "age"],
+            ["floor", "order", "frequency", "animal"],
+            [], // generate a page break
+            ["flat", "long", "book", "drink"],
+            ["vehicle", "house", "sock", "clothe"]
+        ] ];
+    var topics = TOPICS[dir];
 
     setPageSize(dir);
-    var content = cards.makeCards(db, topics, question);
+    var content = cards.makeCards(db, topics, dir);
     root.appendChild(content);
 }
 
-function handleChange(event) {
+function handleChange() {
     const modeSelect = document.getElementById('modeSelect');
     const selectedModeStr = modeSelect.value;
     localStorage.setItem('CountersMode', selectedModeStr);
@@ -60,8 +55,17 @@ function handleChange(event) {
     const selectedDirStr = dirSelect.value;
     localStorage.setItem('CountersDir', selectedDirStr);
 
+    // Update the Design explanation
+    var text = {
+        VERT: "one portrait A3 page",
+        HORIZ: "one landscape A3 page",
+        HORIZ_2PAGES: "two landscape A4 pages",
+    }
+    var design = document.getElementById("layoutId");
+    design.innerText = text[selectedDirStr];
+
     var main = document.getElementById("mainId");
-    buildTable(main, counterCard.MODES[selectedModeStr], selectedDirStr);
+    buildTable(main, counterCard.MODES[selectedModeStr], counterCard.LAYOUT[selectedDirStr]);
 }
 
 function bootStrap() {
@@ -72,18 +76,19 @@ function bootStrap() {
     if (!counterCard.MODES.hasOwnProperty(savedModeStr)) {
         savedModeStr = "KANA";
     }
-
     const modeSelect = document.getElementById('modeSelect');
     modeSelect.value = savedModeStr;
     modeSelect.addEventListener('change', handleChange);
 
     let savedDirStr = localStorage.getItem('CountersDir') || "VERT";
+    if (!counterCard.LAYOUT.hasOwnProperty(savedDirStr)) {
+        savedDirStr = "VERT";
+    }
     const dirSelect = document.getElementById('dirSelect');
     dirSelect.value = savedDirStr;
     dirSelect.addEventListener('change', handleChange);
 
-    var main = document.getElementById("mainId");
-    buildTable(main, counterCard.MODES[savedModeStr], savedDirStr);
+    handleChange();
 }
 
 window.addEventListener('DOMContentLoaded', bootStrap);

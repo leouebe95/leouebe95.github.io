@@ -24,23 +24,32 @@ div.card {
   background-color: #f0f0f0;
 }
 
+div.card.compact {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 img.card {
   width: 6.5cm;
   margin: auto;
   display: block;
   border-radius: 10px;
+  padding-top: 5px;
 }
 
 div.cardTitle {
-  font-size: 14px;
-  padding-bottom: 8px;
+  font-size: 16px;
 }
+
+div.cardTitle.ignore {
+  display: none;
+}
+
 
 td.roma.large,
 td.kana.large {
   font-size: 20px;
-  background-color: rgba(0, 0, 0, 0);
-  /* transparent */
+  background-color: rgba(0, 0, 0, 0); /* transparent */
   padding-left: 0px;
   padding-right: 0px;
   padding-top: 0px;
@@ -56,7 +65,6 @@ div.compact td.kana.large {
 td.roma,
 td.kana {
   background-color: #f8f8f8;
-  padding-left: 8px;
   padding-right: 8px;
   text-align: right;
   border-radius: 100px;
@@ -74,7 +82,6 @@ td.roma {
 div.compact td.roma,
 div.compact td.kana {
   font-size: 11px;
-  padding-left: 5px;
 }
 
 td.num {
@@ -89,7 +96,9 @@ td.stretch {
 
 div.header {
   background-color: #bbdbe9;
+  font-size: 16px;
   width: 100%;
+  height: 16px;
   padding-bottom: 10px;
   padding-top: 10px;
   margin-bottom: 20px;
@@ -102,6 +111,11 @@ div.header {
 div.header span.right {
   position: absolute;
   right: 20px;
+}
+
+div.header span.left {
+  position: absolute;
+  left: 20px;
 }
 
 td.except {
@@ -122,9 +136,11 @@ span.suff2 {
     display: none;
 	visibility: hidden;
   }
+
+  .page-break { break-after: page; }
 }
 
-/* 
+/*
 @media screen {
   body {
 	border: solid 1px red;

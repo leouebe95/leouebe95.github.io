@@ -19,7 +19,7 @@
 
   <body id="body">
 	<div id="UI" class="header noprint">
-	  <span class="center">
+	  <span class="left">
 		<label for="modeSelect"><strong>Display Mode: </strong></label>
 		<select id="modeSelect">
 		  <option value="KANA">Hiragana</option>
@@ -29,13 +29,14 @@
 
 		<span style="width: 1cm; display: inline-flex; "></span>
 
-		<label for="dirSelect"><strong>Direction: </strong></label>
+		<label for="dirSelect"><strong>Layout: </strong></label>
 		<select id="dirSelect">
 		  <option value="VERT">Vertical</option>
 		  <option value="HORIZ">Horizontal</option>
+		  <option value="HORIZ_2PAGES">Two Horizontal pages</option>
 		</select>
 	  </span>
-	  <span class="right">Designed to be printed in A3 format.</span>
+	  <span class="right">Designed to be printed as <span id="layoutId">one portrait A3 page</span>.</span>
 	</div>
 	<div id="mainId"></div>
   </body>

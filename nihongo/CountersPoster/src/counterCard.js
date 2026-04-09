@@ -10,6 +10,12 @@ class counterCard {
         BOTH: 2,
     };
 
+    static LAYOUT = {
+        VERT: 0, // 4x4 vertical layout
+        HORIZ: 1, // 5x3 horizontal layout
+        HORIZ_2PAGES: 2, // Two A4 pages each of 4x2 layout
+    };
+
     static RENDAKU = {
         "が": "か", "ga": "ka",
         "げ": "け", "ge": "ke",
@@ -34,16 +40,20 @@ class counterCard {
         {kana: 'はち',   roma: 'hachi'}, // 8
         {kana: 'きゅう', roma: 'kyū'},   // 9
         {kana: 'じゅう', roma: 'jū'},    // 10
+        {kana: 'なん',   roma: 'nan'},   // ?
     ];
+
+    static EXCEPT_CLASS = " except";
+    static EMPTY = {kana: '', roma: ''};
 
     /*! Constructor
      */
-    constructor(mode, question) {
+    constructor(mode, layout) {
         if (!(mode in Object.values(counterCard.MODES))) {
             mode = counterCard.MODES.BOTH;
         }
-        this._question = question; // True is we want a line for the question
         this._mode = mode;
+        this._layout = layout;
     }
 
     // Add coloring to the suffix part of the text for both kana and roma
@@ -77,9 +87,10 @@ class counterCard {
         }
     }
 
-    // return trure if the number is an exception
+    // return true if the number is an exception
     isExeption(text, num) {
-        var prefix = counterCard.NUMBERS_KANA[num]
+        if (!num) { return false; }
+        var prefix = counterCard.NUMBERS_KANA[num=="?" ? 11 : num];
 
         if (text["kana"].startsWith(prefix["kana"])) {
             return false;
@@ -91,33 +102,41 @@ class counterCard {
         var k = text["kana"] + suffix;
         var r = text["roma"] + suffix;
 
+        var except = "";
+        if (suffix != "") { // Check the question line
+            var prefix = "なん";
+            if (!text["kana"].startsWith(prefix)) {
+                except = counterCard.EXCEPT_CLASS;
+            }
+        }
+
         switch (this._mode) {
             case counterCard.MODES.KANA:
-                return `<tr><td class="kana ${size}" colspan="7">${k}</td></tr>`;
+                return `<tr><td class="kana ${size}${except}" colspan="7">${k}</td></tr>`;
             case counterCard.MODES.ROMA:
-                return `<tr><td class="roma ${size}" colspan="7">${r}</td></tr>`;
+                return `<tr><td class="roma ${size}${except}" colspan="7">${r}</td></tr>`;
             default:
-                return `<tr><td></td><td class="kana ${size}" colspan="2">${k}</td>` +
+                return `<tr><td></td><td class="kana ${size}${except}" colspan="2">${k}</td>` +
                     '<td></td>' +
-                    `<td class="roma ${size}" colspan="2">${r}</td><td></td></tr>`;
+                    `<td class="roma ${size}${except}" colspan="2">${r}</td><td></td></tr>`;
         }
     }
 
     tableLine4(cardData, num1, num2) {
         var items = [];
         var classes = [];
-        var text1 = cardData[num1.toString()];
-        var text2 = cardData[num2.toString()];
+        var text1 = num1 ? cardData[num1.toString()] : counterCard.EMPTY;
+        var text2 = num2 ? cardData[num2.toString()] : counterCard.EMPTY;
         var suff = cardData["suffix"];
 
         var except1 = "";
         var except2 = "";
 
-        if (this.isExeption(text1, num1)) { except1 = " except"; }
-        if (this.isExeption(text2, num2)) { except2 = " except"; }
+        if (this.isExeption(text1, num1)) { except1 = counterCard.EXCEPT_CLASS; }
+        if (this.isExeption(text2, num2)) { except2 = counterCard.EXCEPT_CLASS; }
 
-        text1 = this.colorize(text1, suff, num1);
-        text2 = this.colorize(text2, suff, num2);
+        if (num1) { text1 = this.colorize(text1, suff, num1); }
+        if (num2) { text2 = this.colorize(text2, suff, num2); }
 
         switch (this._mode) {
             case counterCard.MODES.KANA:
@@ -138,7 +157,11 @@ class counterCard {
         items = [""].concat(items.slice(0, 2), [""], items.slice(-2), [""]);
         var res = '<tr>';
         for (let i = 0; i < 7; i++) {
-            res += `<td class="${classes[i]}">${items[i]}</td>`;
+            if (items[i]) {
+                res += `<td class="${classes[i]}">${items[i]}</td>`;
+            } else {
+                res += `<td></td>`;
+            }
         }
         res += '</tr>';
 
@@ -146,7 +169,8 @@ class counterCard {
     }
 
     makeCard(cardData) {
-        var val = `<div class="cardTitle">${cardData["title"]}</div>`;
+        var layoutClass = this._layout == counterCard.LAYOUT.HORIZ ? " ignore" : "";
+        var val = `<div class="cardTitle${layoutClass}">${cardData["title"]}</div>`;
 
         val += `<img class="card" src="./img/${cardData["image"]}" />`;
 
@@ -157,9 +181,7 @@ class counterCard {
             val += this.tableLine4(cardData, i, i + 5);
         }
 
-        if (this._question) {
-            val += this.tableLine2(cardData["?"], " ？");
-        }
+        val += this.tableLine4(cardData, null, "?");
         val += '</table>';
 
         var res = document.createElement("div");
@@ -174,9 +196,17 @@ class counterCard {
     }
 
     makeCards(db, topics) {
+        var top = document.createElement("div");
         var table = document.createElement("table");
         for (let i = 0; i < topics.length; i++) {
             var line = topics[i];
+            if (line.length == 0) { // Empty array indicates a page break
+                top.appendChild(table);
+                var pagebreak = document.createElement("div");
+                pagebreak.classList.add("page-break");
+                top.appendChild(pagebreak);
+                table = document.createElement("table");
+            }
             var row = document.createElement("tr");
             for (let j = 0; j < line.length; j++) {
                 var cell = document.createElement("td");
@@ -186,6 +216,7 @@ class counterCard {
             }
             table.appendChild(row);
         }
-        return table;
+        top.appendChild(table);
+        return top;
     }
 }
