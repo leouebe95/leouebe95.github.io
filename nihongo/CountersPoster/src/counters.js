@@ -25,16 +25,16 @@ function buildTable(root, mode, dir) {
     var TOPICS = [
         [ // VERT
             ["thing", "small", "people", "age"],
-            ["floor", "order", "frequency", "animal"],
+            ["floor", "frequency", "order", "animal"],
             ["flat", "long", "book", "drink"],
             ["vehicle", "house", "sock", "clothe"]
         ], [ // HORIZ
-            ["thing", "small", "people", "age", "floor"],
-            ["order", "frequency", "animal", "flat", "long"],
+            ["thing", "small", "people", "age", "order"],
+            ["floor", "frequency", "animal", "flat", "long"],
             ["book", "drink", "house", "sock", "clothe"]
         ], [ // 2xA4
             ["thing", "small", "people", "age"],
-            ["floor", "order", "frequency", "animal"],
+            ["floor", "frequency", "order", "animal"],
             [], // generate a page break
             ["flat", "long", "book", "drink"],
             ["vehicle", "house", "sock", "clothe"]
