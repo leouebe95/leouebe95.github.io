@@ -1,6 +1,7 @@
 :root {
   --primary-color: #2c3e50; /* Deep navy for text */
-  --accent-color: #e74c3c;  /* Soft red for highlights (Japan-inspired) */
+  --accent-color: #424de8;  /* Soft blue */
+  --accent-color2: #e74c3c; /* Soft red for highlights (Japan-inspired) */
 
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba
 												 (0, 0, 0, 0.06);
@@ -165,16 +166,16 @@ td.stretch {
 }
 
 td.except {
-  background-color: #f4f9d0;
-  border-color: #b8cf10;
+  background-color: #f5f9d2;
+  border-color: #d7e566;
 }
 
 span.suff {
-  color: blue;
+  color: var(--accent-color);
 }
 
 span.suff2 {
-  color: var(--accent-color);
+  color: var(--accent-color2);
 }
 
 @media print {
