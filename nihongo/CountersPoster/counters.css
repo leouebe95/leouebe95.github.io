@@ -124,6 +124,7 @@ td.kana.large {
   padding-top: 0px;
   padding-bottom: 0px;
   text-align: center;
+  border-style: none;
 }
 
 div.compact td.roma.large,
@@ -173,7 +174,7 @@ span.suff {
 }
 
 span.suff2 {
-  color: red;
+  color: var(--accent-color);
 }
 
 @media print {
