@@ -1,13 +1,82 @@
-body {
-  font-size: 12px;
-  text-align: center;
+:root {
+  --primary-color: #2c3e50; /* Deep navy for text */
+  --accent-color: #e74c3c;  /* Soft red for highlights (Japan-inspired) */
 
-  font-family: "M PLUS 2", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-style: normal;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba
+												 (0, 0, 0, 0.06);
+  
+  --head-back-dark2: #3e9ac1;
+  --head-back-dark: #78b8d3;
+  --head-back: #bbdbe9;
+  --head-back-light: #d8ebf3;
+  --head-back-light2: #ecf5f9;
+
 }
 
+/* body ---------------------------------------- */
+body {
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+  font-family: 'Helvetica Neue', Arial, 'Noto Sans JP', sans-serif;
+  font-optical-sizing: auto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+/* header ---------------------------------------- */
+div.header {
+  align-items: center;
+  backdrop-filter: blur(8px); /* Modern glass effect */
+  background: var(--head-back);
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 16px;
+  gap: 20px;
+  height: 16px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 15px 30px;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  border-bottom-right-radius: 20px;
+}
+
+div.header span.right {
+  position: absolute;
+  right: 20px;
+}
+
+div.header span.left {
+  position: absolute;
+  left: 20px;
+}
+/* This targets buttons, dropdowns, and inputs in the header */
+.header select {
+  padding: 8px 16px;
+  border: 1px solid var(--head-back-dark);
+  border-radius: 16px;
+  background-color: var(--head-back-light);
+  color: var(--primary-color);
+  font-size: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.header select:hover {
+  background-color: var(--head-back-light2);
+  border-color: var(--head-back-dark2);
+  font-weight: 600;
+}
+
+/* main page ---------------------------------------- */
 table {
   width: 100%;
 }
@@ -92,30 +161,6 @@ td.num {
 
 td.stretch {
   width: 30%;
-}
-
-div.header {
-  background-color: #bbdbe9;
-  font-size: 16px;
-  width: 100%;
-  height: 16px;
-  padding-bottom: 10px;
-  padding-top: 10px;
-  margin-bottom: 20px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-div.header span.right {
-  position: absolute;
-  right: 20px;
-}
-
-div.header span.left {
-  position: absolute;
-  left: 20px;
 }
 
 td.except {
