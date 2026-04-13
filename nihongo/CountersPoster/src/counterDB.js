@@ -1,4 +1,5 @@
 
+/* exported counterDB */
 /*
   Read the counters data and store it in a structured object
 */

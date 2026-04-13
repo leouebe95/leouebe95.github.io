@@ -1,4 +1,5 @@
-counterData = {
+/* exported counterData */
+var counterData = {
   "1": {
     "small": "いっこ",
     "small2": "ikko",

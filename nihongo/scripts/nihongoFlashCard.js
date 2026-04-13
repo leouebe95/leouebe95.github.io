@@ -49,7 +49,7 @@
                     DOM._myClass.select(uiState);
                 }
             }
-            catch(e) {
+            catch {
                 // If the UI state was not saved, just ignore
             }
         }
@@ -72,7 +72,7 @@
             try {
                 let savedUIState = JSON.parse(savedStr);
                 setUIState(savedUIState);
-            } catch(e) {
+            } catch {
                 // Just ignore the saved UI state are use defaults
             }
         }
@@ -223,7 +223,6 @@
     function start() {
         // Start the app with only the 'practice' vocabulary
         var defaultFilter = {'Proficiency': new Set(['3-practice'])}
-        var defaultVisible = new Set(['Kana', 'Romaji', 'English']);
 
         // Start the app with only the 'practice' vocabulary
         __db.filterBy(defaultFilter, true);

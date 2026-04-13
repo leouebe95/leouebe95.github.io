@@ -1,4 +1,5 @@
 
+/* exported counterCard */
 /*
   Render counter as cards
 */
@@ -77,7 +78,7 @@ class counterCard {
     }
 
     // Add coloring to the suffix part of the text for both kana and roma
-    colorize(text, suffix, num) {
+    colorize(text, suffix) {
         var k = this.colorSingle(text["kana"], suffix["kana"]);
         var r = this.colorSingle(text["roma"], suffix["roma"]);
 

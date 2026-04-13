@@ -52,7 +52,7 @@
                     DOM._myClass.select(uiState);
                 }
             }
-            catch(e) {
+            catch {
                 // If the UI state was not saved, just ignore
             }
         }
@@ -91,7 +91,7 @@
             try {
                 let savedUIState = JSON.parse(savedStr);
                 setUIState(savedUIState);
-            } catch(e) {
+            } catch {
                 // console.log(e);
                 // Just ignore the saved UI state are use defaults
             }

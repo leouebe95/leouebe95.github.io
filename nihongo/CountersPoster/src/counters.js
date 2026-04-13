@@ -1,10 +1,9 @@
+/* global counterCard, counterDB, counterData */
 let db;
 
 function setPageSize(dir) {
-    var width, height;
-
     // Indexed by counterCard.LAYOUT
-    PAGE_SIZES = [
+    const PAGE_SIZES = [
         {width: "28.7cm", height: "41cm"},
         {width: "41cm", height: "28.7cm"},
         {width: "28.7cm", height: "20cm"}
@@ -73,7 +72,7 @@ function bootStrap() {
 
     // Initialize UI from local storage
     let savedModeStr = localStorage.getItem('CountersMode') || "KANA";
-    if (!counterCard.MODES.hasOwnProperty(savedModeStr)) {
+    if (!Object.prototype.hasOwnProperty.call(counterCard.MODES, savedModeStr)) {
         savedModeStr = "KANA";
     }
     const modeSelect = document.getElementById('modeSelect');
@@ -81,7 +80,7 @@ function bootStrap() {
     modeSelect.addEventListener('change', handleChange);
 
     let savedDirStr = localStorage.getItem('CountersDir') || "VERT";
-    if (!counterCard.LAYOUT.hasOwnProperty(savedDirStr)) {
+    if (!Object.prototype.hasOwnProperty.call(counterCard.LAYOUT, savedDirStr)) {
         savedDirStr = "VERT";
     }
     const dirSelect = document.getElementById('dirSelect');
