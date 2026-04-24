@@ -26,10 +26,11 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         var sheetId = '1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI'; // FIXME
         var tabName = 'Vocabulary';
         // var tabName = 'Sentences';
-        var query = 'SELECT A,B,C,D,E,F,G,H';
-        //var gvizAPI = `gviz/tq?tqx=out:csv&tq=${query}`;
-        var gvizAPI = `gviz/tq?tq=${query}`;
-        var url = `https://docs.google.com/spreadsheets/d/${sheetId}/${gvizAPI}&sheet=${tabName}`;
+        
+        // We use the CSV export API because gviz/tq respects the user's basic 
+        // filter on the spreadsheet, leading to missing rows. CSV export downloads the 
+        // whole sheet bypassing the filter.
+        var url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${tabName}`;
 
         // this.setDB(data);
         this.getDB(url, cb, refreshCb);
@@ -44,34 +45,71 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         this.initLabels();
     }
 
+    static parseCSV(text) {
+        let ret = [];
+        let curRow = [];
+        let curVal = '';
+        let inQuote = false;
+        for (let i = 0; i < text.length; i++) {
+            let c = text[i];
+            if (inQuote) {
+                if (c === '"') {
+                    if (i + 1 < text.length && text[i + 1] === '"') {
+                        curVal += '"';
+                        i++;
+                    } else {
+                        inQuote = false;
+                    }
+                } else {
+                    curVal += c;
+                }
+            } else {
+                if (c === '"') {
+                    inQuote = true;
+                } else if (c === ',') {
+                    curRow.push(curVal);
+                    curVal = '';
+                } else if (c === '\n') {
+                    curRow.push(curVal);
+                    ret.push(curRow);
+                    curRow = [];
+                    curVal = '';
+                } else if (c === '\r') {
+                    // ignore
+                } else {
+                    curVal += c;
+                }
+            }
+        }
+        if (curVal !== '' || curRow.length > 0) {
+            curRow.push(curVal);
+            ret.push(curRow);
+        }
+        return ret;
+    }
+
     /* ------------------------------------------------------------------------
        Extract the DB from the payload and store it in the current object
     */
-    storeDB(payloadData) {
-        var payload = payloadData.split("setResponse(")[1].slice(0,-2);
-        var obj = JSON.parse(payload);
+    storeDB(csvData) {
+        var rows = NihongoDB.parseCSV(csvData);
 
-        /* Extract the names from the column definition
-           obj.table.cols is an array of hash tables, the "label" entry is
-           the column name.
-        */
-        var colNames = obj.table.cols.map(x => x.label);
+        if (rows.length < 2) return;
+
+        var colNames = rows[0];
 
         var db = [];
         // Read each row
-        for(let row of obj.table.rows) {
-            let elem = {};
-            for (let i=0 ; i<colNames.length ; i++) {
-                let value = '';
-                var x = row['c'][i];
-                // If the column is not empty
-                if (x != null) {
+        for(let i=1 ; i<rows.length ; i++) {
+            let row = rows[i];
+            
+            // Skip empty rows
+            if (row.length === 1 && row[0].trim() === '') continue;
 
-                    // If this is a formatted cell, read the formatted value from "f"
-                    if ('f' in x) { value = x["f"]; }
-                    else value = x["v"];
-                }
-                elem[colNames[i]] = value;
+            let elem = {};
+            for (let j=0 ; j<colNames.length ; j++) {
+                let value = j < row.length ? row[j] : '';
+                elem[colNames[j]] = value;
             }
 
             // There is a special row with '!' and a fake date to work
@@ -111,6 +149,12 @@ class NihongoDB { // eslint-disable-line no-unused-vars
     */
     getDB(url, cb, refreshCb) {
         let cached = localStorage.getItem('nihongo_db_cache');
+        // Clear old JSON cache format
+        if (cached && (cached.includes('setResponse(') || cached.includes('google.visualization'))) {
+            localStorage.removeItem('nihongo_db_cache');
+            cached = null;
+        }
+
         if (cached) {
             this.showCacheMessage("Using local cached vocabulary");
             this.storeDB(cached);
