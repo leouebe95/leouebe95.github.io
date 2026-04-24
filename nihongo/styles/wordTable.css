@@ -5,12 +5,8 @@
   height: 1px;
 }
 
-.wordList .even tr:nth-child(even) {
-  background: #F0F0F0
-}
-
-.wordList .odd tr:nth-child(odd) {
-  background: #F0F0F0
+.wordList td.bg-gray {
+  background: #F0F0F0;
 }
 
 .wordList td.English {

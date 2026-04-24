@@ -29,16 +29,15 @@ class WordTable { // eslint-disable-line no-unused-vars
         this._linePerCol = Math.ceil(this._wordLen / this._nbCol);
         this._colIndx = 0;
         this._rowIndx = 0;
-        let width = Math.floor(100 / this._nbCol);
 
-        // Create all columns
-        this._columns = [];
-        for (let i = 0; i < this._nbCol; i++) {
-
-            var col = document.createElement("table");
-            col.classList.add(i % 2 ? 'odd' : 'even');
-            col.style.borderWidth = `${width}px`;
-            this._columns.push(col);
+        // Create the single table
+        this._table = document.createElement("table");
+        this._table.style.width = '100%';
+        this._rows = [];
+        for (let i = 0; i < this._linePerCol; i++) {
+            let tr = document.createElement("tr");
+            this._table.appendChild(tr);
+            this._rows.push(tr);
         }
     }
 
@@ -47,14 +46,12 @@ class WordTable { // eslint-disable-line no-unused-vars
        Add all the table content to the given DOM root
     */
     addTable(root) {
-        var table = document.createElement("div");
-        table.classList.add('wordList');
-        for (const col of this._columns) {
-            table.appendChild(col);
-        }
+        var container = document.createElement("div");
+        container.classList.add('wordList');
+        container.appendChild(this._table);
 
         // Finally add everything to the DOM
-        root.appendChild(table);
+        root.appendChild(container);
     }
 
     // ------------------------------------------------------------------------
@@ -63,14 +60,13 @@ class WordTable { // eslint-disable-line no-unused-vars
        column when it is full.
     */
     addLine(item) {
-        var newLine = document.createElement("tr");
         var kanji = item['Kanji'];
         var kana = item['Kana'];
         var ref = kanji.split('・')[0];
         var link = WordTable.dictURL.replace('${ref}', ref);
 
         if (kanji == kana) {
-            kanji = '';
+            kanji = '&#12288;'; // ideographic space, invisible in print
         } else {
             kanji = `<a target="_new" href="${link}">${kanji}</a>`;
         }
@@ -86,13 +82,20 @@ class WordTable { // eslint-disable-line no-unused-vars
             kanji = kanji + ` <a class="noprint" target="_new" href="${link}">${icon}</a>`;
         }
 
-        newLine.innerHTML = `
-		  <td class="Kanji">${kanji}</td>
-		  <td class="English">${item['English']}</td>
-		  <td class="Kana">${kana}</td>
-		  <td class="Romaji">${item['Romaji']}</td>`;
+        // Apply alternating background depending on the column and row index
+        let isEvenCol = (this._colIndx % 2 === 0);
+        let isEvenRow = (this._rowIndx % 2 === 0);
+        let needsBg = isEvenCol ? isEvenRow : !isEvenRow;
+        let bgClass = needsBg ? ' bg-gray' : '';
 
-        this._columns[this._colIndx].appendChild(newLine);
+        var html = `
+		  <td class="Kanji${bgClass}">${kanji}</td>
+		  <td class="English${bgClass}">${item['English']}</td>
+		  <td class="Kana${bgClass}">${kana}</td>
+		  <td class="Romaji${bgClass}">${item['Romaji']}</td>`;
+
+        this._rows[this._rowIndx].insertAdjacentHTML('beforeend', html);
+
         this._rowIndx++;
         if (this._rowIndx >= this._linePerCol) {
             this._rowIndx = 0;
