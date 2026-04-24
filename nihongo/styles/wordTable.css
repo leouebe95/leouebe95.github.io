@@ -18,6 +18,7 @@
 .wordList td.Kanji {
   font-size: var(--sheet-large-fontsize);
   padding-left: 10px;
+  position: relative;
 }
 
 .wordList td.Kana {
@@ -43,4 +44,8 @@
 .wordList a:hover {
   color: #C040C0;
   font-weight: bold;
+}
+
+.wordList .icon {
+  float: right;
 }

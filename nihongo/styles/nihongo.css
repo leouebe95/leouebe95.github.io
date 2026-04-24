@@ -1,6 +1,7 @@
 :root {
   --card-fontsize: 40px;
   --card-large-fontsize: 80px;
+  --sheet-small-fontsize: 10px;
   --sheet-fontsize: 12px;
   --sheet-large-fontsize: 18px;
 }

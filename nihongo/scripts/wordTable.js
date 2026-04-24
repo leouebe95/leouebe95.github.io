@@ -9,16 +9,15 @@ class WordTable { // eslint-disable-line no-unused-vars
     static dictURL = 'https://jisho.org/search/${ref}';
     static prefixes =
         {
-            'verb (1 dan)': { icon: '&#x2460;', url: WordTable.verbURL }, // ①
-            'verb (5 dan)': { icon: '&#x2464;', url: WordTable.verbURL }, // ⑤
-            'verb (irreg)': { icon: '&#x24CB;', url: WordTable.verbURL }, // Ⓥ
+            'verb (1 dan)': { icon: '&#x278A;', url: WordTable.verbURL }, // ➊
+            'verb (5 dan)': { icon: '&#x278E;', url: WordTable.verbURL }, // ➎
+            'verb (irreg)': { icon: '&#x1F165;', url: WordTable.verbURL }, // 🅥
         };
 
     // ------------------------------------------------------------------------
     constructor(wordLen, nbCol = 2) {
         this._wordLen = wordLen;
         this._nbCol = nbCol;
-
         this.initTable();
     }
 
@@ -66,7 +65,7 @@ class WordTable { // eslint-disable-line no-unused-vars
         var link = WordTable.dictURL.replace('${ref}', ref);
 
         if (kanji == kana) {
-            kanji = '&#12288;'; // ideographic space, invisible in print
+            kanji = '&#x3000;'; // ideographic space, invisible in print
         } else {
             kanji = `<a target="_new" href="${link}">${kanji}</a>`;
         }
@@ -79,7 +78,7 @@ class WordTable { // eslint-disable-line no-unused-vars
             link = encodeURI(prefix.url.replace('${ref}', ref));
             var icon = prefix.icon;
 
-            kanji = kanji + ` <a class="noprint" target="_new" href="${link}">${icon}</a>`;
+            kanji = kanji + `<a class="noprint icon" target="_new" href="${link}">${icon}</a>`;
         }
 
         // Apply alternating background depending on the column and row index
