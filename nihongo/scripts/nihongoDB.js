@@ -7,7 +7,7 @@
 /* ============================================================================
    Database holding the vocabulary list
 */
-class NihongoDB { // eslint-disable-line no-unused-vars
+class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
     static filters = ['Source', 'Proficiency', 'Category', 'Date', 'isKana'];
 
     static defaultEntry = {
@@ -23,17 +23,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
        Argument is the loaded database object (this)
     */
     constructor(cb, refreshCb) {
-        var sheetId = '1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI'; // FIXME
-        var tabName = 'Vocabulary';
-        // var tabName = 'Sentences';
-        
-        // We use the CSV export API because gviz/tq respects the user's basic 
-        // filter on the spreadsheet, leading to missing rows. CSV export downloads the 
-        // whole sheet bypassing the filter.
-        var url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${tabName}`;
-
-        // this.setDB(data);
-        this.getDB(url, cb, refreshCb);
+        super('1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI', 'Vocabulary', 'nihongo_db_cache', cb, refreshCb);
     }
 
     /* ------------------------------------------------------------------------
@@ -45,54 +35,11 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         this.initLabels();
     }
 
-    static parseCSV(text) {
-        let ret = [];
-        let curRow = [];
-        let curVal = '';
-        let inQuote = false;
-        for (let i = 0; i < text.length; i++) {
-            let c = text[i];
-            if (inQuote) {
-                if (c === '"') {
-                    if (i + 1 < text.length && text[i + 1] === '"') {
-                        curVal += '"';
-                        i++;
-                    } else {
-                        inQuote = false;
-                    }
-                } else {
-                    curVal += c;
-                }
-            } else {
-                if (c === '"') {
-                    inQuote = true;
-                } else if (c === ',') {
-                    curRow.push(curVal);
-                    curVal = '';
-                } else if (c === '\n') {
-                    curRow.push(curVal);
-                    ret.push(curRow);
-                    curRow = [];
-                    curVal = '';
-                } else if (c === '\r') {
-                    // ignore
-                } else {
-                    curVal += c;
-                }
-            }
-        }
-        if (curVal !== '' || curRow.length > 0) {
-            curRow.push(curVal);
-            ret.push(curRow);
-        }
-        return ret;
-    }
-
     /* ------------------------------------------------------------------------
        Extract the DB from the payload and store it in the current object
     */
     storeDB(csvData) {
-        var rows = NihongoDB.parseCSV(csvData);
+        var rows = DBManager.parseCSV(csvData);
 
         if (rows.length < 2) return;
 
@@ -100,14 +47,14 @@ class NihongoDB { // eslint-disable-line no-unused-vars
 
         var db = [];
         // Read each row
-        for(let i=1 ; i<rows.length ; i++) {
+        for (let i = 1; i < rows.length; i++) {
             let row = rows[i];
-            
+
             // Skip empty rows
             if (row.length === 1 && row[0].trim() === '') continue;
 
             let elem = {};
-            for (let j=0 ; j<colNames.length ; j++) {
+            for (let j = 0; j < colNames.length; j++) {
                 let value = j < row.length ? row[j] : '';
                 elem[colNames[j]] = value;
             }
@@ -122,77 +69,6 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         this.setDB(db);
         var dbSize = this._data.length;
         console.log(`Database finished loading (${dbSize} entries)`);
-    }
-
-    showCacheMessage(msg) {
-        let div = document.getElementById('localCacheMsg');
-        if (!div) {
-            div = document.createElement('div');
-            div.id = 'localCacheMsg';
-            div.className = 'noprint message';
-            document.body.appendChild(div);
-        }
-        div.innerText = msg;
-        div.style.display = 'block';
-    }
-
-    hideCacheMessage() {
-        let div = document.getElementById('localCacheMsg');
-        if (div) {
-            div.style.display = 'none';
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    /*!
-       Read the entire vocabulary database from a spreadsheet
-    */
-    getDB(url, cb, refreshCb) {
-        let cached = localStorage.getItem('nihongo_db_cache');
-        // Clear old JSON cache format
-        if (cached && (cached.includes('setResponse(') || cached.includes('google.visualization'))) {
-            localStorage.removeItem('nihongo_db_cache');
-            cached = null;
-        }
-
-        if (cached) {
-            this.showCacheMessage("Using local cached vocabulary");
-            this.storeDB(cached);
-            setTimeout(cb, 0);
-        }
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        fetch(url, { signal: controller.signal })
-            .then(response => response.text())
-            .then(data => {
-                clearTimeout(timeoutId);
-                let isFirstLoad = !cached;
-                if (!isFirstLoad) {
-                    if (cached === data) {
-                        this.hideCacheMessage();
-                        return; // No change
-                    }
-                }
-                localStorage.setItem('nihongo_db_cache', data);
-                
-                if (isFirstLoad) {
-                    this.storeDB(data);
-                    cb();
-                } else {
-                    this.storeDB(data);
-                    if (refreshCb) refreshCb();
-                    this.hideCacheMessage();
-                }
-            })
-            .catch(err => {
-                clearTimeout(timeoutId);
-                console.log(err);
-                if (cached) {
-                    this.showCacheMessage("no network access, using local cache");
-                }
-            });
     }
 
     // ------------------------------------------------------------------------
@@ -243,7 +119,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
        If ensureOneElem is true, then at least one element is always
        there (A default value in this case)
     */
-    filterBy(filter, ensureOneElem=false) {
+    filterBy(filter, ensureOneElem = false) {
         this._filteredData = [];
         const filters = NihongoDB.filters;
 
@@ -269,7 +145,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
             for (let f of filters) {
                 if (filter[f] && filter[f].size && (!filter[f].has(entry[f]))) {
                     keep = false;
-                continue;
+                    continue;
                 }
             }
             if (keep) {
@@ -300,7 +176,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
        Useful before calling pickOne(true, 0)
     */
     sortBy(key) {
-        this._filteredData.sort( (a, b) => {
+        this._filteredData.sort((a, b) => {
             return a[key].localeCompare(b[key]);
         })
     }
@@ -316,7 +192,7 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         while (this.numLeft > 0) {
             shuffled.push(this.pickOne(true));
         }
-        
+
         this._filteredData = shuffled;
     }
 
@@ -343,5 +219,21 @@ class NihongoDB { // eslint-disable-line no-unused-vars
         }
 
         return elem;
+    }
+    // ------------------------------------------------------------------------
+    /*
+       Find a vocabulary entry by its English translation.
+       Uses a lazy-initialized hash table for fast lookups.
+    */
+    findWordByEnglish(englishWord) {
+        if (!this._englishIndex) {
+            this._englishIndex = {};
+            for (let entry of this._data) {
+                if (entry['English']) {
+                    this._englishIndex[entry['English']] = entry;
+                }
+            }
+        }
+        return this._englishIndex[englishWord];
     }
 }
