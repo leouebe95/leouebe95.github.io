@@ -10,12 +10,12 @@ class DBManager {
        cb is the callback called when the database is ready.
        Argument is the loaded database object (this)
     */
-    constructor(sheetId, tabName, cacheKey, cb, refreshCb) {
+    constructor(sheetId, tabId, cacheKey, cb, refreshCb) {
         this.cacheKey = cacheKey;
-        // We use the CSV export API because gviz/tq respects the user's basic 
-        // filter on the spreadsheet, leading to missing rows. CSV export downloads the 
+        // We use the CSV export API because gviz/tq respects the user's basic
+        // filter on the spreadsheet, leading to missing rows. CSV export downloads the
         // whole sheet bypassing the filter.
-        var url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&sheet=${tabName}`;
+        var url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${tabId}`;
 
         this.getDB(url, cb, refreshCb);
     }
@@ -116,7 +116,7 @@ class DBManager {
                     }
                 }
                 localStorage.setItem(this.cacheKey, data);
-                
+
                 if (isFirstLoad) {
                     this.storeDB(data);
                     if (cb) cb();

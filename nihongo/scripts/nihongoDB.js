@@ -23,7 +23,9 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
        Argument is the loaded database object (this)
     */
     constructor(cb, refreshCb) {
-        super('1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI', 'Vocabulary', 'nihongo_db_cache', cb, refreshCb);
+        var sheetId = '1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI';
+        var tabID = '1935990244'; // Vocabulary
+        super(sheetId, tabID, 'nihongo_db_cache', cb, refreshCb);
     }
 
     /* ------------------------------------------------------------------------
@@ -68,7 +70,7 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
 
         this.setDB(db);
         var dbSize = this._data.length;
-        console.log(`Database finished loading (${dbSize} entries)`);
+        console.log(`Vocabulary database finished loading (${dbSize} entries)`);
     }
 
     // ------------------------------------------------------------------------
@@ -94,6 +96,15 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
         return data;
     }
 
+
+    // ------------------------------------------------------------------------
+    /*
+       Return the canonical part of the entry. Used for key or image names.
+    */
+    static canonical(entry) {
+        // Remove any character after (and including) , or /
+        return entry.replace(/[,/].*$/, '').trim();
+    }
     // ------------------------------------------------------------------------
     /*
        Compute all possible filter values
@@ -230,7 +241,8 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
             this._englishIndex = {};
             for (let entry of this._data) {
                 if (entry['English']) {
-                    this._englishIndex[entry['English']] = entry;
+                    let key = NihongoDB.canonical(entry['English']);
+                    this._englishIndex[key] = entry;
                 }
             }
         }
