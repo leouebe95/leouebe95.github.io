@@ -48,4 +48,5 @@
 
 .wordList .icon {
   float: right;
+  font-size: var(--sheet-fontsize);
 }

@@ -9,9 +9,9 @@ class WordTable { // eslint-disable-line no-unused-vars
     static dictURL = 'https://jisho.org/search/${ref}';
     static prefixes =
         {
-            'verb (1 dan)': { icon: '&#x278A;', url: WordTable.verbURL }, // ➊
-            'verb (5 dan)': { icon: '&#x278E;', url: WordTable.verbURL }, // ➎
-            'verb (irreg)': { icon: '&#x1F165;', url: WordTable.verbURL }, // 🅥
+            'verb (1 dan)': { icon: '1', url: WordTable.verbURL }, // ➊
+            'verb (5 dan)': { icon: '5', url: WordTable.verbURL }, // ➎
+            'verb (irreg)': { icon: 'V', url: WordTable.verbURL }, // 🅥
         };
 
     // ------------------------------------------------------------------------
@@ -78,7 +78,7 @@ class WordTable { // eslint-disable-line no-unused-vars
             link = encodeURI(prefix.url.replace('${ref}', ref));
             var icon = prefix.icon;
 
-            kanji = kanji + `<a class="noprint icon" target="_new" href="${link}">${icon}</a>`;
+            kanji = kanji + `<a class="icon" target="_new" href="${link}">${icon}</a>`;
         }
 
         // Apply alternating background depending on the column and row index
