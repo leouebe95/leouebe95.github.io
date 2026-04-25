@@ -47,10 +47,49 @@
         }
     };
 
+    function updateSlideButtons() {
+        let selector = document.getElementById('slide-selector');
+        let prevButton = document.getElementById('prev-slide');
+        let nextButton = document.getElementById('next-slide');
+
+        let index = selector.selectedIndex;
+        let length = selector.options.length;
+
+        if (index <= 1) {
+            prevButton.disabled = true;
+        } else {
+            prevButton.disabled = false;
+        }
+
+        if (index === 0 || index === length - 1) {
+            nextButton.disabled = true;
+        } else {
+            nextButton.disabled = false;
+        }
+    }
+
+    function prevSlide() {
+        let selector = document.getElementById('slide-selector');
+        if (selector.selectedIndex > 1) {
+            selector.selectedIndex--;
+            renderSlide();
+        }
+    }
+
+    function nextSlide() {
+        let selector = document.getElementById('slide-selector');
+        if (selector.selectedIndex > 0 && selector.selectedIndex < selector.options.length - 1) {
+            selector.selectedIndex++;
+            renderSlide();
+        }
+    }
+
     function renderSlide() {
         let slideName = document.getElementById('slide-selector').value;
         let table = document.getElementById('slide-table');
         table.innerHTML = ''; // Clear table
+        
+        updateSlideButtons();
 
         if (!slideName) {
             setMessage("Please select a slide.");
@@ -60,6 +99,7 @@
         setMessage("");
         let slideData = __slideDB.getSlideData(slideName);
         let noErrorToggle = document.getElementById('no-error-toggle').checked;
+        let showRomaji = document.getElementById('show-romaji-toggle').checked;
 
         for (let row of slideData) {
             let tr = document.createElement('tr');
@@ -99,12 +139,15 @@
 
                 var kana = entry.Kana;
                 if (kana == entry.Kanji) { kana = ' '; }
+                
+                let romajiHtml = showRomaji ? `<div class="romaji">${entry.Romaji}</div>` : '';
+                
                 // Entry found
                 td.innerHTML = `
                     <div class="slide-card">
                         <div class="img">
                         <img src="./VocabularyImages/${baseName}.png" alt="${baseName}.png" onerror="handleImageError(this)"></div>
-                        <div class="romaji">${entry.Romaji}</div>
+                        ${romajiHtml}
                         <div class="kana">${kana}</div>
                         <div class="kanji">${entry.Kanji}</div>
                         <div class="english">${entry.English}</div>
@@ -124,6 +167,11 @@
 
         document.getElementById('slide-selector').addEventListener('change', renderSlide);
         document.getElementById('no-error-toggle').addEventListener('change', renderSlide);
+        document.getElementById('show-romaji-toggle').addEventListener('change', renderSlide);
+        document.getElementById('prev-slide').addEventListener('click', prevSlide);
+        document.getElementById('next-slide').addEventListener('click', nextSlide);
+        
+        updateSlideButtons();
     }
 
     document.addEventListener('DOMContentLoaded', main);
