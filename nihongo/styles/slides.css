@@ -1,0 +1,83 @@
+/* Styles for nihongoSlides.html */
+
+#slide-table {
+    border-collapse: collapse;
+    margin: 5px auto;
+    font-size: 12px;
+}
+
+#slide-table td {
+    padding: 5px;
+    vertical-align: top;
+    text-align: center;
+}
+
+.slide-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    width: 150px;
+    height: 230px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.slide-card .img {
+    min-width: 130px;
+    min-height: 130px;
+    max-width: 130px;
+    max-height: 130px;
+}
+
+.slide-card img {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.slide-card .romaji {
+    font-size: 1em;
+    color: #CCC;
+}
+
+.slide-card .kana {
+    font-size: .75em;
+    font-weight: bold;
+    color: #333;
+}
+
+.slide-card .kanji {
+    font-size: 1.7em;
+    color: #000;
+}
+
+.slide-card .english {
+    font-size: 1em;
+    color: #0056b3;
+}
+
+.slide-card .not-found {
+    font-size: 1.2em;
+    color: #d9534f;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.slide-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.slide-controls select {
+    padding: 5px 10px;
+    font-size: 1.1em;
+}

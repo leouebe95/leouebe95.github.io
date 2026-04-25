@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="UTF-8" />
+	<title>Japanese Slides</title>
+	<link id="favicon" rel="icon" href="nihongo.png" type="image/x-icon">
+
+	<link type="text/css" rel="stylesheet" href="styles/nihongo.css" />
+	<link type="text/css" rel="stylesheet" href="styles/slides.css" />
+
+	<script type="text/javascript" src="scripts/dbManager.js"></script>
+	<script type="text/javascript" src="scripts/nihongoDB.js"></script>
+	<script type="text/javascript" src="scripts/slideDB.js"></script>
+	<script type="text/javascript" src="scripts/nihongoSlides.js"></script>
+
+	<!-- For iOS  -->
+	<meta name="viewport"
+		  content="user-scalable=no, width=device-width,
+				   initial-scale=1.0, maximum-scale=1.0" />
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="apple-touch-icon" href="img/place.jpg" />
+
+  </head>
+  <body>
+    <div id="slides-container">
+      <table id="slide-table">
+        <!-- Populated dynamically -->
+      </table>
+    </div>
+
+	<div id="UI" class="noprint pad">
+      <div class="slide-controls">
+        <label for="slide-selector"><strong>Select Slide:</strong></label>
+        <select id="slide-selector">
+          <option value="">-- Select a slide --</option>
+        </select>
+        
+        <label>
+          <input type="checkbox" id="no-error-toggle">
+          No Error (Hide missing entries/images)
+        </label>
+      </div>
+      <div id="messageBox"></div>
+	</div>
+  </body>
+</html>
