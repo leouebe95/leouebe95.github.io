@@ -40,13 +40,6 @@
         }
     }
 
-    window.handleImageError = function (img) {
-        let noErrorToggle = document.getElementById('no-error-toggle').checked;
-        if (noErrorToggle) {
-            img.style.display = 'none';
-        }
-    };
-
     function updateSlideButtons() {
         let selector = document.getElementById('slide-selector');
         let prevButton = document.getElementById('prev-slide');
@@ -88,7 +81,7 @@
         let slideName = document.getElementById('slide-selector').value;
         let table = document.getElementById('slide-table');
         table.innerHTML = ''; // Clear table
-        
+
         updateSlideButtons();
 
         if (!slideName) {
@@ -98,7 +91,6 @@
 
         setMessage("");
         let slideData = __slideDB.getSlideData(slideName);
-        let noErrorToggle = document.getElementById('no-error-toggle').checked;
         let showRomaji = document.getElementById('show-romaji-toggle').checked;
 
         for (let row of slideData) {
@@ -119,29 +111,23 @@
                 let baseName = NihongoDB.canonical(cellName);
 
                 if (!entry) {
-                    if (noErrorToggle) {
-                        // Leave totally empty
-                        tr.appendChild(td);
-                        continue;
-                    } else {
-                        // Display image, english, and "Not found"
-                        td.innerHTML = `
+                    // Display image, english, and "Not found"
+                    td.innerHTML = `
                             <div class="slide-card">
                                 <img src="./VocabularyImages/${baseName}.png" alt="${baseName}.png" onerror="handleImageError(this)">
                                 <div class="not-found">Not found</div>
                                 <div class="english">${cellName}</div>
                             </div>
                         `;
-                        tr.appendChild(td);
-                        continue;
-                    }
+                    tr.appendChild(td);
+                    continue;
                 }
 
                 var kana = entry.Kana;
                 if (kana == entry.Kanji) { kana = ' '; }
-                
+
                 let romajiHtml = showRomaji ? `<div class="romaji">${entry.Romaji}</div>` : '';
-                
+
                 // Entry found
                 td.innerHTML = `
                     <div class="slide-card">
@@ -166,11 +152,10 @@
         __slideDB = new SlideDB(checkReady, null);
 
         document.getElementById('slide-selector').addEventListener('change', renderSlide);
-        document.getElementById('no-error-toggle').addEventListener('change', renderSlide);
         document.getElementById('show-romaji-toggle').addEventListener('change', renderSlide);
         document.getElementById('prev-slide').addEventListener('click', prevSlide);
         document.getElementById('next-slide').addEventListener('click', nextSlide);
-        
+
         updateSlideButtons();
     }
 
