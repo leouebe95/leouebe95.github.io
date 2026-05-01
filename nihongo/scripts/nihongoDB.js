@@ -103,6 +103,9 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
     */
     static canonical(entry) {
         // Remove any character after (and including) , or /
+        // Remove all words inside [] or <>
+        entry = entry.replace(/<[^>]+>/, '')
+        entry = entry.replace(/\[[^\]]+\]/, '')
         return entry.replace(/[,/].*$/, '').trim();
     }
     // ------------------------------------------------------------------------
