@@ -77,22 +77,13 @@
         let index = selector.selectedIndex;
         let length = selector.options.length;
 
-        if (index <= 1) {
-            prevButton.disabled = true;
-        } else {
-            prevButton.disabled = false;
-        }
-
-        if (index === 0 || index === length - 1) {
-            nextButton.disabled = true;
-        } else {
-            nextButton.disabled = false;
-        }
+        prevButton.disabled = (index == 0);
+        nextButton.disabled = index >= length - 1;
     }
 
     function prevSlide() {
         let selector = document.getElementById('slide-selector');
-        if (selector.selectedIndex > 1) {
+        if (selector.selectedIndex > 0) {
             selector.selectedIndex--;
             renderSlide();
         }
@@ -100,7 +91,7 @@
 
     function nextSlide() {
         let selector = document.getElementById('slide-selector');
-        if (selector.selectedIndex > 0 && selector.selectedIndex < selector.options.length - 1) {
+        if (selector.selectedIndex < selector.options.length - 1) {
             selector.selectedIndex++;
             renderSlide();
         }
@@ -157,8 +148,10 @@
                 }
 
                 var kana = entry.Kana;
-                if (kana == entry.Kanji) { kana = ' '; }
-
+                if (kana == entry.Kanji) {
+                    // ideographic space, invisible in print
+                    kana = '&#x3000;';
+                }
                 let romajiHtml = showRomaji ? `<div class="romaji">${entry.Romaji}</div>` : '';
 
                 // Entry found
