@@ -22,7 +22,7 @@
         if (__loadedCount === 2) {
             // Both DBs are loaded
             populateSlideSelector();
-            setMessage("Data loaded. Please select a slide.");
+            restoreUIState();
         }
     }
 
@@ -31,13 +31,42 @@
         let slideNames = __slideDB.getSlideNames();
 
         slideNames.sort();
-
+        
+        selector.innerHTML = ''; // Reset the control
         for (let name of slideNames) {
             let option = document.createElement('option');
             option.value = name;
             option.innerText = name;
             selector.appendChild(option);
         }
+    }
+
+    function saveUIState() {
+        let slideName = document.getElementById('slide-selector').value;
+        let showRomaji = document.getElementById('show-romaji-toggle').checked;
+        localStorage.setItem('nihongoSlides_slideName', slideName);
+        localStorage.setItem('nihongoSlides_showRomaji', showRomaji);
+    }
+
+    function restoreUIState() {
+        let savedSlideName = localStorage.getItem('nihongoSlides_slideName');
+        let savedShowRomaji = localStorage.getItem('nihongoSlides_showRomaji');
+
+        if (savedShowRomaji !== null) {
+            document.getElementById('show-romaji-toggle').checked = (savedShowRomaji === 'true');
+        }
+
+        if (savedSlideName !== null) {
+            let selector = document.getElementById('slide-selector');
+            for (let i = 0; i < selector.options.length; i++) {
+                if (selector.options[i].value === savedSlideName) {
+                    selector.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        renderSlide();
     }
 
     function updateSlideButtons() {
@@ -83,6 +112,7 @@
         table.innerHTML = ''; // Clear table
 
         updateSlideButtons();
+        saveUIState();
 
         if (!slideName) {
             setMessage("Please select a slide.");
@@ -96,27 +126,30 @@
         for (let row of slideData) {
             let tr = document.createElement('tr');
 
-            for (let cellName of row) {
+            for (let item of row) {
                 let td = document.createElement('td');
 
-                cellName = cellName.trim();
+                item = item.trim();
+                // Optional text in { } is for image name only
+                let key = item.replace(/\{[^\}]+\}/g, '');
 
-                if (cellName === "") {
+                if (key === "") {
                     // Empty space
                     tr.appendChild(td);
                     continue;
                 }
 
-                let entry = __nihongoDB.findWordByEnglish(cellName);
-                let baseName = NihongoDB.canonical(cellName);
+                let entry = __nihongoDB.findWordByEnglish(key);
+                // Kepp only whjayt is inside the {}
+                let imgName = item.replace(/[{}]/gi, '')+".png";
 
                 if (!entry) {
                     // Display image, english, and "Not found"
                     td.innerHTML = `
                             <div class="slide-card">
-                                <img src="./VocabularyImages/${baseName}.png" alt="${baseName}.png" onerror="handleImageError(this)">
+                                <img src="./VocabularyImages/${imgName}" alt="${imgName}">
                                 <div class="not-found">Not found</div>
-                                <div class="english">${cellName}</div>
+                                <div class="english">${item}</div>
                             </div>
                         `;
                     tr.appendChild(td);
@@ -132,7 +165,7 @@
                 td.innerHTML = `
                     <div class="slide-card">
                         <div class="img">
-                        <img src="./VocabularyImages/${baseName}.png" alt="${baseName}.png" onerror="handleImageError(this)"></div>
+                        <img src="./VocabularyImages/${imgName}" alt="${imgName}"></div>
                         ${romajiHtml}
                         <div class="kana">${kana}</div>
                         <div class="kanji">${entry.Kanji}</div>
