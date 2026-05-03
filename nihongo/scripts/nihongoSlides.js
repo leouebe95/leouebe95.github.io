@@ -31,7 +31,7 @@
         let slideNames = __slideDB.getSlideNames();
 
         slideNames.sort();
-        
+
         selector.innerHTML = ''; // Reset the control
         for (let name of slideNames) {
             let option = document.createElement('option');
@@ -65,7 +65,7 @@
                 }
             }
         }
-        
+
         renderSlide();
     }
 
@@ -95,6 +95,28 @@
             selector.selectedIndex++;
             renderSlide();
         }
+    }
+
+    /*
+      If text has extra text in [] or (), normalize and use a smaller font.
+     */
+    function formatExtra(text) {
+        // First convert all () into []
+        text = text.replace(/\(/g, '[');
+        text = text.replace(/（/g, '[');
+        text = text.replace(/\)/g, ']');
+        text = text.replace(/）/g, ']');
+
+        // Surround all [...] parts with "extra" span, and replace with ()
+        text = text.replace(/\[(.*?)\]/g, '<span class="extra">($1)</span>');
+
+        // Consider extra all text following ・(Japanese dot). It's used to indicate the ~masu form
+        text = text.replace(/(・.*?)$/, '<span class="extra">$1</span>');
+
+        // 「な」is used to indicate ~na adjectives
+        text = text.replace(/(「.*?」)/g, '<span class="extra">$1</span>');
+
+        return text;
     }
 
     function renderSlide() {
@@ -133,38 +155,44 @@
                 let entry = __nihongoDB.findWordByEnglish(key);
                 // Kepp only whjayt is inside the {}
                 let imgName = item.replace(/[{}]/gi, '')+".png";
-
+                let content = '';
                 if (!entry) {
                     // Display image, english, and "Not found"
-                    td.innerHTML = `
-                            <div class="slide-card">
-                                <img src="./VocabularyImages/${imgName}" alt="${imgName}">
-                                <div class="not-found">Not found</div>
-                                <div class="english">${item}</div>
-                            </div>
+                    content = `
+                         <div class="not-found">Not found</div>
+                         <div class="english">${item}</div>
                         `;
-                    tr.appendChild(td);
-                    continue;
-                }
+                } else {
+                    var kana = entry.Kana;
+                    var kanji = entry.Kanji;
+                    var roma = entry.Romaji;
 
-                var kana = entry.Kana;
-                if (kana == entry.Kanji) {
-                    // ideographic space, invisible in print
-                    kana = '&#x3000;';
-                }
-                let romajiHtml = showRomaji ? `<div class="romaji">${entry.Romaji}</div>` : '';
+                    if (kana == entry.Kanji) {
+                        // ideographic space, invisible in print
+                        kana = '&#x3000;';
+                    }
 
-                // Entry found
-                td.innerHTML = `
-                    <div class="slide-card">
-                        <div class="img">
-                        <img src="./VocabularyImages/${imgName}" alt="${imgName}"></div>
+                    // format [] or () in kanji and kana
+                    kanji = formatExtra(kanji);
+                    kana = formatExtra(kana);
+                    roma = formatExtra(roma);
+                    let romajiHtml = showRomaji ? `<div class="romaji">${roma}</div>` : '';
+
+                    // Entry found
+                    content = `
                         ${romajiHtml}
                         <div class="kana">${kana}</div>
-                        <div class="kanji">${entry.Kanji}</div>
+                        <div class="kanji">${kanji}</div>
                         <div class="english">${entry.English}</div>
-                    </div>
                 `;
+
+                    td.innerHTML = `
+                    <div class="slide-card">
+                        <div class="img"><img src="./VocabularyImages/${imgName}" alt="${imgName}"></div>
+${content}
+                    </div>
+                    `;
+                }
                 tr.appendChild(td);
             }
             table.appendChild(tr);

@@ -16,7 +16,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 8px;
-    width: 150px;
+    width: 180px;
     height: 230px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     background-color: white;
@@ -43,18 +43,30 @@
 
 .slide-card .romaji {
     font-size: 1em;
-    color: #CCC;
+    color: #AA0;
 }
 
+.slide-card .romaji span.extra{
+    color: #CCC;
+}
 .slide-card .kana {
     font-size: .75em;
     font-weight: bold;
     color: #333;
 }
 
+.slide-card .kana span.extra{
+    color: #888;
+}
+
 .slide-card .kanji {
     font-size: 1.7em;
     color: #000;
+}
+
+.slide-card .kanji span.extra{
+    font-size: .66em;
+    color: #888;
 }
 
 .slide-card .english {
