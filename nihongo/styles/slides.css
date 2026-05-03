@@ -44,6 +44,7 @@
 .slide-card .romaji {
     font-size: 1em;
     color: #AA0;
+    min-height: 15px;
 }
 
 .slide-card .romaji span.extra{
@@ -53,6 +54,7 @@
     font-size: .75em;
     font-weight: bold;
     color: #333;
+    min-height: 13px;
 }
 
 .slide-card .kana span.extra{
@@ -62,6 +64,15 @@
 .slide-card .kanji {
     font-size: 1.7em;
     color: #000;
+    min-height: 30px;
+}
+
+/* reduced font size for Kana string that are too long */
+.slide-card .kanji.small {
+    font-size: 1.5em;
+}
+.slide-card .kanji.tiny {
+    font-size: 1.2em;
 }
 
 .slide-card .kanji span.extra{
@@ -72,6 +83,7 @@
 .slide-card .english {
     font-size: 1em;
     color: #0056b3;
+    min-height: 15px;
 }
 
 .slide-card .not-found {

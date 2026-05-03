@@ -26,6 +26,10 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
         var sheetId = '1CXgb4O6LnszuytBKeS3uOPFcygkybrm4CJhvq5VWhBI';
         var tabID = '1935990244'; // Vocabulary
         super(sheetId, tabID, 'nihongo_db_cache', cb, refreshCb);
+
+        // Cached object for helper methods
+        this._segmenter = null;
+        this._segmenterChecked = false;
     }
 
     /* ------------------------------------------------------------------------
@@ -96,7 +100,6 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
         return data;
     }
 
-
     // ------------------------------------------------------------------------
     /*
        Return the canonical part of the entry. Used for key or image names.
@@ -108,6 +111,67 @@ class NihongoDB extends DBManager { // eslint-disable-line no-unused-vars
         entry = entry.replace(/\[[^\]]+\]/g, '')
         return entry.replace(/[,/].*$/, '').trim();
     }
+
+    // ------------------------------------------------------------------------
+    /*
+      Helper method to count the number of visible glyphs (grapheme clusters) in a string.
+      @param {string} text - The UTF-16 input string.
+      @param {string} [locale='en'] - Optional locale for language-specific rules.
+      @returns {number} The count of perceived characters.
+    */
+    static countGlyphs(text, locale = 'ja-JP') {
+        // Lazy init of the segmenter
+        if (!this._segmenterChecked) {
+            this._segmenterChecked = true;
+
+            // Check if Intl.Segmenter is supported (modern browsers)
+            if (!Intl.Segmenter) {
+                console.warn('Intl.Segmenter not supported. Falling back to spread operator.');
+                this._noSegmenter = true;
+            } else {
+                this._segmenter = new Intl.Segmenter(locale, { granularity: 'grapheme' });
+            }
+        }
+
+        // Intl.Segmenter API not available
+        if (!this._segmenter) {
+            return [...text].length;
+        }
+
+        const segments = this._segmenter.segment(text);
+
+        // segments is an iterator; need to iterate to find the length
+        let count = 0;
+        for (const _ of segments) {
+            count++;
+        }
+        return count;
+    }
+
+    // ------------------------------------------------------------------------
+    /*
+      Computes the width and height of a string in pixels.
+      @param {string} text - The input string.
+      @param {string} font - The CSS font string (e.g., "16px Arial").
+      @returns {Object} { width, height } in pixels.
+    */
+    getTextSize(text, font = '16px sans-serif') {
+        // FIXME: cache the canvas and default font for repeated calls
+        // Create a headless canvas
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = font;
+
+        const metrics = context.measureText(text);
+
+        return {
+            width: metrics.width,
+            // actualBoundingBox tracks the specific pixels used by the string
+            // fontBoundingBox tracks the entire line height including padding
+            height: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+        };
+    }
+
     // ------------------------------------------------------------------------
     /*
        Compute all possible filter values

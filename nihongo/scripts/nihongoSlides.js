@@ -172,17 +172,31 @@
                         kana = '&#x3000;';
                     }
 
+                    // Maximal allowed number of characters for kanji
+                    // is 7. After that we need to reduce the font size.
+                    // Need to call 'countGlyphs' because of UTF-16
+                    // encoding
+                    // FIXME: this does not take into account the
+                    // "extra" parts and sometimes renders a bit too small
+                    //
+                    let nbJpChar = NihongoDB.countGlyphs(kanji);
+                    let moreKanjiClasses = "";
+                    if (nbJpChar > 9) {
+                        moreKanjiClasses = " tiny";
+                    } else if (nbJpChar > 7) {
+                        moreKanjiClasses = " small";
+                    }
+
                     // format [] or () in kanji and kana
                     kanji = formatExtra(kanji);
                     kana = formatExtra(kana);
                     roma = formatExtra(roma);
                     let romajiHtml = showRomaji ? `<div class="romaji">${roma}</div>` : '';
 
-                    // Entry found
                     content = `
                         ${romajiHtml}
                         <div class="kana">${kana}</div>
-                        <div class="kanji">${kanji}</div>
+                        <div class="kanji${moreKanjiClasses}">${kanji}</div>
                         <div class="english">${entry.English}</div>
                 `;
 
