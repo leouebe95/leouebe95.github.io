@@ -1,107 +1,113 @@
 /* Styles for nihongoSlides.html */
 
 #slide-table {
-    border-collapse: collapse;
-    margin: 5px auto;
-    font-size: 12px;
+  border-collapse: collapse;
+  margin: 5px auto;
+  font-size: 16px;
 }
 
 #slide-table td {
-    padding: 5px;
-    vertical-align: top;
-    text-align: center;
+  padding: 5px;
+  vertical-align: top;
+  text-align: center;
 }
 
 .slide-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 8px;
-    width: 180px;
-    height: 230px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  width: 250px;
+  height: 250px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .slide-card .img {
-    min-width: 130px;
-    min-height: 130px;
-    max-width: 130px;
-    max-height: 130px;
+  min-width: 230px;
+  max-width: 230px;
+  min-height: 120px;
+  max-height: 120px;
+
+  /* Force Flexbox centering — html2canvas reads this perfectly */
+  display: flex !important;
+  align-items: center !important;     /* Centers vertically */
+  justify-content: center !important;   /* Centers horizontally */
 }
 
 .slide-card img {
-    width: 130px;
-    height: 130px;
-    object-fit: contain;
-    margin-top: auto;
-    margin-bottom: auto;
+  width: 230px;
+  height: 120px;
+  object-fit: contain;
 }
 
 .slide-card .romaji {
-    font-size: 1em;
-    color: #AA0;
-    min-height: 15px;
+  font-size: 1em;
+  color: #e3e37b;
+  min-height: 15px;
 }
 
 .slide-card .romaji span.extra{
-    color: #CCC;
+  color: #CCC;
 }
+
 .slide-card .kana {
-    font-size: .75em;
-    font-weight: bold;
-    color: #333;
-    min-height: 13px;
+  font-size: 1em;
+  color: #444;
+  min-height: 13px;
 }
 
 .slide-card .kana span.extra{
-    color: #888;
+  color: #888;
 }
 
 .slide-card .kanji {
-    font-size: 1.7em;
-    color: #000;
-    min-height: 30px;
+  font-size: 1.7em;
+  color: #000;
+  min-height: 30px;
 }
 
 /* reduced font size for Kana string that are too long */
 .slide-card .kanji.small {
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 .slide-card .kanji.tiny {
-    font-size: 1.2em;
+  font-size: 1.2em;
 }
 
 .slide-card .kanji span.extra{
-    font-size: .66em;
-    color: #888;
+  font-size: .66em;
+  color: #888;
 }
 
 .slide-card .english {
-    font-size: 1em;
-    color: #0056b3;
-    min-height: 15px;
+  font-size: 1em;
+  color: #0056b3;
+  min-height: 15px;
 }
 
 .slide-card .not-found {
-    font-size: 1.2em;
-    color: #d9534f;
-    font-weight: bold;
-    margin: 8px 0;
+  font-size: 1.2em;
+  color: #d9534f;
+  font-weight: bold;
+  margin: 8px 0;
 }
 
 .slide-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
 .slide-controls select {
-    padding: 5px 10px;
-    font-size: 1.1em;
+  padding: 5px 10px;
+  font-size: 1.1em;
+}
+
+.hidden {
+  display: none;
 }

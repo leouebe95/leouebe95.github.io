@@ -97,6 +97,31 @@
         }
     }
 
+    function goToSlide(slideName) {
+        console.log(`Going to slide "${slideName}"`);
+        let select = document.getElementById('slide-selector');
+        select.value = slideName;
+        renderSlide();
+    }
+
+    function exportPptx() {
+        let select = document.getElementById('slide-selector');
+        const pptxManager = new PptxManager();
+
+        // Read the names of all slides
+        const options = Array.from(select.options);
+
+        // Hide the UI while snapshoting the slides to get the
+        // proper absolute coordinates
+        let UIdiv = document.getElementById('UI');
+        UIdiv.classList.add('hidden')
+
+        pptxManager.runMultiPageExport(options, goToSlide)
+
+        // Display the UI again
+        UIdiv.classList.remove('hidden')
+    }
+
     /*
       If text has extra text in [] or (), normalize and use a smaller font.
      */
@@ -191,13 +216,13 @@
                     kanji = formatExtra(kanji);
                     kana = formatExtra(kana);
                     roma = formatExtra(roma);
-                    let romajiHtml = showRomaji ? `<div class="romaji">${roma}</div>` : '';
+                    let romajiHtml = showRomaji ? `<div class="romaji as-text">${roma}</div>` : '';
 
                     content = `
                         ${romajiHtml}
-                        <div class="kana">${kana}</div>
-                        <div class="kanji${moreKanjiClasses}">${kanji}</div>
-                        <div class="english">${entry.English}</div>
+                        <div class="kana as-text">${kana}</div>
+                        <div class="kanji as-text${moreKanjiClasses}">${kanji}</div>
+                        <div class="english as-text">${entry.English}</div>
                 `;
 
                     td.innerHTML = `
@@ -212,7 +237,12 @@ ${content}
             table.appendChild(tr);
         }
     }
-
+    /*
+    function PptxGenJSLoaded() {
+        console.log('\nPptxGenJSLoaded is loaded now\n');
+        document.getElementById('export-pptx').disabled = false;
+    }
+    */
     function main() {
         setMessage("Loading data...");
 
@@ -223,6 +253,7 @@ ${content}
         document.getElementById('show-romaji-toggle').addEventListener('change', renderSlide);
         document.getElementById('prev-slide').addEventListener('click', prevSlide);
         document.getElementById('next-slide').addEventListener('click', nextSlide);
+        document.getElementById('export-pptx').addEventListener('click', exportPptx);
 
         updateSlideButtons();
     }
