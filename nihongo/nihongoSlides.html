@@ -34,6 +34,7 @@
 
   <body>
 	<div id="UI" class="noprint">
+      <div id="slide-index" class="slide-index"></div>
       <div class="slide-controls">
 		<button class="large" id="prev-slide">
           <img src="img/prev.png" title="Previous Slide" />Prev
@@ -57,11 +58,53 @@
 		</button>
       </div>
 	</div>
+	<div id="messageBox" class="noprint"></div>
 
 	<div id="slides-container">
       <table id="slide-table">
 		<!-- Populated dynamically -->
       </table>
+	</div>
+
+	<!-- PPTX Export Modal -->
+	<div id="export-modal" class="modal hidden noprint">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Export to PPTX</h2>
+          <span class="close-modal" id="modal-close-btn">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="export-filename"><strong>File Name:</strong></label>
+            <input type="text" id="export-filename" value="Nihongo_Vocabulary.pptx" placeholder="Presentation.pptx" />
+          </div>
+
+          <div class="form-group">
+            <label for="export-pages-select"><strong>Slides:</strong></label>
+            <select id="export-pages-select">
+              <option value="all">All slides</option>
+              <option value="custom">Custom range</option>
+            </select>
+            <div id="custom-pages-container" class="hidden">
+              <input type="text" id="custom-pages-input" placeholder="e.g. 1-5,7,9" />
+              <div class="help-text">Enter slide indices separated by commas, or ranges (e.g., 1-5).</div>
+              <div id="custom-pages-error" class="error-text hidden"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="export-ratio"><strong>Slide Aspect Ratio:</strong></label>
+            <select id="export-ratio">
+              <option value="16/9">16:9 (Widescreen)</option>
+              <option value="4/3">4:3 (Standard)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="modal-cancel-btn" class="secondary">Cancel</button>
+          <button id="modal-confirm-btn" class="primary">Export</button>
+        </div>
+      </div>
 	</div>
   </body>
 

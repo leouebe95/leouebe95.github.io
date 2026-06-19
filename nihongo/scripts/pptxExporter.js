@@ -28,12 +28,21 @@ class PptxExporter {
      * Step 1: Initialize the Presentation
      * @param {string} fileName - The name of the file to save (e.g., "Nihongo_Lessons.pptx")
      */
-    constructor(fileName) {
+    constructor(fileName, ratio) {
         this.fileName = fileName || "Presentation.pptx";
+        this.ratio = ratio || '16/9';
 
         // Initialize PptxGenJS instance
         this.pptx = new PptxGenJS();
-        this.pptx.layout = 'LAYOUT_16x9'; // Slide dimensions: 10 x 5.625 inches
+        if (this.ratio === '4/3') {
+            this.pptx.layout = 'LAYOUT_4x3'; // Slide dimensions: 10 x 7.5 inches
+            this.slideWidth = 10;
+            this.slideHeight = 7.5;
+        } else {
+            this.pptx.layout = 'LAYOUT_16x9'; // Slide dimensions: 10 x 5.625 inches
+            this.slideWidth = 10;
+            this.slideHeight = 5.625;
+        }
 
         // The scaling parameters will be computed dynamically on the first slide and reused
         this._scaleInitialized = false;
@@ -85,7 +94,7 @@ class PptxExporter {
                 spacingPx = tdPaddingLeft + tdPaddingRight;
             }
 
-            const usableWidth = PptxExporter.SLIDE_WIDTH_INCHES - 2 * PptxExporter.FLUSH_LEFT_PADDING_INCHES;
+            const usableWidth = this.slideWidth - 2 * PptxExporter.FLUSH_LEFT_PADDING_INCHES;
 
             // 6 cards + 5 gaps (spacings) between them
             const totalWidth6CardsPx = 6 * cardWidthPx + 5 * spacingPx;
@@ -100,7 +109,7 @@ class PptxExporter {
         const gridHeightInches = gridHeightPx * this._scale;
         
         // Center vertically on the slide
-        const offsetY = (PptxExporter.SLIDE_HEIGHT_INCHES - gridHeightInches) / 2;
+        const offsetY = (this.slideHeight - gridHeightInches) / 2;
         this._offsetY = Math.max(offsetY, PptxExporter.MARGIN_INCHES);
     }
 
@@ -377,19 +386,24 @@ class PptxManager {
 
     /*!
      */
-    constructor(fileName = "Nihongo_Vocabulary.pptx") {
+    constructor(fileName = "Nihongo_Vocabulary.pptx", ratio = '16/9') {
         this._fileName = fileName;
+        this._ratio = ratio;
     }
 
-    async runMultiPageExport(options, goToSlideCB) {
+    async runMultiPageExport(options, goToSlideCB, progressCB) {
 
         // 1. Initialize the exporter wrapper instance
-        const exporter = new PptxExporter(this._fileName);
+        const exporter = new PptxExporter(this._fileName, this._ratio);
         const totalPages = options.length;
 
         for (var i=0 ; i<totalPages ; i++) {
             var option = options[i];
             console.log(`Processing page ${option}, ${i}/${totalPages}...`);
+
+            if (progressCB) {
+                progressCB('preparing', i + 1, totalPages);
+            }
 
             // 2. Trigger your web app's native layout updates/navigation
             // e.g., update current state, hit the next pagination button element, etc.
@@ -404,7 +418,15 @@ class PptxManager {
             await exporter.addSlideFromCurrentPage();
         }
 
+        if (progressCB) {
+            progressCB('exporting');
+        }
+
         // 5. Finalize file construction and compile the file presentation down to disk
         await exporter.finalize();
+
+        if (progressCB) {
+            progressCB('done', null, null, this._fileName);
+        }
     }
 };

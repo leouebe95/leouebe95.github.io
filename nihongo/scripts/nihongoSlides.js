@@ -9,6 +9,7 @@
     let __nihongoDB = null;
     let __slideDB = null;
     let __loadedCount = 0;
+    let __isExporting = false;
 
     function setMessage(msg) {
         let msgBox = document.getElementById('messageBox');
@@ -33,10 +34,11 @@
         slideNames.sort();
 
         selector.innerHTML = ''; // Reset the control
-        for (let name of slideNames) {
+        for (let i = 0; i < slideNames.length; i++) {
+            let name = slideNames[i];
             let option = document.createElement('option');
             option.value = name;
-            option.innerText = name;
+            option.innerText = `${i + 1} | ${name}`;
             selector.appendChild(option);
         }
     }
@@ -79,6 +81,15 @@
 
         prevButton.disabled = (index == 0);
         nextButton.disabled = index >= length - 1;
+
+        let indexDiv = document.getElementById('slide-index');
+        if (indexDiv) {
+            if (length > 0 && index >= 0) {
+                indexDiv.innerText = `${index + 1}/${length}`;
+            } else {
+                indexDiv.innerText = `-/-`;
+            }
+        }
     }
 
     function prevSlide() {
@@ -104,22 +115,137 @@
         renderSlide();
     }
 
-    function exportPptx() {
-        let select = document.getElementById('slide-selector');
-        const pptxManager = new PptxManager();
+    function openExportModal() {
+        const modal = document.getElementById('export-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.getElementById('export-filename').value = "Nihongo_Vocabulary.pptx";
+            document.getElementById('export-pages-select').value = "all";
+            document.getElementById('custom-pages-container').classList.add('hidden');
+            document.getElementById('custom-pages-input').value = '';
+            document.getElementById('custom-pages-error').classList.add('hidden');
+            document.getElementById('export-ratio').value = "16/9";
+        }
+    }
 
-        // Read the names of all slides
-        const options = Array.from(select.options);
+    function closeExportModal() {
+        const modal = document.getElementById('export-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function parsePageRange(inputStr, maxPages) {
+        if (!inputStr || !inputStr.trim()) {
+            throw new Error("Page selection cannot be empty.");
+        }
+
+        const pages = new Set();
+        const parts = inputStr.split(',');
+
+        for (let part of parts) {
+            part = part.trim();
+            if (!part) continue;
+
+            if (/^\d+$/.test(part)) {
+                const p = parseInt(part, 10);
+                if (p < 1 || p > maxPages) {
+                    throw new Error(`Slide index ${p} is out of range (1-${maxPages}).`);
+                }
+                pages.add(p);
+            } else if (/^\d+-\d+$/.test(part)) {
+                const match = part.split('-');
+                const start = parseInt(match[0], 10);
+                const end = parseInt(match[1], 10);
+
+                if (start < 1 || end < 1 || start > maxPages || end > maxPages) {
+                    throw new Error(`Slide range ${part} contains indices out of range (1-${maxPages}).`);
+                }
+                if (start > end) {
+                    throw new Error(`Invalid range: ${part}. Start index must be less than or equal to end index.`);
+                }
+
+                for (let i = start; i <= end; i++) {
+                    pages.add(i);
+                }
+            } else {
+                throw new Error(`Invalid page range syntax: "${part}". Use numbers or ranges like 1-5.`);
+            }
+        }
+
+        if (pages.size === 0) {
+            throw new Error("No valid slides selected.");
+        }
+
+        return Array.from(pages).sort((a, b) => a - b);
+    }
+
+    function runExport() {
+        let select = document.getElementById('slide-selector');
+        const allOptions = Array.from(select.options);
+        
+        let optionsToExport = [];
+        const isCustom = document.getElementById('export-pages-select').value === 'custom';
+        if (isCustom) {
+            const inputStr = document.getElementById('custom-pages-input').value;
+            try {
+                const pageIndices = parsePageRange(inputStr, allOptions.length);
+                optionsToExport = pageIndices.map(p => allOptions[p - 1]);
+            } catch (err) {
+                const errorDiv = document.getElementById('custom-pages-error');
+                errorDiv.innerText = err.message;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+        } else {
+            optionsToExport = allOptions;
+        }
+
+        // Hide modal
+        closeExportModal();
+
+        const filename = document.getElementById('export-filename').value.trim() || "Nihongo_Vocabulary.pptx";
+        const ratio = document.getElementById('export-ratio').value;
+        const pptxManager = new PptxManager(filename, ratio);
 
         // Hide the UI while snapshoting the slides to get the
         // proper absolute coordinates
         let UIdiv = document.getElementById('UI');
-        UIdiv.classList.add('hidden')
+        UIdiv.classList.add('hidden');
 
-        pptxManager.runMultiPageExport(options, goToSlide)
+        __isExporting = true;
 
-        // Display the UI again
-        UIdiv.classList.remove('hidden')
+        const progressCB = (status, current, total, fn) => {
+            if (status === 'preparing') {
+                setMessage("Preparing " + current + " slide out of " + total + ".");
+            } else if (status === 'exporting') {
+                setMessage("exporting...");
+            } else if (status === 'done') {
+                setMessage("exported slides to " + fn);
+                setTimeout(() => {
+                    setMessage("");
+                }, 5000);
+            }
+        };
+
+        pptxManager.runMultiPageExport(optionsToExport, goToSlide, progressCB)
+            .then(() => {
+                UIdiv.classList.remove('hidden');
+                __isExporting = false;
+            })
+            .catch(err => {
+                console.error("Export failed:", err);
+                UIdiv.classList.remove('hidden');
+                __isExporting = false;
+                setMessage("Export failed: " + err.message);
+                setTimeout(() => {
+                    setMessage("");
+                }, 5000);
+            });
+    }
+
+    function exportPptx() {
+        openExportModal();
     }
 
     /*
@@ -157,7 +283,9 @@
             return;
         }
 
-        setMessage("");
+        if (!__isExporting) {
+            setMessage("");
+        }
         let slideData = __slideDB.getSlideData(slideName);
         let showRomaji = document.getElementById('show-romaji-toggle').checked;
 
@@ -243,17 +371,46 @@ ${content}
         document.getElementById('export-pptx').disabled = false;
     }
     */
+    function handleRefresh() {
+        if (__loadedCount >= 2) {
+            populateSlideSelector();
+            restoreUIState();
+        }
+    }
+
     function main() {
         setMessage("Loading data...");
 
-        __nihongoDB = new NihongoDB(checkReady, null);
-        __slideDB = new SlideDB(checkReady, null);
+        __nihongoDB = new NihongoDB(checkReady, handleRefresh);
+        __slideDB = new SlideDB(checkReady, handleRefresh);
 
         document.getElementById('slide-selector').addEventListener('change', renderSlide);
         document.getElementById('show-romaji-toggle').addEventListener('change', renderSlide);
         document.getElementById('prev-slide').addEventListener('click', prevSlide);
         document.getElementById('next-slide').addEventListener('click', nextSlide);
         document.getElementById('export-pptx').addEventListener('click', exportPptx);
+
+        // Modal event listeners
+        document.getElementById('modal-close-btn').addEventListener('click', closeExportModal);
+        document.getElementById('modal-cancel-btn').addEventListener('click', closeExportModal);
+        document.getElementById('modal-confirm-btn').addEventListener('click', runExport);
+        document.getElementById('export-pages-select').addEventListener('change', (e) => {
+            const customContainer = document.getElementById('custom-pages-container');
+            if (e.target.value === 'custom') {
+                customContainer.classList.remove('hidden');
+                document.getElementById('custom-pages-input').focus();
+            } else {
+                customContainer.classList.add('hidden');
+                document.getElementById('custom-pages-error').classList.add('hidden');
+            }
+        });
+
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('export-modal');
+            if (e.target === modal) {
+                closeExportModal();
+            }
+        });
 
         updateSlideButtons();
     }
