@@ -10,11 +10,31 @@
     let __slideDB = null;
     let __loadedCount = 0;
     let __isExporting = false;
+    let __messageTimeout = null;
 
     function setMessage(msg) {
         let msgBox = document.getElementById('messageBox');
-        if (msgBox) {
+        if (!msgBox) return;
+
+        if (msg) {
+            if (__messageTimeout) {
+                clearTimeout(__messageTimeout);
+                __messageTimeout = null;
+            }
             msgBox.innerText = msg;
+            msgBox.classList.add('visible');
+        } else {
+            if (msgBox.classList.contains('visible') && !__messageTimeout) {
+                __messageTimeout = setTimeout(() => {
+                    msgBox.classList.remove('visible');
+                    setTimeout(() => {
+                        if (!msgBox.classList.contains('visible')) {
+                            msgBox.innerText = "";
+                        }
+                    }, 1000);
+                    __messageTimeout = null;
+                }, 5000);
+            }
         }
     }
 
@@ -222,9 +242,7 @@
                 setMessage("exporting...");
             } else if (status === 'done') {
                 setMessage("exported slides to " + fn);
-                setTimeout(() => {
-                    setMessage("");
-                }, 5000);
+                setMessage("");
             }
         };
 
@@ -238,9 +256,7 @@
                 UIdiv.classList.remove('hidden');
                 __isExporting = false;
                 setMessage("Export failed: " + err.message);
-                setTimeout(() => {
-                    setMessage("");
-                }, 5000);
+                setMessage("");
             });
     }
 

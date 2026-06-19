@@ -307,3 +307,37 @@
   background-color: #E0E0E0;
 }
 
+/* Floating message box at the bottom of the window */
+#messageBox {
+  position: fixed !important;
+  bottom: -120px; /* Hidden below the viewport */
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 80%;
+  min-width: 320px;
+  height: auto !important;
+  line-height: normal !important;
+  background-color: #F0F8FF;
+  border: 3px solid #80C0E0 !important;
+  color: #0056b3 !important;
+  padding: 12px 24px !important;
+  border-radius: 10px !important;
+  margin-top: 0 !important;
+  font-family: "Verdana", Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 3000;
+  transition: bottom 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#messageBox.visible {
+  bottom: 30px; /* Animate up into view */
+  opacity: 1;
+  pointer-events: auto;
+}
+
