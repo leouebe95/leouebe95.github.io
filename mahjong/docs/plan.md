@@ -12,7 +12,7 @@ Execute the process autonomously from start to finish across **5 sequential phas
 4. Complete Modular Implementation
 5. Autonomous Test Execution & Verification
 
-The legacy source code is avaiable in the `zold-mahjong` directory. You will use it as inspiration. The new code must be placed in the `mahjong` directory. All documents must be placed in the Docs sub-directory. You will use `nihongo` as an exmaple of coding style, modularyty, and file organization.
+The legacy source code is avaiable in the `zold-mahjong` directory. You will use it as inspiration. The new code must be placed in the `mahjong` directory. All documents must be placed in the `docs` sub-directory. You will use `nihongo` as an exmaple of coding style, modularyty, and file organization.
 
 ---
 
