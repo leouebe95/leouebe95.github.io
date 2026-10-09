@@ -1,0 +1,56 @@
+/* generic CSS constants for styling properties */
+
+:root {
+  /* Font Constants */
+  --font-family-base: "Verdana", Helvetica, sans-serif;
+  
+  /* Font Sizes */
+  --font-size-base: 16px;
+  --font-size-small: 14px;
+  --font-size-input: 15px;
+  --font-size-index: 1.2em;
+  --font-size-title: 1.3em;
+  
+  /* Border Radius & Width Constants */
+  --border-radius-base: 10px;
+  --border-width-base: 3px;
+  
+  /* Color Theme Bases (Hue, Saturation, Lightness coordinates) */
+  --theme-primary-h: 200; /* Hue for light blue base */
+  --theme-primary-s: 60%;
+  --theme-primary-l: 69%; /* #80C0E0 */
+
+  --theme-dark-h: 211; /* Hue for dark blue theme */
+  --theme-dark-s: 100%;
+  --theme-dark-l: 35%; /* #0056b3 */
+
+  --theme-gray-h: 0;
+  --theme-gray-s: 0%;
+  --theme-gray-l: 94%; /* #F0F0F0 */
+
+  --theme-focus-h: 60;
+  --theme-focus-s: 100%;
+  --theme-focus-l: 91%; /* #FFFFD0 */
+  
+  /* Base Colors derived from coordinates */
+  --color-primary: hsl(var(--theme-primary-h), var(--theme-primary-s), var(--theme-primary-l));
+  --color-dark: hsl(var(--theme-dark-h), var(--theme-dark-s), var(--theme-dark-l));
+  --color-gray: hsl(var(--theme-gray-h), var(--theme-gray-s), var(--theme-gray-l));
+  --color-focus: hsl(var(--theme-focus-h), var(--theme-focus-s), var(--theme-focus-l));
+  
+  /* Multiple values for color states derived using HSL/HSV scaling: */
+  /* 1. Primary theme color states (e.g. for borders, secondary button border, elements) */
+  --color-primary-hover: hsl(var(--theme-primary-h), var(--theme-primary-s), calc(var(--theme-primary-l) - 10%));
+  --color-primary-clicked: hsl(var(--theme-primary-h), var(--theme-primary-s), calc(var(--theme-primary-l) - 20%));
+  --color-primary-disabled: hsl(var(--theme-primary-h), 10%, 80%);
+
+  /* 2. Dark theme color states (e.g. for primary buttons, highlighted text) */
+  --color-dark-hover: hsl(var(--theme-dark-h), var(--theme-dark-s), calc(var(--theme-dark-l) + 10%));
+  --color-dark-clicked: hsl(var(--theme-dark-h), var(--theme-dark-s), calc(var(--theme-dark-l) - 10%));
+  --color-dark-disabled: hsl(var(--theme-dark-h), 10%, 75%);
+
+  /* 3. Gray background states (e.g. for input backgrounds, secondary buttons) */
+  --color-gray-hover: hsl(var(--theme-gray-h), var(--theme-gray-s), calc(var(--theme-gray-l) - 10%));
+  --color-gray-clicked: hsl(var(--theme-gray-h), var(--theme-gray-s), calc(var(--theme-gray-l) - 15%));
+  --color-gray-disabled: hsl(var(--theme-gray-h), var(--theme-gray-s), 98%);
+}

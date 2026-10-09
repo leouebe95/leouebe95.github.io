@@ -1,0 +1,171 @@
+/* -*- coding: utf-8 -*- */
+
+/* ==========================================================================
+   THEME 1: Imperial Emerald Glassmorphism (Default)
+   ========================================================================== */
+:root, [data-theme="emerald"] {
+    --color-bg-canvas: #0B251A;
+    --color-bg-canvas-gradient: radial-gradient(circle at 50% 10%, #134230 0%, #0B251A 75%, #05140E 100%);
+
+    --color-surface-panel: rgba(18, 48, 34, 0.72);
+    --color-surface-panel-border: rgba(229, 193, 88, 0.28);
+    --color-surface-card: rgba(24, 62, 44, 0.65);
+    --color-surface-card-hover: rgba(30, 78, 56, 0.85);
+
+    --backdrop-blur: blur(14px);
+
+    --color-text-primary: #F4F6F4;
+    --color-text-secondary: #B2C7BC;
+    --color-text-muted: #739382;
+
+    --color-accent-gold: #E5C158;
+    --color-accent-gold-hover: #F2D275;
+    --color-accent-red: #D93829;
+    --color-accent-green: #34D399;
+
+    --color-tile-bg: #FDFBF7;
+    --color-tile-border: #D8D2C2;
+    --color-tile-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --color-tile-selected-border: #E5C158;
+    --color-tile-highlight-glow: 0 0 16px rgba(229, 193, 88, 0.85);
+
+    --badge-bg: rgba(229, 193, 88, 0.18);
+    --badge-text: #E5C158;
+    --badge-border: rgba(229, 193, 88, 0.4);
+}
+
+/* ==========================================================================
+   THEME 2: Modern Zen (Nordic-Japanese Minimalist)
+   ========================================================================== */
+[data-theme="zen"] {
+    --color-bg-canvas: #F5F2EB;
+    --color-bg-canvas-gradient: linear-gradient(180deg, #F9F8F5 0%, #ECE7DD 100%);
+
+    --color-surface-panel: rgba(255, 255, 255, 0.88);
+    --color-surface-panel-border: #D8CBB5;
+    --color-surface-card: #FFFFFF;
+    --color-surface-card-hover: #F0EDE4;
+
+    --backdrop-blur: blur(8px);
+
+    --color-text-primary: #2C2B29;
+    --color-text-secondary: #6B6862;
+    --color-text-muted: #9E998F;
+
+    --color-accent-gold: #8E7A4A;
+    --color-accent-gold-hover: #736239;
+    --color-accent-red: #B83A30;
+    --color-accent-green: #4D7C5D;
+
+    --color-tile-bg: #FFFFFF;
+    --color-tile-border: #C8BFB0;
+    --color-tile-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 #FFFFFF;
+    --color-tile-selected-border: #4D7C5D;
+    --color-tile-highlight-glow: 0 0 12px rgba(77, 124, 93, 0.6);
+
+    --badge-bg: rgba(77, 124, 93, 0.12);
+    --badge-text: #3D644A;
+    --badge-border: rgba(77, 124, 93, 0.3);
+}
+
+/* ==========================================================================
+   THEME 3: Cyberpunk Riichi (Midnight Neon Arcade)
+   ========================================================================== */
+[data-theme="cyberpunk"] {
+    --color-bg-canvas: #07080D;
+    --color-bg-canvas-gradient: radial-gradient(circle at 50% 20%, #150928 0%, #07080D 80%);
+
+    --color-surface-panel: rgba(14, 16, 26, 0.85);
+    --color-surface-panel-border: rgba(0, 240, 255, 0.35);
+    --color-surface-card: rgba(20, 24, 38, 0.75);
+    --color-surface-card-hover: rgba(30, 36, 56, 0.95);
+
+    --backdrop-blur: blur(16px);
+
+    --color-text-primary: #00F0FF;
+    --color-text-secondary: #E0E7FF;
+    --color-text-muted: #6B7294;
+
+    --color-accent-gold: #FFE600;
+    --color-accent-gold-hover: #FFF04D;
+    --color-accent-red: #FF007B;
+    --color-accent-green: #00F0FF;
+
+    --color-tile-bg: #101424;
+    --color-tile-border: #00F0FF;
+    --color-tile-shadow: 0 0 12px rgba(0, 240, 255, 0.3), inset 0 0 6px rgba(0, 240, 255, 0.2);
+    --color-tile-selected-border: #FF007B;
+    --color-tile-highlight-glow: 0 0 20px #FF007B, 0 0 35px rgba(255, 0, 123, 0.5);
+
+    --badge-bg: rgba(255, 0, 123, 0.2);
+    --badge-text: #FF007B;
+    --badge-border: #FF007B;
+}
+
+/* ==========================================================================
+   THEME 4: Tactile Neumorphic (Mahjong Green Felt Table)
+   ========================================================================== */
+[data-theme="neumorphic"] {
+    --color-bg-canvas: #165331;
+    --color-bg-canvas-gradient: radial-gradient(circle at 50% 50%, #1C653C 0%, #124327 100%);
+
+    --color-surface-panel: #165331;
+    --color-surface-panel-border: rgba(255, 255, 255, 0.1);
+    --color-surface-card: #165331;
+    --color-surface-card-hover: #195C37;
+
+    --backdrop-blur: none;
+
+    --color-text-primary: #F0FDF4;
+    --color-text-secondary: #BBF7D0;
+    --color-text-muted: #86EFAC;
+
+    --color-accent-gold: #FACC15;
+    --color-accent-gold-hover: #FDE047;
+    --color-accent-red: #EF4444;
+    --color-accent-green: #4ADE80;
+
+    --color-tile-bg: #FFFBF2;
+    --color-tile-border: #D4CEBF;
+    --color-tile-shadow: 4px 4px 10px rgba(9, 36, 21, 0.8), -2px -2px 6px rgba(35, 117, 71, 0.5);
+    --color-tile-selected-border: #FACC15;
+    --color-tile-highlight-glow: 0 0 16px #FACC15;
+
+    --badge-bg: rgba(0, 0, 0, 0.25);
+    --badge-text: #FACC15;
+    --badge-border: rgba(250, 204, 21, 0.4);
+}
+
+/* ==========================================================================
+   THEME 5: Scandinavian Bauhaus (Clean Modernist Structural)
+   ========================================================================== */
+[data-theme="bauhaus"] {
+    --color-bg-canvas: #FFFFFF;
+    --color-bg-canvas-gradient: #F5F5F5;
+
+    --color-surface-panel: #FFFFFF;
+    --color-surface-panel-border: #111111;
+    --color-surface-card: #FFFFFF;
+    --color-surface-card-hover: #F0F0F0;
+
+    --backdrop-blur: none;
+
+    --color-text-primary: #111111;
+    --color-text-secondary: #333333;
+    --color-text-muted: #666666;
+
+    --color-accent-gold: #FFD700;
+    --color-accent-gold-hover: #E6C200;
+    --color-accent-red: #E63946;
+    --color-accent-green: #0047AB;
+
+    --color-tile-bg: #FFFFFF;
+    --color-tile-border: #111111;
+    --color-tile-shadow: 3px 3px 0px #111111;
+    --color-tile-selected-border: #E63946;
+    --color-tile-highlight-glow: 0 0 0 3px #E63946;
+
+    --badge-bg: #111111;
+    --badge-text: #FFFFFF;
+    --badge-border: #111111;
+}

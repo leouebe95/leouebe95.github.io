@@ -1,9 +1,11 @@
 /* Styles for nihongoSlides.html */
 
+/* Theme constants imported from styleConstants.css in HTML */
+
 #slide-table {
   border-collapse: collapse;
   margin: 5px auto;
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 #slide-table td {
@@ -13,8 +15,8 @@
 }
 
 .slide-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid var(--color-primary-disabled);
+  border-radius: var(--border-radius-base);
   padding: 8px;
   width: 250px;
   height: 250px;
@@ -85,7 +87,7 @@
 
 .slide-card .english {
   font-size: 1em;
-  color: #0056b3;
+  color: var(--color-dark);
   min-height: 15px;
 }
 
@@ -104,8 +106,11 @@
 }
 
 .slide-controls select {
+  font-family: var(--font-family-base);
   padding: 5px 10px;
   font-size: 1.1em;
+  border-width: var(--border-width-base);
+  border-radius: var(--border-radius-base);
 }
 
 .hidden {
@@ -122,10 +127,10 @@
 .slide-index {
   position: absolute;
   left: 20px;
-  font-size: 1.2em;
+  font-size: var(--font-size-index);
   font-weight: bold;
-  color: #0056b3;
-  font-family: "Verdana", Helvetica, sans-serif;
+  color: var(--color-dark);
+  font-family: var(--font-family-base);
 }
 
 .slide-controls {
@@ -154,15 +159,15 @@
 /* Modal content card */
 .modal-content {
   background-color: #FFFFFF;
-  border: 3px solid #80C0E0;
-  border-radius: 10px;
+  border: var(--border-width-base) solid var(--color-primary);
+  border-radius: var(--border-radius-base);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   width: 420px;
   max-width: 90%;
   padding: 20px;
   box-sizing: border-box;
   animation: modalFadeIn 0.25s ease;
-  font-family: "Verdana", Helvetica, sans-serif;
+  font-family: var(--font-family-base);
   color: #333;
 }
 
@@ -181,19 +186,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #80C0E0;
+  border-bottom: 2px solid var(--color-primary);
   padding-bottom: 10px;
   margin-bottom: 15px;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.3em;
-  color: #0056b3;
+  font-size: var(--font-size-title);
+  color: var(--color-dark);
 }
 
 .close-modal {
-  color: #80C0E0;
+  color: var(--color-primary);
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
@@ -202,7 +207,7 @@
 }
 
 .close-modal:hover {
-  color: #0056b3;
+  color: var(--color-dark);
 }
 
 .modal-body {
@@ -216,16 +221,16 @@
 .form-group label {
   display: block;
   margin-bottom: 5px;
-  font-size: 14px;
+  font-size: var(--font-size-small);
 }
 
 /* Modal inputs and select dropdowns matching nihongo theme */
 .form-group input[type="text"],
 .form-group select {
-  font-family: "Verdana", Helvetica, sans-serif;
-  font-size: 15px;
-  border: 3px solid #80C0E0;
-  border-radius: 10px;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-input);
+  border: var(--border-width-base) solid var(--color-primary);
+  border-radius: var(--border-radius-base);
   padding: 6px 10px;
   width: 100%;
   box-sizing: border-box;
@@ -234,14 +239,14 @@
 }
 
 .form-group select {
-  background-color: #F0F0F0;
+  background-color: var(--color-gray);
   cursor: pointer;
 }
 
 .form-group input[type="text"]:focus,
 .form-group select:focus {
-  border-color: #0056b3;
-  background-color: #FFFFD0;
+  border-color: var(--color-dark);
+  background-color: var(--color-focus);
 }
 
 #custom-pages-container {
@@ -265,22 +270,22 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 2px solid #80C0E0;
+  border-top: 2px solid var(--color-primary);
   padding-top: 15px;
 }
 
 /* Modal Buttons matching main theme buttons */
 .modal-footer button {
-  font-family: "Verdana", Helvetica, sans-serif;
-  font-size: 16px;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
   font-weight: bold;
-  border-width: 3px;
+  border-width: var(--border-width-base);
   border-style: solid;
-  border-radius: 10px;
+  border-radius: var(--border-radius-base);
   padding: 6px 15px;
   cursor: pointer;
   outline: none;
-  transition: transform 0.1s, opacity 0.15s;
+  transition: transform 0.1s, opacity 0.15s, background-color 0.15s, border-color 0.15s;
 }
 
 .modal-footer button:active {
@@ -288,56 +293,45 @@
 }
 
 .modal-footer button.primary {
-  background-color: #0056b3;
-  border-color: #004085;
+  background-color: var(--color-dark);
+  border-color: var(--color-dark-clicked);
   color: #FFFFFF;
 }
 
 .modal-footer button.primary:hover {
-  opacity: 0.9;
+  background-color: var(--color-dark-hover);
+  border-color: var(--color-dark);
+}
+
+.modal-footer button.primary:active {
+  background-color: var(--color-dark-clicked);
+  border-color: var(--color-dark-clicked);
+}
+
+.modal-footer button.primary:disabled {
+  background-color: var(--color-dark-disabled);
+  border-color: var(--color-dark-disabled);
+  cursor: not-allowed;
 }
 
 .modal-footer button.secondary {
-  background-color: #F0F0F0;
-  border-color: #80C0E0;
+  background-color: var(--color-gray);
+  border-color: var(--color-primary);
   color: #333;
 }
 
 .modal-footer button.secondary:hover {
-  background-color: #E0E0E0;
+  background-color: var(--color-gray-hover);
+  border-color: var(--color-primary-hover);
 }
 
-/* Floating message box at the bottom of the window */
-#messageBox {
-  position: fixed !important;
-  bottom: -120px; /* Hidden below the viewport */
-  left: 50%;
-  transform: translateX(-50%);
-  width: auto;
-  max-width: 80%;
-  min-width: 320px;
-  height: auto !important;
-  line-height: normal !important;
-  background-color: #F0F8FF;
-  border: 3px solid #80C0E0 !important;
-  color: #0056b3 !important;
-  padding: 12px 24px !important;
-  border-radius: 10px !important;
-  margin-top: 0 !important;
-  font-family: "Verdana", Helvetica, sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  z-index: 3000;
-  transition: bottom 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1s ease;
-  opacity: 0;
-  pointer-events: none;
+.modal-footer button.secondary:active {
+  background-color: var(--color-gray-clicked);
+  border-color: var(--color-primary-clicked);
 }
 
-#messageBox.visible {
-  bottom: 30px; /* Animate up into view */
-  opacity: 1;
-  pointer-events: auto;
+.modal-footer button.secondary:disabled {
+  background-color: var(--color-gray-disabled);
+  border-color: var(--color-primary-disabled);
+  cursor: not-allowed;
 }
-

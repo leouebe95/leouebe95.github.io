@@ -10,31 +10,16 @@
     let __slideDB = null;
     let __loadedCount = 0;
     let __isExporting = false;
-    let __messageTimeout = null;
+    let __messageBox = null;
 
     function setMessage(msg) {
-        let msgBox = document.getElementById('messageBox');
-        if (!msgBox) return;
-
+        if (!__messageBox) {
+            __messageBox = new MessageBox();
+        }
         if (msg) {
-            if (__messageTimeout) {
-                clearTimeout(__messageTimeout);
-                __messageTimeout = null;
-            }
-            msgBox.innerText = msg;
-            msgBox.classList.add('visible');
+            __messageBox.show(msg);
         } else {
-            if (msgBox.classList.contains('visible') && !__messageTimeout) {
-                __messageTimeout = setTimeout(() => {
-                    msgBox.classList.remove('visible');
-                    setTimeout(() => {
-                        if (!msgBox.classList.contains('visible')) {
-                            msgBox.innerText = "";
-                        }
-                    }, 1000);
-                    __messageTimeout = null;
-                }, 5000);
-            }
+            __messageBox.hide();
         }
     }
 

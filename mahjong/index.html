@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="emerald">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mahjong Scorer - MCR & Riichi Scoring Calculator</title>
+    <meta name="description" content="Modern, modular mobile-first Mahjong scoring calculator with manual tile entry for MCR and Riichi rules.">
+
+    <link rel="icon" type="image/png" href="../favicon.png">
+
+    <!-- Design System & Styles -->
+    <link rel="stylesheet" href="src/ui/styles/variables.css">
+    <link rel="stylesheet" href="src/ui/styles/themes.css">
+    <link rel="stylesheet" href="src/ui/styles/components.css">
+    <link rel="stylesheet" href="src/ui/styles/mobile.css">
+</head>
+<body>
+    <!-- App Header Bar -->
+    <header class="app-header">
+        <div class="app-title-group">
+            <h1 class="app-title" id="title-text">Mahjong Scorer</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" id="btn-clear-hand" title="Clear Hand">
+                <span>🗑</span><span id="text-clear">Clear</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-header-examples" title="Load Examples">
+                <span>📚</span><span id="text-examples">Examples</span>
+            </button>
+            <button class="btn btn-secondary btn-icon" id="btn-header-settings" title="Settings">
+                <span>⚙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+        <!-- 1. Flowers & Seasons Row (directly above main hand) -->
+        <section id="flowers-bar-root"></section>
+
+        <!-- 2. Main Hand Display (14+ Tiles, Melds, Pair) -->
+        <section id="hand-display-root"></section>
+
+        <!-- 3. Special Conditions Bar (Winds, Tsumo, Haitei, Chankan) -->
+        <section id="conditions-bar-root"></section>
+
+        <!-- 4. Score & Combination Breakdown -->
+        <section id="score-breakdown-root"></section>
+    </main>
+
+    <!-- Modal Roots -->
+    <div id="modal-settings-root"></div>
+    <div id="modal-examples-root"></div>
+    <div id="modal-tile-picker-root"></div>
+    <!-- Application Entry Point -->
+    <script type="module" src="src/app.js"></script>
+</body>
+</html>

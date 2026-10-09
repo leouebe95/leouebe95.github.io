@@ -1,0 +1,74 @@
+/* -*- coding: utf-8 -*- */
+
+/* Mobile Ergonomics & Responsive Breakpoints */
+
+@media (max-width: 768px) {
+    :root {
+        --tile-width: 38px;
+        --tile-height: 52px;
+        --tile-width-sm: 30px;
+        --tile-height-sm: 41px;
+        --space-4: 0.75rem;
+        --space-5: 1rem;
+    }
+
+    .app-main {
+        padding: var(--space-2);
+        gap: var(--space-3);
+    }
+
+    .melds-wrapper {
+        justify-content: center;
+        gap: var(--space-2);
+    }
+
+    .meld-group {
+        padding: var(--space-1);
+    }
+
+    .conditions-bar {
+        justify-content: center;
+    }
+
+    /* Modal as Bottom Sheet on Mobile */
+    .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        max-height: 85vh;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: var(--space-4);
+        transform: translateY(100%);
+    }
+
+    .modal-backdrop.open .modal-content {
+        transform: translateY(0);
+    }
+
+}
+
+@media (max-width: 480px) {
+    :root {
+        --tile-width: 32px;
+        --tile-height: 44px;
+        --tile-width-sm: 26px;
+        --tile-height-sm: 36px;
+    }
+
+    .app-header {
+        padding: 0 var(--space-2);
+    }
+
+    .app-title {
+        font-size: var(--font-size-base);
+    }
+
+    .condition-pill {
+        font-size: 11px;
+        padding: 2px 8px;
+    }
+}

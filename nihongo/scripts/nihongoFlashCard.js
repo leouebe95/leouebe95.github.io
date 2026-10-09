@@ -16,11 +16,19 @@
     const __nextContent = '<img src="img/next.png" title="Next Card"/>Next</button>'
     const __revealContent = '<img src="img/show.png" title="Show Answers"/>Reveal</button>'
     var __db = null;
+    var __messageBox = null;
 
     /*!
      */
     function setMessage(msg) {
-        document.getElementById('messageBox').innerText = msg;
+        if (!__messageBox) {
+            __messageBox = new MessageBox();
+        }
+        if (msg) {
+            __messageBox.show(msg);
+        } else {
+            __messageBox.hide();
+        }
     }
 
     /*!

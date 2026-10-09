@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="emerald">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahjong Test Runner</title>
+    <link rel="stylesheet" href="src/ui/styles/variables.css">
+    <link rel="stylesheet" href="src/ui/styles/themes.css">
+    <link rel="stylesheet" href="src/ui/styles/components.css">
+    <style>
+        body {
+            padding: var(--space-6);
+            background: var(--color-bg-canvas);
+            background-image: var(--color-bg-canvas-gradient);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-base);
+        }
+        .test-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+        .test-summary {
+            padding: var(--space-4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--border-radius-md);
+        }
+        .badge-pass {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34D399;
+            border: 1px solid #34D399;
+            padding: 4px 12px;
+            border-radius: var(--border-radius-full);
+            font-weight: bold;
+        }
+        .badge-fail {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid #EF4444;
+            padding: 4px 12px;
+            border-radius: var(--border-radius-full);
+            font-weight: bold;
+        }
+        .suite-card {
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        .suite-title {
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            color: var(--color-accent-gold);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: var(--space-2);
+        }
+        .test-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-2);
+            border-radius: var(--border-radius-sm);
+            background: rgba(0, 0, 0, 0.2);
+            font-size: var(--font-size-sm);
+        }
+        .test-error {
+            margin-top: 4px;
+            padding: var(--space-2);
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="font-size: var(--font-size-2xl); color: var(--color-accent-gold);">Autonomous Test Suite</h1>
+            <a href="index.html" class="btn btn-secondary">&larr; Back to App</a>
+        </header>
+
+        <div id="test-summary" class="glass-panel test-summary">
+            <span style="font-weight: 600;">Running autonomous tests...</span>
+        </div>
+
+        <div id="test-suites" style="display: flex; flex-direction: column; gap: var(--space-4);"></div>
+    </div>
+
+    <script type="module">
+        import { runner } from './tests/test-runner.js';
+        import './tests/unit/Tile.test.js';
+        import './tests/unit/Meld.test.js';
+        import './tests/unit/Hand.test.js';
+        import './tests/unit/EventBus.test.js';
+        import './tests/integration/Scoring.test.js';
+        import './tests/integration/ManualEntry.test.js';
+
+        async function runTests() {
+            const results = await runner.run();
+            window.__testResults = results;
+
+            const summaryEl = document.getElementById('test-summary');
+            const suitesEl = document.getElementById('test-suites');
+
+            const isAllPassed = results.totalFailed === 0;
+            summaryEl.innerHTML = `
+                <div>
+                    <span style="font-size: 1.25rem; font-weight: 700; color: ${isAllPassed ? '#34D399' : '#EF4444'};">
+                        ${isAllPassed ? '✓ All Tests Passed' : '✗ Tests Failed'}
+                    </span>
+                    <span style="margin-left: 12px; font-size: 0.875rem; color: var(--color-text-secondary);">
+                        (${results.totalPassed} passed, ${results.totalFailed} failed in ${results.totalDuration.toFixed(1)}ms)
+                    </span>
+                </div>
+                <div class="${isAllPassed ? 'badge-pass' : 'badge-fail'}">
+                    ${isAllPassed ? 'PASSED' : 'FAILED'}
+                </div>
+            `;
+
+            suitesEl.innerHTML = '';
+            results.suites.forEach(suite => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel suite-card';
+
+                const title = document.createElement('div');
+                title.className = 'suite-title';
+                title.textContent = `${suite.name} (${suite.passed}/${suite.tests.length})`;
+                card.appendChild(title);
+
+                suite.tests.forEach(test => {
+                    const row = document.createElement('div');
+                    row.className = 'test-row';
+                    row.innerHTML = `
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: ${test.passed ? '#34D399' : '#EF4444'}; font-weight: bold;">
+                                ${test.passed ? '✓' : '✗'}
+                            </span>
+                            <span>${test.name}</span>
+                        </span>
+                        <span style="font-size: 11px; color: var(--color-text-muted);">
+                            ${test.duration.toFixed(1)}ms
+                        </span>
+                    `;
+
+                    if (!test.passed && test.error) {
+                        const errDiv = document.createElement('div');
+                        errDiv.className = 'test-error';
+                        errDiv.textContent = test.error.message || String(test.error);
+                        row.appendChild(errDiv);
+                    }
+
+                    card.appendChild(row);
+                });
+
+                suitesEl.appendChild(card);
+            });
+        }
+
+        runTests();
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+/* Styles for the floating, animated message box */
+
+:root {
+  /* Derived properties based on generic theme constants */
+  --mb-bg-color: hsl(var(--theme-primary-h, 200), 100%, 97%);
+}
+
+.floating-message-box {
+  position: fixed !important;
+  bottom: -120px; /* Hidden below the viewport */
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 80%;
+  min-width: 320px;
+  height: auto !important;
+  line-height: normal !important;
+  background-color: var(--mb-bg-color);
+  border: var(--border-width-base, 3px) solid var(--color-primary, #80C0E0) !important;
+  color: var(--color-dark, #0056b3) !important;
+  padding: 12px 24px !important;
+  border-radius: var(--border-radius-base, 10px) !important;
+  margin-top: 0 !important;
+  font-family: var(--font-family-base, "Verdana", Helvetica, sans-serif);
+  font-size: var(--font-size-base, 16px);
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 3000;
+  transition: bottom 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.floating-message-box.visible {
+  bottom: 30px; /* Animate up into view */
+  opacity: 1;
+  pointer-events: auto;
+}
