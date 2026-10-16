@@ -244,7 +244,7 @@ export class InternationalRules extends RuleSetStrategy {
             new RuleDef([76, 88, HR.bigFourWinds, 'BIG_FOUR_WINDS', 5, 7, 15, 16, 28, 49]),
             new RuleDef([77, 88, HR.bigThreeDragons, 'BIG_THREE_DRAGONS', 7, 14, 33]),
             new RuleDef([78, 88, HR.allGreen, 'ALL_GREEN', true, true, 7, 29]),
-            new RuleDef([79, 88, HR.nineGates, 'NINE_GATES', true, false, 5, 17, 50]),
+            new RuleDef([79, 88, HR.nineGates, 'NINE_GATES', true, true, 5, 17, 50]),
             new RuleDef([80, 88, HR.fourKongs, 'FOUR_KONGS', 28]),
             new RuleDef([81, 88, HR.sevenShiftedPairs, 'SEVEN_SHIFTED_PAIRS', true, false, 11, 17, 50]),
             new RuleDef([82, 88, HR.thirteenOrphans, 'THIRTEEN_ORPHANS', true, false, 31, 67])
@@ -304,7 +304,9 @@ export class InternationalRules extends RuleSetStrategy {
                             isImplied: true,
                             impliedBy: `${parent.indx}: ${parent.key}`,
                             meldIndices: attribution.meldIndices,
-                            tileIndices: attribution.tileIndices
+                            tileIndices: attribution.tileIndices,
+                            highlightGroups: attribution.highlightGroups,
+                            flowerIndices: attribution.flowerIndices
                         }));
                         res.desc.push(`0 points: Rule ${rule.indx}: ${rule.key} [Implied from rule ${parent.indx}]`);
                     }
@@ -325,7 +327,9 @@ export class InternationalRules extends RuleSetStrategy {
                     count: matching,
                     isImplied: false,
                     meldIndices: attribution.meldIndices,
-                    tileIndices: attribution.tileIndices
+                    tileIndices: attribution.tileIndices,
+                    highlightGroups: attribution.highlightGroups,
+                    flowerIndices: attribution.flowerIndices
                 }));
 
                 res.desc.push(`${thisScore} points: ${matching}x Rule ${rule.indx}: ${rule.key}`);
@@ -344,6 +348,11 @@ export class InternationalRules extends RuleSetStrategy {
             res.desc = ['NO_VALID_HAND'];
         }
 
+        if (res.nbPoints < 8) {
+            res.isValid = false;
+            res.warnings.push('MCR_MINIMUM_NOT_MET');
+        }
+
         if (hand._lastTile < 0) {
             res.warnings.push('LAST_TILE_NOT_SET');
             res.desc.push('LAST_TILE_NOT_SET');
@@ -359,41 +368,363 @@ export class InternationalRules extends RuleSetStrategy {
     static getAttribution(ruleIndx, hand, data) {
         const meldIndices = [];
         const tileIndices = [];
+        const highlightGroups = [];
+        const flowerIndices = [];
+        const addFirstMeldCombination = predicate => {
+            for (let i = 0; i < 2; i++) {
+                for (let j = i + 1; j < 3; j++) {
+                    for (let k = j + 1; k < 4; k++) {
+                        if (predicate(hand._melds[i], hand._melds[j], hand._melds[k])) {
+                            highlightGroups.push({ meldIndices: [i, j, k], tileIndices: [] });
+                            return;
+                        }
+                    }
+                }
+            }
+        };
 
         if (!hand._isNormal) {
             for (let i = 0; i < 14; i++) {
                 if (hand._tiles[i].isValid()) tileIndices.push(i);
             }
-            return { meldIndices, tileIndices };
+            if (tileIndices.length) highlightGroups.push({ meldIndices: [], tileIndices: [...tileIndices] });
+            return { meldIndices, tileIndices, highlightGroups, flowerIndices };
         }
 
         switch (ruleIndx) {
+            case 13: // Flower tiles
+                for (let i = 0; i < hand._flowers.length; i++) {
+                    if (hand._flowers[i].isValid()) flowerIndices.push(hand._flowers[i].type === TileType.FLOWER
+                        ? hand._flowers[i].num - 1
+                        : hand._flowers[i].num + 3);
+                }
+                break;
+            case 4: // Two terminal chows
+                for (let i = 0; i < 3; i++) {
+                    const left = hand._melds[i];
+                    if (left.type !== MeldType.CHOW || left.firstTile.num !== 1) continue;
+                    for (let j = i + 1; j < 4; j++) {
+                        const right = hand._melds[j];
+                        if (right.type === MeldType.CHOW &&
+                            left.firstTile.type === right.firstTile.type &&
+                            right.firstTile.num === 7) {
+                            highlightGroups.push({ meldIndices: [i, j], tileIndices: [] });
+                            break;
+                        }
+                    }
+                }
+                break;
+            case 6: // Melded kong
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type === MeldType.KONG && !hand._melds[i].isConcealed) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 18: // All chows
+                highlightGroups.push({
+                    meldIndices: hand._melds.slice(0, 4)
+                        .map((meld, index) => meld.type === MeldType.CHOW ? index : -1)
+                        .filter(index => index >= 0),
+                    tileIndices: []
+                });
+                break;
+            case 19: { // Tile hog
+                const fourTileIds = data.count
+                    .map((count, tileId) => count === 4 ? tileId : -1)
+                    .filter(tileId => tileId >= 0);
+                fourTileIds.forEach(tileId => {
+                    for (let meldIndex = 0; meldIndex < 5; meldIndex++) {
+                        if (hand._melds[meldIndex].getTiles().some(tile => tile.tileId === tileId)) {
+                            highlightGroups.push({ meldIndices: [meldIndex], tileIndices: [] });
+                        }
+                    }
+                });
+                break;
+            }
+            case 60: // Pure triple chow
+                addFirstMeldCombination((a, b, c) =>
+                    [a, b, c].every(meld => meld.type === MeldType.CHOW) &&
+                    a.firstTile.sameAs(b.firstTile) && b.firstTile.sameAs(c.firstTile));
+                break;
+            case 61: // Pure shifted pungs
+                addFirstMeldCombination((a, b, c) => {
+                    const melds = [a, b, c];
+                    const nums = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                    return melds.every(meld => meld.type !== MeldType.CHOW && meld.firstTile.isRegular()) &&
+                        a.firstTile.type === b.firstTile.type && b.firstTile.type === c.firstTile.type &&
+                        (nums[1] - nums[0] === 1 || nums[1] - nums[0] === 2) &&
+                        nums[2] - nums[1] === nums[1] - nums[0];
+                });
+                break;
+            case 65: { // Four shifted chows
+                const melds = hand._melds.slice(0, 4);
+                const nums = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                if (melds.every(meld => meld.type === MeldType.CHOW) &&
+                    melds.every(meld => meld.firstTile.type === melds[0].firstTile.type) &&
+                    (nums[1] - nums[0] === 1 || nums[1] - nums[0] === 2) &&
+                    nums.slice(1).every((num, index) => num - nums[index] === nums[1] - nums[0])) {
+                    highlightGroups.push({ meldIndices: [0, 1, 2, 3], tileIndices: [] });
+                }
+                break;
+            }
+            case 66: // Three kongs
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type === MeldType.KONG) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 68: // Pure quadruple chow
+                if (hand._melds.slice(0, 4).every(meld =>
+                    meld.type === MeldType.CHOW && meld.firstTile.sameAs(hand._melds[0].firstTile))) {
+                    highlightGroups.push({ meldIndices: [0, 1, 2, 3], tileIndices: [] });
+                }
+                break;
+            case 69: { // Four pure shifted pungs
+                const melds = hand._melds.slice(0, 4);
+                const nums = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                if (melds.every(meld => meld.type !== MeldType.CHOW && meld.firstTile.isRegular()) &&
+                    melds.every(meld => meld.firstTile.type === melds[0].firstTile.type) &&
+                    (nums[1] - nums[0] === 1 || nums[1] - nums[0] === 2) &&
+                    nums.slice(1).every((num, index) => num - nums[index] === nums[1] - nums[0])) {
+                    highlightGroups.push({ meldIndices: [0, 1, 2, 3], tileIndices: [] });
+                }
+                break;
+            }
+            case 71: // Little four winds
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.type === TileType.WIND) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                if (hand._melds[4].firstTile.type === TileType.WIND) {
+                    highlightGroups.push({ meldIndices: [4], tileIndices: [] });
+                }
+                break;
+            case 72: // Little three dragons
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.type === TileType.DRAGON) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                if (hand._melds[4].firstTile.type === TileType.DRAGON) {
+                    highlightGroups.push({ meldIndices: [4], tileIndices: [] });
+                }
+                break;
+            case 74: // Four concealed pungs
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type !== MeldType.CHOW && hand._melds[i].isConcealed) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 75: // Pure terminal chows
+                highlightGroups.push({ meldIndices: [0, 1, 2, 3, 4], tileIndices: [] });
+                break;
+            case 76: // Big four winds
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.type === TileType.WIND) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 77: // Big three dragons
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.type === TileType.DRAGON) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 80: // Four kongs
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type === MeldType.KONG) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 30: // Mixed shifted chows
+                addFirstMeldCombination((a, b, c) => {
+                    const melds = [a, b, c];
+                    const starts = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                    return melds.every(meld => meld.type === MeldType.CHOW) &&
+                        starts[1] === starts[0] + 1 && starts[2] === starts[1] + 1 &&
+                        new Set(melds.map(meld => meld.firstTile.type)).size === 3;
+                });
+                break;
+            case 33: // Two dragons
+                for (let i = 0; i < 4; i++) {
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.type === TileType.DRAGON) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 35: // Mixed straight
+                addFirstMeldCombination((a, b, c) => {
+                    const melds = [a, b, c];
+                    const starts = melds.map(meld => meld.firstTile.num).sort();
+                    return melds.every(meld => meld.type === MeldType.CHOW) &&
+                        starts[0] === 1 && starts[1] === 4 && starts[2] === 7 &&
+                        new Set(melds.map(meld => meld.firstTile.type)).size === 3;
+                });
+                break;
+            case 37: // Mixed triple chow
+                addFirstMeldCombination((a, b, c) =>
+                    [a, b, c].every(meld => meld.type === MeldType.CHOW) &&
+                    a.firstTile.num === b.firstTile.num && b.firstTile.num === c.firstTile.num &&
+                    new Set([a.firstTile.type, b.firstTile.type, c.firstTile.type]).size === 3);
+                break;
+            case 38: // Mixed shifted pungs
+                addFirstMeldCombination((a, b, c) => {
+                    const melds = [a, b, c];
+                    const starts = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                    return melds.every(meld => meld.type !== MeldType.CHOW && meld.firstTile.isRegular()) &&
+                        starts[1] === starts[0] + 1 && starts[2] === starts[1] + 1 &&
+                        new Set(melds.map(meld => meld.firstTile.type)).size === 3;
+                });
+                break;
+            case 50: // Pure straight
+                addFirstMeldCombination((a, b, c) => {
+                    const melds = [a, b, c];
+                    const starts = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                    return melds.every(meld => meld.type === MeldType.CHOW) &&
+                        starts[0] === 1 && starts[1] === 4 && starts[2] === 7 &&
+                        a.firstTile.type === b.firstTile.type && b.firstTile.type === c.firstTile.type;
+                });
+                break;
+            case 52: // Pure shifted chows
+                addFirstMeldCombination((a, b, c) => {
+                    const melds = [a, b, c];
+                    const starts = melds.map(meld => meld.firstTile.num).sort((x, y) => x - y);
+                    const firstGap = starts[1] - starts[0];
+                    return melds.every(meld => meld.type === MeldType.CHOW) &&
+                        a.firstTile.type === b.firstTile.type && b.firstTile.type === c.firstTile.type &&
+                        (firstGap === 1 || firstGap === 2) && starts[2] - starts[1] === firstGap;
+                });
+                break;
+            case 54: // Triple pung
+                addFirstMeldCombination((a, b, c) =>
+                    [a, b, c].every(meld => meld.type !== MeldType.CHOW && meld.firstTile.isRegular()) &&
+                    a.firstTile.num === b.firstTile.num && b.firstTile.num === c.firstTile.num &&
+                    new Set([a.firstTile.type, b.firstTile.type, c.firstTile.type]).size === 3);
+                break;
             case 1: // Pure double chow
             case 2: // Mixed double chow
             case 3: // Short straight
+            case 20: { // Double pung
+                const used = new Set();
+                for (let i = 0; i < 3; i++) {
+                    if (ruleIndx === 2 && used.has(i)) continue;
+                    for (let j = i + 1; j < 4; j++) {
+                        const left = hand._melds[i];
+                        const right = hand._melds[j];
+                        let matches = false;
+                        if (ruleIndx === 1) {
+                            matches = j === i + 1 &&
+                                left.type === MeldType.CHOW && right.type === MeldType.CHOW &&
+                                left.firstTile.sameAs(right.firstTile);
+                        } else if (ruleIndx === 2) {
+                            matches = left.type === MeldType.CHOW && right.type === MeldType.CHOW &&
+                                left.firstTile.type !== right.firstTile.type &&
+                                left.firstTile.num === right.firstTile.num;
+                        } else if (ruleIndx === 3) {
+                            matches = left.type === MeldType.CHOW && right.type === MeldType.CHOW &&
+                                left.firstTile.type === right.firstTile.type &&
+                                left.firstTile.num + 3 === right.firstTile.num;
+                        } else {
+                            matches = left.type !== MeldType.CHOW && right.type !== MeldType.CHOW &&
+                                !left.firstTile.isHonor() && !right.firstTile.isHonor() &&
+                                left.firstTile.num === right.firstTile.num;
+                        }
+                        const shouldAdd = matches && (ruleIndx === 1 || ruleIndx === 3 || ruleIndx === 20 ||
+                            (ruleIndx === 2 && !used.has(j)) ||
+                            (ruleIndx !== 2 && !used.has(i) && !used.has(j)));
+                        if (shouldAdd) {
+                            highlightGroups.push({ meldIndices: [i, j], tileIndices: [] });
+                            if (ruleIndx === 2) {
+                                used.add(i);
+                                used.add(j);
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            case 5: // Pung of terminals or honors
                 for (let i = 0; i < 4; i++) {
-                    if (hand._melds[i]._type === MeldType.CHOW) meldIndices.push(i);
+                    const meld = hand._melds[i];
+                    if (meld.type !== MeldType.CHOW &&
+                        (meld.firstTile.isTerminal() ||
+                            (meld.firstTile.type === TileType.WIND &&
+                                !meld.firstTile.sameAs(hand._tableWind) &&
+                                !meld.firstTile.sameAs(hand._playerWind)))) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
                 }
                 break;
             case 14: // Dragon pung
                 for (let i = 0; i < 4; i++) {
-                    if (hand._melds[i]._firstTile._type === TileType.DRAGON) meldIndices.push(i);
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.type === TileType.DRAGON) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
                 }
                 break;
             case 15: // Prevalent wind
                 for (let i = 0; i < 4; i++) {
-                    if (hand._melds[i]._firstTile._tileId === hand._tableWind._tileId) meldIndices.push(i);
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.sameAs(hand._tableWind)) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
                 }
                 break;
             case 16: // Seat wind
                 for (let i = 0; i < 4; i++) {
-                    if (hand._melds[i]._firstTile._tileId === hand._playerWind._tileId) meldIndices.push(i);
+                    if (hand._melds[i].type !== MeldType.CHOW &&
+                        hand._melds[i].firstTile.sameAs(hand._playerWind)) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
                 }
+                break;
+            case 21: // Two concealed pungs
+            case 55: // Three concealed pungs
+            case 22: // Concealed kong
+            case 26: // Two melded kongs
+            case 34: // One melded and one concealed kong
+            case 43: // Two concealed kongs
+                for (let i = 0; i < 4; i++) {
+                    const meld = hand._melds[i];
+                    const isKong = meld.type === MeldType.KONG;
+                    const isPung = meld.type === MeldType.PUNG;
+                    const matches =
+                        (ruleIndx === 21 && isPung && meld.isConcealed) ||
+                        (ruleIndx === 55 && (isPung || isKong) && meld.isConcealed) ||
+                        (ruleIndx === 22 && isKong && meld.isConcealed) ||
+                        (ruleIndx === 26 && isKong && !meld.isConcealed) ||
+                        (ruleIndx === 34 && isKong) ||
+                        (ruleIndx === 43 && isKong && meld.isConcealed);
+                    if (matches) highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                }
+                break;
+            case 49: // Big three winds
+                for (let i = 0; i < 4; i++) {
+                    const meld = hand._melds[i];
+                    if (meld.type !== MeldType.CHOW && meld.firstTile.type === TileType.WIND) {
+                        highlightGroups.push({ meldIndices: [i], tileIndices: [] });
+                    }
+                }
+                break;
+            case 12: case 27: case 40: case 41: case 42: case 44: // Winning-tile conditions
+                if (hand._lastTile >= 0) tileIndices.push(hand._lastTile);
                 break;
             case 9: case 10: case 11: // Waits
                 if (hand._lastTile >= 0) {
-                    const m = Math.floor(hand._lastTile / 3);
-                    meldIndices.push(m >= 4 ? 4 : m);
+                    tileIndices.push(hand._lastTile);
                 }
                 break;
             default:
@@ -404,7 +735,17 @@ export class InternationalRules extends RuleSetStrategy {
                 break;
         }
 
-        return { meldIndices, tileIndices };
+        if (!highlightGroups.length && (meldIndices.length || tileIndices.length)) {
+            highlightGroups.push({ meldIndices: [...meldIndices], tileIndices: [...tileIndices] });
+        }
+        const groupedMeldIndices = highlightGroups.flatMap(group => group.meldIndices);
+        const groupedTileIndices = highlightGroups.flatMap(group => group.tileIndices);
+        return {
+            meldIndices: groupedMeldIndices.length ? [...new Set(groupedMeldIndices)] : meldIndices,
+            tileIndices: groupedTileIndices.length ? [...new Set(groupedTileIndices)] : tileIndices,
+            highlightGroups,
+            flowerIndices
+        };
     }
 
     // --- Static Rule Computation Methods ported from HandRules.js ---
@@ -441,13 +782,19 @@ export class InternationalRules extends RuleSetStrategy {
 
     static shortStraight(hand) {
         let res = 0;
+        const used = [false, false, false, false];
         for (let i = 0; i < 3; i++) {
+            if (used[i]) continue;
             if (hand._melds[i]._type !== MeldType.CHOW || hand._melds[i]._firstTile._num > 4) continue;
             for (let j = i + 1; j < 4; j++) {
-                if (hand._melds[j]._type === MeldType.CHOW &&
+                if (!used[j] &&
+                    hand._melds[j]._type === MeldType.CHOW &&
                     hand._melds[i]._firstTile._num + 3 === hand._melds[j]._firstTile._num &&
                     hand._melds[i]._firstTile._type === hand._melds[j]._firstTile._type) {
                     res++;
+                    used[i] = true;
+                    used[j] = true;
+                    break;
                 }
             }
         }
@@ -623,19 +970,11 @@ export class InternationalRules extends RuleSetStrategy {
     }
 
     static allChows(hand, data) {
-        if (hand._isNormal) {
-            if (hand.chows() === 4) {
-                const type = hand._melds[4]._firstTile._type;
-                if (type !== TileType.DRAGON && type !== TileType.WIND) {
-                    return 1;
-                }
+        if (hand._isNormal && hand.chows() === 4) {
+            const type = hand._melds[4]._firstTile._type;
+            if (type !== TileType.DRAGON && type !== TileType.WIND) {
+                return 1;
             }
-        } else if (data.knittedData.knitMatch > 0 && !data.knittedData.honors &&
-                   data.knittedData.what === MeldType.CHOW) {
-            for (let i = 0; i < 7; i++) {
-                if (data.count[TileType.DRAGON.offset + i] > 0) return 0;
-            }
-            return 1;
         }
         return 0;
     }
@@ -1001,10 +1340,9 @@ export class InternationalRules extends RuleSetStrategy {
     }
 
     static sevenPairs(hand) {
-        for (let i = 0; i < 14; i += 2) {
-            if (hand._tiles[i]._tileId !== hand._tiles[i + 1]._tileId) return 0;
-        }
-        return 1;
+        const counts = hand.countTiles().slice(0, TileType.DRAGON.offset + 7);
+        const tileCount = counts.reduce((total, count) => total + count, 0);
+        return tileCount === 14 && counts.every(count => count % 2 === 0) ? 1 : 0;
     }
 
     static greaterHonorsAndKnittedTiles(hand, data) {
@@ -1189,7 +1527,10 @@ export class InternationalRules extends RuleSetStrategy {
     }
 
     static nineGates(hand) {
-        if (hand._isNormal) return 0;
+        if (hand._isNormal) {
+            const expectedConcealed = hand._selfDrawn || hand._lastTile >= 12 ? 4 : 3;
+            if (hand.concealed() !== expectedConcealed) return 0;
+        }
 
         const counts = hand.countTiles();
         const offsets = [

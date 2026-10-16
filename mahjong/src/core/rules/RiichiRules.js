@@ -314,11 +314,51 @@ export class RiichiRules extends RuleSetStrategy {
         res.scoreSummary = `${fu} Fu · ${yaku} Han${limitName ? ` · ${limitName}` : ''}`;
 
         for (const item of yakuList) {
+            const attributionRuleId = {
+                TANYAO_CHUU: 23,
+                PINFU: 18,
+                IIPEIKOU: 1,
+                RYAN_PEIKOU: 1,
+                DRAGON_PUNG: 14,
+                PREVALENT_WIND: 15,
+                SEAT_WIND: 16,
+                TWO_CONCEALED_PUNGS: 21,
+                THREE_CONCEALED_PUNGS: 55,
+                MIXED_TRIPLE_CHOW: 37,
+                PURE_STRAIGHT: 50,
+                OUTSIDE_HAND: 24,
+                TRIPLE_PUNG: 54,
+                LITTLE_THREE_DRAGONS: 33,
+                ALL_TERMINALS_AND_HONORS: 56,
+                FULLY_CONCEALED_HAND: 25,
+                SEVEN_PAIRS: 56,
+                ALL_PUNGS: 28,
+                HALF_FLUSH: 29,
+                FULL_FLUSH: 29,
+                THIRTEEN_ORPHANS: 39,
+                ALL_GREEN: 39,
+                ALL_HONORS: 39,
+                BIG_THREE_DRAGONS: 39,
+                BIG_FOUR_WINDS: 39,
+                FOUR_CONCEALED_PUNGS: 55,
+                FOUR_KONGS: 39,
+                NINE_GATES: 39,
+                ALL_TERMINALS: 39,
+                LITTLE_FOUR_WINDS: 39,
+                JUNCHAN: 24
+            }[item.name];
+            const attribution = attributionRuleId === undefined
+                ? { meldIndices: [], tileIndices: [], highlightGroups: [], flowerIndices: [] }
+                : InternationalRules.getAttribution(attributionRuleId, hand, data);
             const scoreItem = new ScoreItem({
                 ruleId: item.name,
                 name: item.name,
                 points: item.han,
-                count: 1
+                count: 1,
+                meldIndices: attribution.meldIndices,
+                tileIndices: attribution.tileIndices,
+                highlightGroups: attribution.highlightGroups,
+                flowerIndices: attribution.flowerIndices
             });
             res.items.push(scoreItem);
             res.matched[item.name] = true;

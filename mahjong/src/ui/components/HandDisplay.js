@@ -4,6 +4,7 @@ import { Tile, TileType, BAD_TILE } from '../../core/models/Tile.js';
 import { Meld, MeldType, BAD_MELD } from '../../core/models/Meld.js';
 import { eventBus, Events } from '../../utils/EventBus.js';
 import { t } from '../../core/i18n/i18n.js';
+import { TwoStatePushButton } from './TwoStatePushButton.js';
 
 /**
  * Main Hand Display component rendering regular melds + pair or 14 special tiles.
@@ -20,6 +21,7 @@ export class HandDisplay {
         this._tileSet = 'default';
         this._meldTypes = [MeldType.CHOW, MeldType.CHOW, MeldType.CHOW, MeldType.CHOW];
         this._concealedStates = [true, true, true, true];
+        this._winningTileSelectionMode = false;
 
         this._setupListeners();
     }
@@ -35,6 +37,7 @@ export class HandDisplay {
     }
 
     setHand(hand) {
+        if (this._hand !== hand) this._winningTileSelectionMode = false;
         this._hand = hand;
         if (hand.isNormal) {
             this._meldTypes = this._meldTypes.map((type, index) =>
@@ -45,6 +48,12 @@ export class HandDisplay {
             );
         }
         this.render();
+    }
+
+    resetMeldControls() {
+        this._meldTypes = [MeldType.CHOW, MeldType.CHOW, MeldType.CHOW, MeldType.CHOW];
+        this._concealedStates = [false, false, false, false];
+        this._winningTileSelectionMode = false;
     }
 
     render() {
@@ -58,7 +67,12 @@ export class HandDisplay {
                     <button class="hand-type-btn ${!this._hand.isNormal ? 'active' : ''}" id="btn-special-hand">${t('SPECIAL_HAND')}</button>
                 </div>
                 <div class="hand-actions">
-                    <span style="font-size: 11px; color: var(--color-text-muted);">Double-click tile to set Winning Tile</span>
+                    <button type="button" class="winning-tile-mode-btn ${this._winningTileSelectionMode ? 'active' : ''}"
+                        aria-pressed="${this._winningTileSelectionMode}"
+                        title="${t('WINNING_TILE_HINT')}">${t('SET_WINNING_TILE')}</button>
+                    ${this._winningTileSelectionMode
+                        ? `<span class="winning-tile-hint">${t('WINNING_TILE_HINT')}</span>`
+                        : ''}
                 </div>
             </div>
             <div class="hand-content-area" id="hand-content-area"></div>
@@ -67,6 +81,7 @@ export class HandDisplay {
         // Bind hand type buttons
         this._root.querySelector('#btn-normal-hand').addEventListener('click', () => {
             if (!this._hand.isNormal) {
+                this._winningTileSelectionMode = false;
                 this._hand.setType(true);
                 eventBus.emit(Events.HAND_CHANGED, this._hand);
             }
@@ -74,9 +89,15 @@ export class HandDisplay {
 
         this._root.querySelector('#btn-special-hand').addEventListener('click', () => {
             if (this._hand.isNormal) {
+                this._winningTileSelectionMode = false;
                 this._hand.setType(false);
                 eventBus.emit(Events.HAND_CHANGED, this._hand);
             }
+        });
+
+        this._root.querySelector('.winning-tile-mode-btn').addEventListener('click', () => {
+            this._winningTileSelectionMode = !this._winningTileSelectionMode;
+            this.render();
         });
 
         const container = this._root.querySelector('#hand-content-area');
@@ -119,19 +140,23 @@ export class HandDisplay {
 
             const controls = document.createElement('div');
             controls.className = 'meld-controls';
-            const concealedButton = document.createElement('button');
-            concealedButton.type = 'button';
-            concealedButton.className = 'concealed-toggle-btn';
-            concealedButton.setAttribute('aria-pressed', String(this._concealedStates[meldIdx]));
-            concealedButton.setAttribute('aria-label', t(this._concealedStates[meldIdx] ? 'CONCEALED' : 'MELDED'));
-            concealedButton.title = t(this._concealedStates[meldIdx] ? 'CONCEALED' : 'MELDED');
-            concealedButton.textContent = this._concealedStates[meldIdx] ? '✓' : '';
-            concealedButton.addEventListener('click', () => {
-                this._concealedStates[meldIdx] = !this._concealedStates[meldIdx];
+            const concealedButton = new TwoStatePushButton({
+                label: t(this._concealedStates[meldIdx] ? 'CONCEALED' : 'MELDED'),
+                icon: this._concealedStates[meldIdx] ? 'img/icons/concealed.svg' : 'img/icons/exposed.svg',
+                pressed: this._concealedStates[meldIdx],
+                className: 'concealed-toggle-btn',
+                onToggle: pressed => {
+                this._concealedStates[meldIdx] = pressed;
                 if (meld.isValid()) meld.isConcealed = this._concealedStates[meldIdx];
+                concealedButton.setAttribute('aria-label', t(pressed ? 'CONCEALED' : 'MELDED'));
+                concealedButton.title = t(pressed ? 'CONCEALED' : 'MELDED');
+                concealedButton.querySelector('img').src = pressed
+                    ? 'img/icons/concealed.svg'
+                    : 'img/icons/exposed.svg';
                 this.render();
                 eventBus.emit(Events.HAND_CHANGED, this._hand);
-            });
+                }
+            }).element;
             const typeSelector = document.createElement('select');
             typeSelector.className = 'meld-type-select';
             typeSelector.setAttribute('aria-label', `${t('MELD_TYPE')} ${meldIdx + 1}`);
@@ -146,7 +171,7 @@ export class HandDisplay {
                 option.selected = this._meldTypes[meldIdx] === type;
                 typeSelector.appendChild(option);
             });
-            typeSelector.addEventListener('change', () => {
+            typeSelector.addEventListener('change', event => {
                 this._meldTypes[meldIdx] = Number(typeSelector.value);
                 this._selectedIndex = meldIdx * 3;
                 eventBus.emit(Events.TILE_SELECTED, {
@@ -155,7 +180,7 @@ export class HandDisplay {
                     meldType: this._meldTypes[meldIdx],
                     isConcealed: this._concealedStates[meldIdx]
                 });
-                eventBus.emit(Events.OPEN_TILE_PICKER);
+                eventBus.emit(Events.OPEN_TILE_PICKER, this._pickerPosition(event.currentTarget, event));
             });
 
             controls.append(concealedButton, typeSelector);
@@ -233,14 +258,13 @@ export class HandDisplay {
         img.alt = tile.toString();
         div.appendChild(img);
 
-        div.addEventListener('click', () => {
+        div.addEventListener('click', event => {
+            if (this._winningTileSelectionMode) {
+                this._setWinningTile(globalIdx);
+                return;
+            }
             this._selectTileSlot(globalIdx, meldIdx);
-            eventBus.emit(Events.OPEN_TILE_PICKER);
-        });
-
-        div.addEventListener('dblclick', () => {
-            eventBus.emit(Events.CLOSE_TILE_PICKER);
-            this._setWinningTile(globalIdx);
+            eventBus.emit(Events.OPEN_TILE_PICKER, this._pickerPosition(div, event));
         });
 
         return div;
@@ -252,9 +276,9 @@ export class HandDisplay {
         div.dataset.tileIndex = globalIdx;
         if (meldIdx !== null) div.dataset.meldIndex = meldIdx;
 
-        div.addEventListener('click', () => {
+        div.addEventListener('click', event => {
             this._selectTileSlot(globalIdx, meldIdx);
-            eventBus.emit(Events.OPEN_TILE_PICKER);
+            eventBus.emit(Events.OPEN_TILE_PICKER, this._pickerPosition(div, event));
         });
 
         return div;
@@ -279,42 +303,59 @@ export class HandDisplay {
         });
     }
 
+    _pickerPosition(anchor, event) {
+        const bounds = anchor.getBoundingClientRect();
+        return {
+            x: event?.clientX > 0 ? event.clientX : bounds.left,
+            y: event?.clientY > 0 ? event.clientY : bounds.bottom,
+            anchorRect: bounds
+        };
+    }
+
     _setWinningTile(globalIdx) {
+        eventBus.emit(Events.CLOSE_TILE_PICKER);
         this._hand.lastTile = globalIdx;
+        this._winningTileSelectionMode = false;
         this.render();
         eventBus.emit(Events.HAND_CHANGED, this._hand);
     }
 
     /**
      * Visually highlight specific melds or tiles associated with a combination.
-     * @param {{ meldIndices: number[], tileIndices: number[] }} data
+     * @param {{ meldIndices: number[], tileIndices: number[], highlightGroups?: Array<{ meldIndices: number[], tileIndices: number[] }> }} data
      */
     highlightTiles(data) {
         this.clearHighlights();
         if (!data) return;
 
-        if (Array.isArray(data.meldIndices)) {
-            data.meldIndices.forEach(meldIdx => {
+        const groups = Array.isArray(data.highlightGroups) && data.highlightGroups.length
+            ? data.highlightGroups
+            : [{ meldIndices: data.meldIndices || [], tileIndices: data.tileIndices || [] }];
+        groups.forEach((group, index) => {
+            const colorClass = `combination-highlight-color-${index % 6}`;
+            (group.meldIndices || []).forEach(meldIdx => {
                 const meldEl = this._root.querySelector(`.meld-group[data-meld-index="${meldIdx}"]`);
                 if (meldEl) {
-                    meldEl.querySelectorAll('.mj-tile').forEach(t => t.classList.add('combination-highlight'));
+                    meldEl.querySelectorAll('.mj-tile').forEach(tile => {
+                        tile.classList.add('combination-highlight', colorClass);
+                    });
                 }
             });
-        }
-
-        if (Array.isArray(data.tileIndices)) {
-            data.tileIndices.forEach(tileIdx => {
+            (group.tileIndices || []).forEach(tileIdx => {
                 const tileEl = this._root.querySelector(`.mj-tile[data-tile-index="${tileIdx}"]`);
-                if (tileEl) {
-                    tileEl.classList.add('combination-highlight');
-                }
+                if (tileEl) tileEl.classList.add('combination-highlight', colorClass);
             });
-        }
+        });
+        (data.tileIndices || []).forEach(tileIdx => {
+            const tileEl = this._root.querySelector(`.mj-tile[data-tile-index="${tileIdx}"]`);
+            if (tileEl) tileEl.classList.add('combination-highlight', 'combination-highlight-color-0');
+        });
     }
 
     clearHighlights() {
         this._root.querySelectorAll('.combination-highlight').forEach(t => {
             t.classList.remove('combination-highlight');
+            for (let i = 0; i < 6; i++) t.classList.remove(`combination-highlight-color-${i}`);
         });
     }
 }

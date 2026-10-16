@@ -331,11 +331,12 @@ export class Hand {
     }
 
     isComplete() {
-        if (!(this._tableWind.isValid() && this._playerWind.isValid() && this._lastTile >= 0)) {
+        if (!(this._tableWind.isValid() && this._playerWind.isValid())) {
             return false;
         }
 
         if (this._isNormal) {
+            if (this._lastTile < 0) return false;
             for (let i = 0; i < 5; i++) {
                 if (!this._melds[i].isValid()) return false;
             }

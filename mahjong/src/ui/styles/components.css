@@ -128,28 +128,29 @@ body {
 
 /* Mahjong Tile Component */
 .mj-tile {
-    width: var(--tile-width);
-    height: var(--tile-height);
-    min-width: 44px;
-    min-height: 44px;
-    background-color: var(--color-tile-bg);
-    border: 1.5px solid var(--color-tile-border);
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--color-tile-shadow);
+    width: fit-content;
+    height: fit-content;
+    min-width: 0;
+    min-height: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: relative;
     cursor: pointer;
     user-select: none;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
     flex-shrink: 0;
 }
 
 .mj-tile img {
-    width: 82%;
-    height: 82%;
-    object-fit: contain;
+    display: block;
+    width: auto;
+    height: auto;
+    border-radius: 3px;
     pointer-events: none;
 }
 
@@ -158,14 +159,17 @@ body {
 }
 
 .mj-tile.selected {
-    border-color: var(--color-tile-selected-border);
-    transform: translateY(-4px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4), var(--color-tile-highlight-glow);
+    transform: translateY(-3px);
+    box-shadow: 0 0 0 2px var(--color-tile-selected-border), 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .mj-tile.empty-slot {
+    width: var(--tile-width);
+    height: var(--tile-height);
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.05);
     border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
     box-shadow: none;
 }
 
@@ -193,27 +197,20 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Pulsing Combination Glow Animation */
-@keyframes tileGlowPulse {
-    0% {
-        box-shadow: var(--color-tile-shadow), 0 0 6px var(--color-accent-gold);
-        transform: translateY(-2px) scale(1);
-    }
-    50% {
-        box-shadow: var(--color-tile-shadow), 0 0 20px var(--color-accent-gold), 0 0 35px var(--color-accent-gold);
-        transform: translateY(-4px) scale(1.05);
-    }
-    100% {
-        box-shadow: var(--color-tile-shadow), 0 0 6px var(--color-accent-gold);
-        transform: translateY(-2px) scale(1);
-    }
+.mj-tile.combination-highlight {
+    animation: none;
+    transform: none;
+    box-shadow:
+        inset 0 0 0 2px var(--highlight-color, var(--color-accent-gold)),
+        0 0 10px 2px var(--highlight-color, var(--color-accent-gold));
 }
 
-.mj-tile.combination-highlight {
-    animation: tileGlowPulse 1.4s infinite ease-in-out;
-    border-color: var(--color-accent-gold) !important;
-    z-index: 10;
-}
+.combination-highlight-color-0 { --highlight-color: #f4c542; }
+.combination-highlight-color-1 { --highlight-color: #44c7a1; }
+.combination-highlight-color-2 { --highlight-color: #5ea7ff; }
+.combination-highlight-color-3 { --highlight-color: #e879f9; }
+.combination-highlight-color-4 { --highlight-color: #ff805e; }
+.combination-highlight-color-5 { --highlight-color: #b3d94c; }
 
 /* Flowers & Seasons Row */
 .flowers-bar-container {
@@ -222,19 +219,38 @@ body {
     align-items: center;
     gap: var(--space-4);
     overflow-x: auto;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .flowers-tiles-list {
     display: flex;
+    width: max-content;
     gap: var(--space-2);
 }
 
 .flower-slot {
-    width: max(44px, var(--tile-width-sm));
-    height: max(44px, var(--tile-height-sm));
+    overflow: hidden;
+    width: fit-content;
+    height: fit-content;
     opacity: 0.45;
     filter: grayscale(80%);
     transition: opacity var(--transition-fast), filter var(--transition-fast), transform var(--transition-fast);
+}
+
+.flower-slot:not(.active)::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 125%;
+    height: 2px;
+    background: rgba(112, 34, 34, 0.82);
+    border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, -50%) rotate(-52deg);
+    pointer-events: none;
 }
 
 .flower-slot.active {
@@ -268,14 +284,16 @@ body {
 }
 
 .hand-type-btn {
-    padding: var(--space-1) var(--space-3);
-    font-size: var(--font-size-xs);
+    min-height: 22px;
+    padding: 1px var(--space-2);
+    font-size: 11px;
     border-radius: var(--border-radius-full);
     background: transparent;
     border: none;
     color: var(--color-text-secondary);
     cursor: pointer;
     transition: all var(--transition-fast);
+    line-height: 1.2;
 }
 
 .hand-type-btn.active {
@@ -284,11 +302,41 @@ body {
     font-weight: 700;
 }
 
+.hand-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.winning-tile-mode-btn {
+    min-height: 22px;
+    padding: 2px var(--space-2);
+    border: 1px solid var(--color-surface-panel-border);
+    border-radius: var(--border-radius-sm);
+    background: var(--color-surface-card);
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.winning-tile-mode-btn.active {
+    border-color: var(--color-accent-gold);
+    background: var(--color-accent-gold);
+    color: #111827;
+    font-weight: 700;
+}
+
+.winning-tile-hint {
+    color: var(--color-text-muted);
+    font-size: 11px;
+}
+
 /* Melds Layout */
 .melds-wrapper {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     gap: var(--space-4);
     padding: var(--space-2) 0;
 }
@@ -324,34 +372,11 @@ body {
 .meld-controls {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: var(--space-1);
     width: 100%;
 }
 
-.concealed-toggle-btn {
-    width: 26px;
-    height: 26px;
-    flex: 0 0 26px;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 1px solid var(--color-surface-panel-border);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-}
-
-.concealed-toggle-btn[aria-pressed="true"] {
-    background: var(--color-accent-gold);
-    border-color: var(--color-accent-gold);
-    color: #111827;
-}
-
-.concealed-toggle-btn:focus-visible,
 .meld-type-select:focus-visible {
     outline: 2px solid var(--color-accent-gold);
     outline-offset: 2px;
@@ -366,13 +391,61 @@ body {
     padding: var(--space-3) 0;
 }
 
+@media (max-width: 768px) {
+    .main-hand-container {
+        padding: var(--space-3);
+        gap: var(--space-2);
+    }
+
+    .hand-header-bar {
+        padding-bottom: 4px;
+    }
+
+    .hand-type-toggle {
+        padding: 2px;
+    }
+
+    .hand-type-btn {
+        height: 20px;
+        min-height: 20px;
+        padding: 1px 7px;
+        font-size: 10px;
+    }
+}
+
 /* Special Conditions Bar */
 .conditions-bar {
-    padding: var(--space-3) var(--space-4);
+    padding: 6px 8px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: var(--space-3);
+    gap: 6px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.conditions-bar::-webkit-scrollbar {
+    display: none;
+    height: 0;
+}
+
+.condition-winds,
+.condition-toggles,
+.riichi-condition-group,
+.indicator-select {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+}
+
+.condition-winds label,
+.indicator-select label {
+    color: var(--color-accent-gold);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .riichi-condition-group {
@@ -380,35 +453,7 @@ body {
 }
 
 .conditions-bar[data-ruleset="riichi"] .riichi-condition-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.condition-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: 4px 8px;
-    min-height: 26px;
-    box-sizing: border-box;
-    border-radius: var(--border-radius-full);
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-surface-panel-border);
-    font-size: var(--font-size-xs);
-    cursor: pointer;
-    user-select: none;
-    transition: all var(--transition-fast);
-}
-
-.indicator-select {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--color-accent-gold);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
+    display: contents;
 }
 
 .score-summary {
@@ -418,22 +463,16 @@ body {
     text-align: center;
 }
 
-.condition-pill.active {
-    background: var(--color-accent-gold);
-    color: #111827;
-    font-weight: 700;
-    border-color: var(--color-accent-gold);
-}
-
 .wind-select {
     background: var(--color-surface-card);
     color: var(--color-text-primary);
     border: 1px solid var(--color-surface-panel-border);
-    padding: 4px 8px;
+    padding: 2px 5px;
     border-radius: var(--border-radius-sm);
     font-size: var(--font-size-xs);
     cursor: pointer;
-    height: 26px;
+    height: 30px;
+    max-width: 76px;
     box-sizing: border-box;
 }
 
@@ -448,6 +487,7 @@ body {
 .total-score-card {
     display: flex;
     align-items: baseline;
+    justify-content: flex-end;
     gap: var(--space-2);
     padding-bottom: var(--space-3);
     border-bottom: 1px solid var(--color-surface-panel-border);
@@ -457,6 +497,16 @@ body {
     font-size: var(--font-size-3xl);
     font-weight: 800;
     color: var(--color-accent-gold);
+}
+
+.total-score-invalid {
+    color: var(--color-accent-red);
+}
+
+.score-validity-warning {
+    color: var(--color-accent-red);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
 }
 
 .score-items-list {
@@ -478,9 +528,28 @@ body {
     transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
-.score-item-row:hover {
+.score-item-row:hover,
+.score-item-row:focus-visible {
     background: rgba(229, 193, 88, 0.15);
     transform: translateX(3px);
+    outline: 2px solid var(--color-accent-gold);
+    outline-offset: 1px;
+}
+
+.score-rule-tooltip {
+    position: fixed;
+    z-index: var(--z-toast);
+    width: max-content;
+    max-width: min(320px, calc(100vw - 16px));
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-surface-panel-border);
+    border-radius: var(--border-radius-sm);
+    background: var(--color-surface-panel);
+    color: var(--color-text-primary);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    font-size: var(--font-size-xs);
+    line-height: 1.45;
+    pointer-events: none;
 }
 
 .score-item-left {
@@ -516,37 +585,50 @@ body {
 }
 
 /* Tile Picker */
-.palette-tabs {
-    display: flex;
-    gap: var(--space-2);
-    overflow-x: auto;
-}
-
-.palette-tab-btn {
-    padding: var(--space-1) var(--space-3);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    border: none;
-    border-radius: var(--border-radius-sm);
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-}
-
-.palette-tab-btn.active {
-    background: var(--color-accent-gold);
-    color: #111827;
-}
-
 .palette-tiles-grid {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    justify-content: flex-start;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: start;
+}
+
+.palette-suit-row {
+    display: grid;
+    grid-template-columns: repeat(9, max-content);
+    gap: 4px;
 }
 
 .tile-picker-content {
-    max-width: 680px;
+    position: fixed;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    overflow: auto;
+    padding: var(--space-3);
+    gap: var(--space-2);
+    transform: none;
+    transition: none;
+}
+
+.tile-picker-backdrop {
+    display: block;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+}
+
+.tile-picker-backdrop.open .tile-picker-content {
+    transform: none;
+}
+
+.tile-picker-content .modal-header {
+    padding-bottom: var(--space-2);
+}
+
+.tile-picker-shortcuts {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
 }
 
 .tile-picker-content .mj-tile:disabled {

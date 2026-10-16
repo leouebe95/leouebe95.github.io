@@ -1,0 +1,91 @@
+body {
+  font-size: 12px;
+}
+
+div.error {
+  font-size: 2em;
+  font-weight: bold;
+  color: #bb0f0f;
+}
+
+th {
+  background-color: #aaaaaa;
+}
+tr:nth-child(even) {
+  background-color: #aaaaaa;
+}
+
+tr:nth-child(odd) {
+  background-color: #cccccc;
+}
+
+td {
+  text-align: center;
+}
+
+td.large {
+  font-size: 1.5em;
+}
+
+td.empty {
+  background-color: #eeeeee;
+}
+td.separate {
+  background-color: #ffffff;
+}
+
+td.found {
+  background-color: #cceeee;
+}
+
+td.found.gen2 {
+  background-color: #feffb9;
+}
+
+td.missing {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #EE8080;
+}
+
+td.missing.gen2 {
+  background-color: #ffffe6;
+}
+
+img.pokemon {
+  width: 64px;
+}
+
+img.item {
+  width: 32px;
+}
+
+div.under {
+  position: relative;
+}
+
+img.lock {
+  width: 64px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+img.over {
+  width: 32px;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+div.overnb {
+  width: 32px;
+  position: absolute;
+  top: 24px;
+  right: 2px;
+  font-size: 1em;
+  font-weight: bold;
+  color: #801010;
+  background-color: rgba(200, 255, 255, 0.75);
+
+}

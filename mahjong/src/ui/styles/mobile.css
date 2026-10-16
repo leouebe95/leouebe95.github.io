@@ -4,10 +4,6 @@
 
 @media (max-width: 768px) {
     :root {
-        --tile-width: 38px;
-        --tile-height: 52px;
-        --tile-width-sm: 30px;
-        --tile-height-sm: 41px;
         --space-4: 0.75rem;
         --space-5: 1rem;
     }
@@ -18,16 +14,18 @@
     }
 
     .melds-wrapper {
+        flex-wrap: wrap;
         justify-content: center;
-        gap: var(--space-2);
+        gap: var(--space-1);
+        overflow: visible;
+    }
+
+    .meld-group {
+        flex: 0 0 auto;
     }
 
     .meld-group {
         padding: var(--space-1);
-    }
-
-    .conditions-bar {
-        justify-content: center;
     }
 
     /* Modal as Bottom Sheet on Mobile */
@@ -49,26 +47,52 @@
         transform: translateY(0);
     }
 
+    .tile-picker-backdrop {
+        display: block;
+        padding: 0;
+    }
+
+    .tile-picker-backdrop .tile-picker-content,
+    .tile-picker-backdrop.open .tile-picker-content {
+        position: fixed;
+        width: max-content;
+        max-width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+        border-radius: var(--border-radius-lg);
+        transform: none;
+    }
+
+    .palette-tiles-grid {
+        gap: 5px;
+    }
+
+    .palette-suit-row {
+        grid-template-columns: repeat(6, max-content);
+        gap: 3px;
+    }
+
 }
 
 @media (max-width: 480px) {
-    :root {
-        --tile-width: 32px;
-        --tile-height: 44px;
-        --tile-width-sm: 26px;
-        --tile-height-sm: 36px;
-    }
-
     .app-header {
         padding: 0 var(--space-2);
+        gap: 4px;
+    }
+
+    .header-actions {
+        gap: 4px;
+        flex-shrink: 0;
+    }
+
+    .header-actions .btn {
+        min-height: 34px;
+        padding: 0 6px;
+        gap: 4px;
+        font-size: 11px;
     }
 
     .app-title {
         font-size: var(--font-size-base);
     }
 
-    .condition-pill {
-        font-size: 11px;
-        padding: 2px 8px;
-    }
 }

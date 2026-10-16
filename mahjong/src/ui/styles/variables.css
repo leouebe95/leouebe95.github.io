@@ -32,12 +32,12 @@
     --border-radius-full: 9999px;
 
     /* Tile Dimensions */
-    --tile-width: 44px;
-    --tile-height: 60px;
-    --tile-width-sm: 36px;
-    --tile-height-sm: 49px;
-    --tile-width-lg: 52px;
-    --tile-height-lg: 71px;
+    --tile-width: 38px;
+    --tile-height: 50px;
+    --tile-width-sm: 38px;
+    --tile-height-sm: 50px;
+    --tile-width-lg: 38px;
+    --tile-height-lg: 50px;
 
     /* Animation Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

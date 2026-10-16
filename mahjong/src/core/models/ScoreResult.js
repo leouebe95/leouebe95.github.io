@@ -12,7 +12,9 @@ export class ScoreItem {
         isImplied = false,
         impliedBy = null,
         tileIndices = [],
-        meldIndices = []
+        meldIndices = [],
+        highlightGroups = [],
+        flowerIndices = []
     }) {
         this.ruleId = ruleId;
         this.name = name;
@@ -22,6 +24,8 @@ export class ScoreItem {
         this.impliedBy = impliedBy;
         this.tileIndices = tileIndices;
         this.meldIndices = meldIndices;
+        this.highlightGroups = highlightGroups;
+        this.flowerIndices = flowerIndices;
     }
 
     get totalPoints() {

@@ -144,6 +144,7 @@ export class App {
         this._hand.setType(isNormal);
         this._hand.tableWind = new Tile(TileType.WIND, 1);
         this._hand.playerWind = new Tile(TileType.WIND, 1);
+        this._handDisplay.resetMeldControls();
 
         this._recomputeScore();
         this._syncComponents();

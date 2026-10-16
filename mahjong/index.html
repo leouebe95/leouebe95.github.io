@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="src/ui/styles/themes.css">
     <link rel="stylesheet" href="src/ui/styles/components.css">
     <link rel="stylesheet" href="src/ui/styles/mobile.css">
+    <link rel="stylesheet" href="src/ui/styles/two-state-push-button.css">
 </head>
 <body>
     <!-- App Header Bar -->
@@ -35,14 +36,14 @@
 
     <!-- Main Content Area -->
     <main class="app-main">
-        <!-- 1. Flowers & Seasons Row (directly above main hand) -->
+        <!-- 1. Special Conditions Bar (Winds, Tsumo, Haitei, Chankan) -->
+        <section id="conditions-bar-root"></section>
+
+        <!-- 2. Flowers & Seasons Row -->
         <section id="flowers-bar-root"></section>
 
-        <!-- 2. Main Hand Display (14+ Tiles, Melds, Pair) -->
+        <!-- 3. Main Hand Display (14+ Tiles, Melds, Pair) -->
         <section id="hand-display-root"></section>
-
-        <!-- 3. Special Conditions Bar (Winds, Tsumo, Haitei, Chankan) -->
-        <section id="conditions-bar-root"></section>
 
         <!-- 4. Score & Combination Breakdown -->
         <section id="score-breakdown-root"></section>

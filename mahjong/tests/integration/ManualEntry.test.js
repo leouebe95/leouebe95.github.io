@@ -6,6 +6,7 @@ import { TilePalette } from '../../src/ui/components/TilePalette.js';
 import { HandDisplay } from '../../src/ui/components/HandDisplay.js';
 import { FlowersBar } from '../../src/ui/components/FlowersBar.js';
 import { SpecialConditions } from '../../src/ui/components/SpecialConditions.js';
+import { TwoStatePushButton } from '../../src/ui/components/TwoStatePushButton.js';
 import { eventBus, Events } from '../../src/utils/EventBus.js';
 
 function createEntry() {
@@ -18,10 +19,6 @@ function createEntry() {
     display.setHand(hand);
     picker.setHand(hand);
     return { hand, displayRoot, pickerRoot, display, picker };
-}
-
-function chooseSuit(root, suit) {
-    root.querySelector(`[data-suit="${suit}"]`).click();
 }
 
 function chooseTile(root, index = 0) {
@@ -40,7 +37,15 @@ describe('Integration: Manual Tile Entry', () => {
         try {
             selectMeldType(displayRoot, 0, MeldType.CHOW);
             assert.ok(pickerRoot.classList.contains('open'), 'The tile picker opens');
-            assert.equal(pickerRoot.querySelectorAll('#palette-tiles-grid .mj-tile').length, 9);
+            const group = displayRoot.querySelector('[data-meld-index="0"]');
+            const tiles = group.querySelector('.meld-tiles').getBoundingClientRect();
+            const controls = group.querySelector('.meld-controls').getBoundingClientRect();
+            assert.equal(
+                Math.round((controls.left + controls.right) / 2),
+                Math.round((tiles.left + tiles.right) / 2),
+                'Meld controls are centered below their tiles'
+            );
+            assert.equal(pickerRoot.querySelectorAll('#palette-tiles-grid .mj-tile').length, 34);
 
             chooseTile(pickerRoot, 1);
             assert.equal(hand.melds[0].type, MeldType.CHOW);
@@ -49,6 +54,50 @@ describe('Integration: Manual Tile Entry', () => {
             assert.isFalse(pickerRoot.classList.contains('open'), 'The picker closes after selection');
         } finally {
             displayRoot.remove();
+            pickerRoot.remove();
+        }
+    });
+
+    it('shows every selectable tile together and supports arrow-key navigation', async () => {
+        const { displayRoot, pickerRoot } = createEntry();
+        try {
+            displayRoot.querySelector('#btn-special-hand').click();
+            displayRoot.querySelector('[data-tile-index="0"]').click();
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            const tiles = [...pickerRoot.querySelectorAll('#palette-tiles-grid .mj-tile')];
+            assert.equal(tiles.length, 34);
+            assert.equal(pickerRoot.querySelectorAll('.palette-tab-btn').length, 0);
+            assert.deepEqual(
+                [...pickerRoot.querySelectorAll('.palette-suit-row')].map(row => row.children.length),
+                [9, 9, 9, 4, 3],
+                'Each suit and honor group has its own row'
+            );
+            assert.isFalse(Boolean(pickerRoot.querySelector('#tile-picker-title')), 'The obvious visible title is omitted');
+            assert.ok(pickerRoot.querySelector('[role="dialog"]').getAttribute('aria-label'), 'The picker remains accessibly named');
+
+            tiles[0].focus();
+            pickerRoot.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+            assert.equal(document.activeElement, tiles[1], 'Right arrow focuses the next tile');
+
+            pickerRoot.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            assert.equal(document.activeElement, tiles[10], 'Down arrow moves to the same column in the next suit row');
+        } finally {
+            displayRoot.remove();
+            pickerRoot.remove();
+        }
+    });
+
+    it('places the picker below its interaction point and clamps it to the viewport', async () => {
+        const { pickerRoot, picker } = createEntry();
+        try {
+            picker.open({ x: 100, y: 120 });
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            const content = pickerRoot.querySelector('.tile-picker-content');
+            const bounds = content.getBoundingClientRect();
+            assert.equal(bounds.top, 128, 'Picker opens below the pointer');
+            assert.ok(bounds.left >= 8, 'Picker remains inside the left viewport edge');
+            assert.ok(bounds.right <= window.innerWidth - 8, 'Picker remains inside the right viewport edge');
+        } finally {
             pickerRoot.remove();
         }
     });
@@ -79,8 +128,7 @@ describe('Integration: Manual Tile Entry', () => {
             assert.equal(pairChip.getBoundingClientRect().height, 26);
             displayRoot.querySelector('[data-meld-index="4"] .mj-tile').click();
             assert.ok(pickerRoot.classList.contains('open'));
-            chooseSuit(pickerRoot, 'honor');
-            chooseTile(pickerRoot, 5);
+            chooseTile(pickerRoot, 32);
 
             assert.equal(hand.melds[4].type, MeldType.PAIR);
             assert.equal(hand.melds[4].getTiles().length, 2);
@@ -96,6 +144,7 @@ describe('Integration: Manual Tile Entry', () => {
         try {
             const toggle = displayRoot.querySelector('.concealed-toggle-btn');
             assert.equal(toggle.getAttribute('aria-pressed'), 'true');
+            assert.ok(toggle.querySelector('img').getAttribute('src').endsWith('concealed.svg'));
             const typeSelector = displayRoot.querySelector('.meld-type-select');
             assert.equal(toggle.getBoundingClientRect().height, typeSelector.getBoundingClientRect().height);
             assert.equal(typeSelector.getBoundingClientRect().height, 26);
@@ -106,7 +155,9 @@ describe('Integration: Manual Tile Entry', () => {
             );
             assert.isFalse(typeSelector.options[0].textContent.includes('('), 'Meld options use compact labels');
             toggle.click();
-            assert.equal(displayRoot.querySelector('.concealed-toggle-btn').getAttribute('aria-pressed'), 'false');
+            const exposedToggle = displayRoot.querySelector('.concealed-toggle-btn');
+            assert.equal(exposedToggle.getAttribute('aria-pressed'), 'false');
+            assert.ok(exposedToggle.querySelector('img').getAttribute('src').endsWith('exposed.svg'));
 
             selectMeldType(displayRoot, 0, MeldType.PUNG);
             chooseTile(pickerRoot);
@@ -117,19 +168,60 @@ describe('Integration: Manual Tile Entry', () => {
         }
     });
 
+    it('resets meld controls to exposed Chows when the hand is cleared', () => {
+        const { display, hand, displayRoot, pickerRoot } = createEntry();
+        try {
+            displayRoot.querySelector('.concealed-toggle-btn').click();
+            selectMeldType(displayRoot, 0, MeldType.PUNG);
+
+            display.resetMeldControls();
+            display.setHand(hand);
+
+            assert.deepEqual(
+                [...displayRoot.querySelectorAll('.meld-type-select')].map(select => Number(select.value)),
+                [MeldType.CHOW, MeldType.CHOW, MeldType.CHOW, MeldType.CHOW],
+                'Every meld selector resets to Chow'
+            );
+            assert.deepEqual(
+                [...displayRoot.querySelectorAll('.concealed-toggle-btn')].map(button => button.getAttribute('aria-pressed')),
+                ['false', 'false', 'false', 'false'],
+                'Every meld resets to visible/exposed'
+            );
+
+            selectMeldType(displayRoot, 0, MeldType.CHOW);
+            chooseTile(pickerRoot);
+            assert.isFalse(hand.melds[0].isConcealed, 'A new meld uses the exposed default');
+        } finally {
+            displayRoot.remove();
+            pickerRoot.remove();
+        }
+    });
+
+    it('uses the compact hand labels and explicit winning-tile selector', () => {
+        const { displayRoot } = createEntry();
+        try {
+            assert.equal(displayRoot.querySelector('#btn-normal-hand').textContent, 'Regular Hand');
+            assert.equal(displayRoot.querySelector('#btn-special-hand').textContent, 'Special Hand');
+            const button = displayRoot.querySelector('.winning-tile-mode-btn');
+            assert.equal(button.textContent, 'Set winning tile');
+            assert.equal(button.getAttribute('aria-pressed'), 'false');
+            button.click();
+            assert.equal(displayRoot.querySelector('.winning-tile-mode-btn').getAttribute('aria-pressed'), 'true');
+            assert.equal(displayRoot.querySelector('.winning-tile-hint').textContent,
+                'Select this, then click the winning tile in your hand.');
+        } finally {
+            displayRoot.remove();
+        }
+    });
+
     it('prevents selecting an invalid chow start tile', () => {
         const { displayRoot, pickerRoot } = createEntry();
         try {
             selectMeldType(displayRoot, 0, MeldType.CHOW);
             assert.equal(
                 pickerRoot.querySelectorAll('#palette-tiles-grid .mj-tile:disabled').length,
-                2,
-                'Ranks eight and nine cannot start a chow'
-            );
-            chooseSuit(pickerRoot, 'honor');
-            assert.equal(
-                pickerRoot.querySelectorAll('#palette-tiles-grid .mj-tile:disabled').length,
-                7
+                13,
+                'Honors and ranks eight and nine cannot start a chow'
             );
             assert.ok(pickerRoot.classList.contains('open'));
         } finally {
@@ -144,8 +236,7 @@ describe('Integration: Manual Tile Entry', () => {
             selectMeldType(displayRoot, 0, MeldType.PUNG);
             chooseTile(pickerRoot);
             displayRoot.querySelector('[data-meld-index="0"] .mj-tile').click();
-            chooseSuit(pickerRoot, 'bamboo');
-            chooseTile(pickerRoot, 1);
+            chooseTile(pickerRoot, 10);
 
             assert.equal(hand.melds[0].type, MeldType.PUNG);
             assert.equal(hand.melds[0].firstTile.type, TileType.BAMBOO);
@@ -160,11 +251,10 @@ describe('Integration: Manual Tile Entry', () => {
         const { hand, displayRoot, pickerRoot } = createEntry();
         try {
             selectMeldType(displayRoot, 0, MeldType.PUNG);
-            chooseSuit(pickerRoot, 'bamboo');
-            chooseTile(pickerRoot);
+            chooseTile(pickerRoot, 9);
 
             selectMeldType(displayRoot, 1, MeldType.PUNG);
-            chooseTile(pickerRoot);
+            chooseTile(pickerRoot, 9);
 
             assert.ok(hand.melds[0].isValid(), 'First pung was entered');
             assert.equal(hand.melds[1].isValid(), false, 'Second pung was rejected');
@@ -181,12 +271,68 @@ describe('Integration: Manual Tile Entry', () => {
         try {
             displayRoot.querySelector('#btn-special-hand').click();
             displayRoot.querySelector('[data-tile-index="0"]').click();
-            chooseSuit(pickerRoot, 'dot');
-            chooseTile(pickerRoot, 2);
+            chooseTile(pickerRoot, 20);
 
             assert.ok(hand.tiles[0].isValid());
             assert.equal(hand.tiles[0].type, TileType.DOT);
             assert.equal(hand.tiles[0].num, 3);
+        } finally {
+            displayRoot.remove();
+            pickerRoot.remove();
+        }
+    });
+
+    it('sets the winning tile with the explicit selector in a 14-tile special hand', () => {
+        const { hand, display, displayRoot, pickerRoot } = createEntry();
+        try {
+            displayRoot.querySelector('#btn-special-hand').click();
+            hand.tableWind = new Tile(TileType.WIND, 1);
+            hand.playerWind = new Tile(TileType.WIND, 1);
+            [
+                [TileType.BAMBOO, 1], [TileType.BAMBOO, 1],
+                [TileType.BAMBOO, 9], [TileType.BAMBOO, 9],
+                [TileType.CHARACTER, 1], [TileType.CHARACTER, 1],
+                [TileType.CHARACTER, 9], [TileType.CHARACTER, 9],
+                [TileType.DOT, 1], [TileType.DOT, 1],
+                [TileType.DOT, 9], [TileType.DOT, 9],
+                [TileType.BAMBOO, 9], [TileType.BAMBOO, 9]
+            ].forEach(([type, num], index) => {
+                hand.tiles[index] = new Tile(type, num);
+            });
+            display.setHand(hand);
+
+            displayRoot.querySelector('.winning-tile-mode-btn').click();
+            displayRoot.querySelector('[data-tile-index="13"]').click();
+
+            assert.isTrue(hand.isValid(), 'The terminal-pair hand obeys tile-copy limits');
+            assert.isTrue(hand.isComplete(), 'Fourteen tiles and a selected winning tile complete the hand');
+            assert.equal(hand.lastTile, 13);
+            assert.ok(displayRoot.querySelector('[data-tile-index="13"]').classList.contains('winning-tile'));
+            assert.equal(displayRoot.querySelector('.winning-tile-mode-btn').getAttribute('aria-pressed'), 'false');
+            assert.isFalse(pickerRoot.classList.contains('open'), 'Choosing the winning tile does not open the tile picker');
+        } finally {
+            displayRoot.remove();
+            pickerRoot.remove();
+        }
+    });
+
+    it('dims special-hand tiles after four copies are already selected', () => {
+        const { hand, display, displayRoot, pickerRoot } = createEntry();
+        try {
+            displayRoot.querySelector('#btn-special-hand').click();
+            const tile = new Tile(TileType.BAMBOO, 9);
+            for (let index = 0; index < 4; index++) hand.tiles[index] = tile.clone();
+            display.setHand(hand);
+
+            displayRoot.querySelector('[data-tile-index="4"]').click();
+            const tileButton = pickerRoot.querySelector(`.mj-tile[data-tile-id="${tile.tileId}"]`);
+            assert.ok(tileButton.disabled, 'A fifth copy cannot be selected into another slot');
+            assert.equal(getComputedStyle(tileButton).opacity, '0.35', 'Unavailable tiles are visibly dimmed');
+
+            displayRoot.querySelector('[data-tile-index="0"]').click();
+            const replacementButton = pickerRoot.querySelector(`.mj-tile[data-tile-id="${tile.tileId}"]`);
+            assert.isFalse(replacementButton.disabled,
+                'Replacing an existing copy with the same tile does not exceed the four-copy limit');
         } finally {
             displayRoot.remove();
             pickerRoot.remove();
@@ -203,27 +349,53 @@ describe('Integration: Manual Tile Entry', () => {
             flowers.setHand(hand);
             assert.isFalse(Boolean(root.querySelector('#flowers-label')), 'Flower tiles render without a heading');
             assert.equal(root.querySelectorAll('.flower-slot').length, 8);
+            assert.equal(getComputedStyle(root.querySelector('.flower-slot'), '::after').content, '""');
             root.querySelector('.flower-slot').click();
             assert.ok(hand.hasFlower(tile));
+            assert.isTrue(root.querySelector('.flower-slot').classList.contains('active'));
+            assert.equal(getComputedStyle(root.querySelector('.flower-slot'), '::after').content, 'none');
             root.querySelector('.flower-slot').click();
             assert.isFalse(hand.hasFlower(tile));
+            assert.isFalse(root.querySelector('.flower-slot').classList.contains('active'));
         } finally {
             root.remove();
         }
     });
 
-    it('sizes condition toggles to match the wind selectors', () => {
+    it('renders compact icon toggles and keeps their state in sync with the hand', () => {
         const root = document.createElement('section');
         document.body.appendChild(root);
         try {
-            new SpecialConditions(root);
-            const windHeight = root.querySelector('#table-wind-select').getBoundingClientRect().height;
-            root.querySelectorAll('.conditions-bar > .condition-pill').forEach(pill => {
-                assert.equal(pill.getBoundingClientRect().height, windHeight);
-            });
+            const conditions = new SpecialConditions(root);
+            const hand = new Hand();
+            conditions.setHand(hand);
+            assert.equal(root.querySelector('label[for="table-wind-select"]').textContent.trim(), 'Table:');
+            assert.equal(root.querySelector('label[for="player-wind-select"]').textContent.trim(), 'Seat:');
+            assert.equal(root.querySelectorAll('.condition-toggles .condition-toggle').length, 5);
+            assert.equal(root.querySelectorAll('.condition-toggles .condition-toggle img').length, 5);
+            const selfDrawn = root.querySelector('#pill-self-drawn');
+            assert.equal(selfDrawn.getAttribute('aria-pressed'), 'false');
+            selfDrawn.click();
+            assert.isTrue(hand.selfDrawn);
+            assert.equal(selfDrawn.getAttribute('aria-pressed'), 'true');
         } finally {
             root.remove();
         }
+    });
+
+    it('provides a reusable accessible two-state push button', () => {
+        let latestState = null;
+        const pushButton = new TwoStatePushButton({
+            label: 'Test toggle',
+            icon: 'img/icons/self-drawn.svg',
+            onToggle: pressed => { latestState = pressed; }
+        });
+        pushButton.element.click();
+
+        assert.equal(pushButton.element.getAttribute('aria-pressed'), 'true');
+        assert.isTrue(latestState);
+        pushButton.setPressed(false);
+        assert.equal(pushButton.element.getAttribute('aria-pressed'), 'false');
     });
 
     it('highlights and clears tiles attributed to a scoring combination', () => {
@@ -232,11 +404,39 @@ describe('Integration: Manual Tile Entry', () => {
         try {
             const display = new HandDisplay(root);
             display.setHand(new Hand());
-            eventBus.emit(Events.HIGHLIGHT_TILES, { meldIndices: [0], tileIndices: [] });
-            assert.equal(root.querySelectorAll('.combination-highlight').length, 3);
+            eventBus.emit(Events.HIGHLIGHT_TILES, {
+                highlightGroups: [
+                    { meldIndices: [0], tileIndices: [] },
+                    { meldIndices: [1], tileIndices: [] }
+                ],
+                meldIndices: [0, 1],
+                tileIndices: []
+            });
+            assert.equal(root.querySelectorAll('.combination-highlight').length, 6);
+            assert.equal(root.querySelectorAll('.combination-highlight-color-0').length, 3);
+            assert.equal(root.querySelectorAll('.combination-highlight-color-1').length, 3);
 
             eventBus.emit(Events.CLEAR_HIGHLIGHT);
             assert.equal(root.querySelectorAll('.combination-highlight').length, 0);
+        } finally {
+            root.remove();
+        }
+    });
+
+    it('highlights only the flower slots attributed to a score', () => {
+        const root = document.createElement('section');
+        document.body.appendChild(root);
+        try {
+            const flowers = new FlowersBar(root);
+            flowers.setHand(new Hand());
+            eventBus.emit(Events.HIGHLIGHT_TILES, { flowerIndices: [0, 5] });
+
+            assert.equal(root.querySelectorAll('.flower-slot.combination-highlight').length, 2);
+            assert.ok(root.querySelector('.flower-slot[data-index="0"]').classList.contains('combination-highlight-color-0'));
+            assert.ok(root.querySelector('.flower-slot[data-index="5"]').classList.contains('combination-highlight-color-1'));
+
+            eventBus.emit(Events.CLEAR_HIGHLIGHT);
+            assert.equal(root.querySelectorAll('.flower-slot.combination-highlight').length, 0);
         } finally {
             root.remove();
         }

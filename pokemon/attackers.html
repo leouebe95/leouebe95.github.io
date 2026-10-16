@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon GO Attacker & Moveset Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-amber-400 mb-2">Pokémon GO Attacker Hub</h1>
+      <p class="text-slate-400">Live data directly synced with game master updates</p>
+    </header>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap gap-4 mb-6 justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700">
+      <div class="flex items-center gap-3">
+        <label for="typeFilter" class="font-semibold text-slate-300">Filter by Type:</label>
+        <select id="typeFilter" class="bg-slate-700 text-white px-3 py-2 rounded-lg border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400">
+          <option value="ALL">All Types</option>
+          <option value="POKEMON_TYPE_FIGHTING">Fighting</option>
+          <option value="POKEMON_TYPE_DRAGON">Dragon</option>
+          <option value="POKEMON_TYPE_FIRE">Fire</option>
+          <option value="POKEMON_TYPE_WATER">Water</option>
+          <option value="POKEMON_TYPE_ELECTRIC">Electric</option>
+          <option value="POKEMON_TYPE_ICE">Ice</option>
+          <option value="POKEMON_TYPE_ROCK">Rock</option>
+          <option value="POKEMON_TYPE_GHOST">Ghost</option>
+          <option value="POKEMON_TYPE_DARK">Dark</option>
+        </select>
+      </div>
+
+      <input type="text" id="searchInput" placeholder="Search Pokémon name..." class="bg-slate-700 text-white px-4 py-2 rounded-lg border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400 w-64" />
+    </div>
+
+    <!-- Status Loading -->
+    <div id="loader" class="text-center py-12 text-amber-400 text-xl font-semibold">
+      Loading live Game Master data...
+    </div>
+
+    <!-- Main Grid -->
+    <div id="pokemonGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+  </div>
+
+  <script>
+    const API_URL = 'https://pokemon-go-api.github.io/pokemon-go-api/api/pokedex.json';
+    let pokemonData = [];
+
+    // Simple type matchup reference table
+    const typeWeaknessMap = {
+      'POKEMON_TYPE_FIGHTING': ['Normal', 'Ice', 'Rock', 'Dark', 'Steel'],
+      'POKEMON_TYPE_DRAGON': ['Dragon'],
+      'POKEMON_TYPE_FIRE': ['Grass', 'Ice', 'Bug', 'Steel'],
+      'POKEMON_TYPE_WATER': ['Fire', 'Ground', 'Rock'],
+      'POKEMON_TYPE_ELECTRIC': ['Water', 'Flying'],
+      'POKEMON_TYPE_ICE': ['Grass', 'Ground', 'Flying', 'Dragon'],
+      'POKEMON_TYPE_ROCK': ['Fire', 'Ice', 'Flying', 'Bug'],
+      'POKEMON_TYPE_GHOST': ['Psychic', 'Ghost'],
+      'POKEMON_TYPE_DARK': ['Psychic', 'Ghost']
+    };
+
+    async function init() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        
+        // Filter out non-primary forms and sort by Base Attack
+        pokemonData = data
+          .filter(p => p.baseStats && p.baseStats.atk)
+          .sort((a, b) => b.baseStats.atk - a.baseStats.atk);
+
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('pokemonGrid').classList.remove('hidden');
+        
+        renderCards(pokemonData.slice(0, 30));
+      } catch (err) {
+        document.getElementById('loader').innerText = 'Failed to load live data. Please try again later.';
+        console.error(err);
+      }
+    }
+
+    function formatName(rawType) {
+      return rawType.replace('POKEMON_TYPE_', '');
+    }
+
+    function renderCards(list) {
+      const grid = document.getElementById('pokemonGrid');
+      grid.innerHTML = '';
+
+      list.forEach(p => {
+        const primaryType = p.primaryType ? p.primaryType.type : 'UNKNOWN';
+        const bestAgainst = typeWeaknessMap[primaryType] ? typeWeaknessMap[primaryType].join(', ') : 'General Coverage';
+
+        const fastMoves = (p.quickMoves ? Object.keys(p.quickMoves) : []).map(m => m.replace('_FAST', '').replace(/_/g, ' ')).slice(0, 3).join(', ');
+        const chargeMoves = (p.cinematicMoves ? Object.keys(p.cinematicMoves) : []).map(m => m.replace(/_/g, ' ')).slice(0, 3).join(', ');
+
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-lg flex flex-col justify-between';
+        
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h3 class="text-xl font-bold text-white">${p.names.English}</h3>
+                <span class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-300 font-semibold uppercase">
+                  ${formatName(primaryType)}
+                </span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-400 uppercase">Base Atk</span>
+                <p class="text-2xl font-black text-amber-400">${p.baseStats.atk}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 text-sm bg-slate-900/60 p-3 rounded-lg border border-slate-700/50">
+              <p class="text-slate-400 text-xs font-semibold uppercase">Best Counter Against:</p>
+              <p class="text-emerald-400 font-medium">${bestAgainst}</p>
+            </div>
+
+            <div class="mt-4 space-y-2 text-xs">
+              <div>
+                <span class="text-slate-400 font-semibold">Fast Moves:</span>
+                <p class="text-slate-200">${fastMoves || 'N/A'}</p>
+              </div>
+              <div>
+                <span class="text-slate-400 font-semibold">Charge Moves:</span>
+                <p class="text-slate-200">${chargeMoves || 'N/A'}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Event Listeners
+    document.getElementById('typeFilter').addEventListener('change', (e) => {
+      const selected = e.target.value;
+      let filtered = pokemonData;
+      if (selected !== 'ALL') {
+        filtered = pokemonData.filter(p => p.primaryType && p.primaryType.type === selected);
+      }
+      renderCards(filtered.slice(0, 30));
+    });
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = pokemonData.filter(p => p.names.English.toLowerCase().includes(query));
+      renderCards(filtered.slice(0, 30));
+    });
+
+    init();
+  </script>
+</body>
+</html>

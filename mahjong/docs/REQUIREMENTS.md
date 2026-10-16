@@ -59,18 +59,25 @@ The application must dynamically switch themes without page reload by updating C
 * **Meld Helper:** Each meld slot offers Chow, Pung, or Kong; choosing a type opens a tile picker where the user selects only the starting tile and the full meld is populated automatically.
 * Clicking a meld, pair, or special-hand tile slot opens the tile picker for replacement or entry. Pair remains a separate pair slot.
 * Flowers and seasons are entered from their dedicated row.
-* Concealed/Melded toggle button per meld slot.
+* A reusable icon-based two-state push button controls Concealed/Melded state and situational scoring options.
+* Tile artwork is displayed at its intrinsic image dimensions without inset padding; only the image corners are subtly rounded.
 * Tile limit enforcement: Maximum 4 identical standard tiles across the hand, maximum 1 of each flower tile.
 
 ### 3.5 Manual Tile Entry (Current Scope)
-* Manual entry uses an on-demand tile picker with suit tabs for Dots, Bamboo, Characters, and Honors; flowers and seasons remain on their dedicated row.
+* Manual entry uses an on-demand tile picker showing all 34 standard tiles together, grouped into separate suit and honor rows, positioned below the pointer or selected slot, and navigable with the arrow keys; flowers and seasons remain on their dedicated row.
 * Selecting a meld type and a starting tile populates a Chow, Pung, or Kong; the pair slot and special-hand slots open the picker when selected.
-* Tile limits are enforced and invalid placements are rejected with visible feedback.
+* A dedicated winning-tile selection control arms one-click selection of a populated hand tile; the selected tile is visibly marked. Winning-tile selection must not depend on double-clicking.
+* A complete 14-tile special hand can be scored without a winning-tile marker; wait-specific patterns are available when a winning tile is selected.
+* Tile limits are enforced and invalid placements are rejected with visible feedback; in a special hand, tile choices with four copies already present are dimmed and disabled (except when replacing one of those copies).
+* Clearing a hand resets all four meld controls to Chow and exposed (not concealed).
 * Camera/photo tile recognition is explicitly deferred until after the manual-entry application is working. It is not part of the current release and must not be represented by fabricated detections.
 
 ### 3.6 Interactive Combination Tile Highlighting
 * In the Score & Combination Breakdown, clicking or hovering over any scoring line item (e.g., *"Pure Straight - 16 pts"* or *"Robbing a Kong - 8 pts"* or *"All Chows - 2 pts"*) emits an event.
-* The application responds by highlighting/glowing the exact corresponding tiles in the hand display that produced that score.
+* The application responds by highlighting/glowing only the corresponding tiles in the hand and flower row that produced that score.
+* Repeated occurrences of the same scoring combination are highlighted as separate groups with distinct colors.
+* Highlighting must not resize, translate, or reflow tiles or melds; mobile meld spacing must preserve the current row wrapping when a score row is hovered, including at a 607px viewport.
+* Hovering over or keyboard-focusing a score row displays a concise definition of that MCR pattern or Riichi yaku.
 
 ### 3.7 Implied / Suppressed Rules Display
 * Under standard Mahjong Competition Rules (MCR), higher-tier rules suppress lower-tier component rules.
@@ -79,6 +86,8 @@ The application must dynamically switch themes without page reload by updating C
 
 ### 3.8 Ruleset Strategy Pattern & Extensibility
 * Default Ruleset: **Chinese Mahjong Competition Rules (MCR / International Rules)** with all 81 official fan rules + flower points.
+* An MCR win must reach at least 8 fan before flower points are added; lower-scoring hands are marked invalid.
+* For a sub-minimum hand, show the invalid notice to the left of the total and color the total red.
 * Extensible strategy interface supporting:
   * **Riichi Rules (Japanese Mahjong):** Yaku, Han, Minipoints (Fu), Dora, Uradora, Tenhou, Chiihou, Renhou.
   * Future rulesets (e.g., Hong Kong, Classical).
@@ -88,7 +97,7 @@ The application must dynamically switch themes without page reload by updating C
 * **Rule Showcase:** User can select any of the 81 MCR rules from a dropdown/modal and instantly load an exemplar hand demonstrating that rule. Curated examples supplement but do not alter the 100-hand legacy library.
 
 ### 3.10 Internationalization (i18n)
-* Pure client-side dictionary system supporting 5 languages:
+* Pure client-side dictionary system supporting 5 languages; rule explanations use the English fallback for other selected languages:
   * English (`en`)
   * French (`fr`)
   * Japanese (`ja`)
@@ -107,9 +116,9 @@ The application must dynamically switch themes without page reload by updating C
 ---
 
 ## 4. Mobile-First Ergonomic Boundaries
-* Minimum touch targets: 44px × 44px.
+* Compact scoring-condition controls stay on a single horizontally scrollable row on narrow screens.
 * Single-hand thumb-accessible bottom actions on mobile viewports (< 768px).
-* CSS Container queries and flex-wrap layouts ensuring tiles shrink proportionally on narrow smartphone screens (360px - 430px) without horizontal body scrolling.
+* CSS Container queries and flex-wrap layouts keep the native-ratio tile images within narrow smartphone screens (360px - 430px) without horizontal body scrolling.
 * Bottom-sheet style modal overlays on small viewports.
 
 ---

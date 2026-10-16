@@ -24,6 +24,8 @@ export class FlowersBar {
             new Tile(TileType.SEASON, 4)  // Winter
         ];
         this._currentHand = null;
+        eventBus.on(Events.HIGHLIGHT_TILES, data => this.highlightFlowers(data.flowerIndices || []));
+        eventBus.on(Events.CLEAR_HIGHLIGHT, () => this.highlightFlowers([]));
         this.render();
     }
 
@@ -68,6 +70,17 @@ export class FlowersBar {
             if (slots[i]) {
                 if (hasIt) slots[i].classList.add('active');
                 else slots[i].classList.remove('active');
+            }
+        });
+    }
+
+    highlightFlowers(indices) {
+        this._root.querySelectorAll('.flower-slot').forEach((slot, index) => {
+            slot.classList.remove('combination-highlight', ...Array.from(
+                { length: 6 }, (_, color) => `combination-highlight-color-${color}`
+            ));
+            if (indices.includes(index)) {
+                slot.classList.add('combination-highlight', `combination-highlight-color-${indices.indexOf(index) % 6}`);
             }
         });
     }

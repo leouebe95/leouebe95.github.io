@@ -12,15 +12,16 @@ export class TilePalette {
     constructor(root) {
         this._root = root;
         this._hand = null;
-        this._activeSuit = 'character';
         this._selectedSlot = { globalIdx: 0, meldIdx: 0 };
         this._activeMeldType = MeldType.CHOW;
         this._tileSet = 'default';
         this._error = '';
+        this._openPosition = { x: 16, y: 16 };
         this._setupListeners();
         this._root.addEventListener('click', event => {
             if (event.target === this._root) this.close();
         });
+        this._root.addEventListener('keydown', event => this._handleNavigationKey(event));
         this.render();
     }
 
@@ -31,7 +32,7 @@ export class TilePalette {
                 this._activeMeldType = slot.meldType;
             }
         });
-        eventBus.on(Events.OPEN_TILE_PICKER, () => this.open());
+        eventBus.on(Events.OPEN_TILE_PICKER, position => this.open(position));
         eventBus.on(Events.CLOSE_TILE_PICKER, () => this.close());
     }
 
@@ -47,66 +48,102 @@ export class TilePalette {
     render() {
         this._root.className = 'modal-backdrop tile-picker-backdrop';
         this._root.innerHTML = `
-            <div class="glass-panel modal-content tile-picker-content" role="dialog" aria-modal="true" aria-labelledby="tile-picker-title">
+            <div class="glass-panel modal-content tile-picker-content" role="dialog" aria-modal="true" aria-label="${t('SELECT_TILE')}">
                 <div class="modal-header">
-                    <h2 id="tile-picker-title">${t('SELECT_TILE')}</h2>
-                    <button class="modal-close-btn" id="btn-close-tile-picker" aria-label="Close">&times;</button>
-                </div>
-                <div class="palette-tabs" id="palette-suit-tabs">
-                    <button class="palette-tab-btn ${this._activeSuit === 'character' ? 'active' : ''}" data-suit="character">${t('CHARACTER')}</button>
-                    <button class="palette-tab-btn ${this._activeSuit === 'bamboo' ? 'active' : ''}" data-suit="bamboo">${t('BAMBOO')}</button>
-                    <button class="palette-tab-btn ${this._activeSuit === 'dot' ? 'active' : ''}" data-suit="dot">${t('DOT')}</button>
-                    <button class="palette-tab-btn ${this._activeSuit === 'honor' ? 'active' : ''}" data-suit="honor">${t('DRAGON')} & ${t('WIND')}</button>
+                    <span class="tile-picker-shortcuts">← ↑ ↓ →</span>
                 </div>
                 <div class="palette-tiles-grid" id="palette-tiles-grid"></div>
                 <p class="palette-error" id="palette-error" role="alert">${this._error}</p>
             </div>
         `;
-        this._root.querySelector('#btn-close-tile-picker').addEventListener('click', () => this.close());
-        this._root.querySelectorAll('#palette-suit-tabs .palette-tab-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                this._activeSuit = button.dataset.suit;
-                this._error = '';
-                this.render();
-                this.open();
-            });
-        });
         this._renderTilesGrid();
     }
 
     _renderTilesGrid() {
         const grid = this._root.querySelector('#palette-tiles-grid');
         grid.innerHTML = '';
-        const tiles = [];
-        if (this._activeSuit === 'character') {
-            for (let i = 1; i <= 9; i++) tiles.push(new Tile(TileType.CHARACTER, i));
-        } else if (this._activeSuit === 'bamboo') {
-            for (let i = 1; i <= 9; i++) tiles.push(new Tile(TileType.BAMBOO, i));
-        } else if (this._activeSuit === 'dot') {
-            for (let i = 1; i <= 9; i++) tiles.push(new Tile(TileType.DOT, i));
-        } else {
-            for (let i = 1; i <= 4; i++) tiles.push(new Tile(TileType.WIND, i));
-            for (let i = 1; i <= 3; i++) tiles.push(new Tile(TileType.DRAGON, i));
+        let tileIndex = 0;
+        [TileType.CHARACTER, TileType.BAMBOO, TileType.DOT, TileType.WIND, TileType.DRAGON]
+            .forEach(type => {
+                const row = document.createElement('div');
+                row.className = 'palette-suit-row';
+                row.dataset.suit = type.name;
+                for (let num = 1; num <= type.len; num++) {
+                    const tile = new Tile(type, num);
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'mj-tile';
+                    button.dataset.tileIndex = tileIndex++;
+                    button.dataset.tileId = tile.tileId;
+                    button.dataset.tileType = tile.type.name;
+                    button.dataset.tileNum = tile.num;
+                    button.title = t(tile.toString());
+                    button.setAttribute('aria-label', t(tile.toString()));
+                    const isInvalidChowStart = this._hand?.isNormal &&
+                        this._selectedSlot.meldIdx !== 4 &&
+                        this._activeMeldType === MeldType.CHOW &&
+                        (!tile.isRegular() || tile.num > 7);
+                    const isCopyLimitReached = this._hand && !this._hand.isNormal &&
+                        this._hand.countTiles()[tile.tileId] -
+                            (this._hand.tiles[this._selectedSlot.globalIdx]?.sameAs(tile) ? 1 : 0) >= 4;
+                    button.disabled = isInvalidChowStart || isCopyLimitReached;
+                    const image = document.createElement('img');
+                    image.src = `img/${this._tileSet}/${tile.fileName()}.png`;
+                    image.alt = t(tile.toString());
+                    button.appendChild(image);
+                    button.addEventListener('click', () => this._handleTilePick(tile));
+                    row.appendChild(button);
+                }
+                grid.appendChild(row);
+            });
+    }
+
+    _handleNavigationKey(event) {
+        if (!this._root.classList.contains('open')) return;
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            this.close();
+            return;
         }
 
-        tiles.forEach(tile => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'mj-tile';
-            button.title = t(tile.toString());
-            button.setAttribute('aria-label', t(tile.toString()));
-            const isInvalidChowStart = this._hand?.isNormal &&
-                this._selectedSlot.meldIdx !== 4 &&
-                this._activeMeldType === MeldType.CHOW &&
-                (!tile.isRegular() || tile.num > 7);
-            button.disabled = isInvalidChowStart;
-            const image = document.createElement('img');
-            image.src = `img/${this._tileSet}/${tile.fileName()}.png`;
-            image.alt = t(tile.toString());
-            button.appendChild(image);
-            button.addEventListener('click', () => this._handleTilePick(tile));
-            grid.appendChild(button);
-        });
+        if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+        event.preventDefault();
+        const current = document.activeElement;
+        const row = current.closest('.palette-suit-row');
+        if (!row) {
+            this._root.querySelector('#palette-tiles-grid .mj-tile:not(:disabled)')
+                ?.focus({ preventScroll: true });
+            return;
+        }
+
+        const currentRow = [...this._root.querySelectorAll('.palette-suit-row')].indexOf(row);
+        const rows = [...this._root.querySelectorAll('.palette-suit-row')];
+        const rowButtons = [...row.querySelectorAll('.mj-tile')];
+        const currentColumn = rowButtons.indexOf(current);
+
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            const step = event.key === 'ArrowLeft' ? -1 : 1;
+            for (let column = currentColumn + step; column >= 0 && column < rowButtons.length; column += step) {
+                if (!rowButtons[column].disabled) {
+                    rowButtons[column].focus({ preventScroll: true });
+                    return;
+                }
+            }
+            return;
+        }
+
+        const step = event.key === 'ArrowUp' ? -1 : 1;
+        for (let rowIndex = currentRow + step; rowIndex >= 0 && rowIndex < rows.length; rowIndex += step) {
+            const candidates = [...rows[rowIndex].querySelectorAll('.mj-tile:not(:disabled)')];
+            candidates.sort((left, right) =>
+                Math.abs([...rows[rowIndex].children].indexOf(left) - currentColumn) -
+                Math.abs([...rows[rowIndex].children].indexOf(right) - currentColumn)
+            );
+            if (candidates.length) {
+                candidates[0].focus({ preventScroll: true });
+                return;
+            }
+        }
     }
 
     _handleTilePick(tile) {
@@ -150,12 +187,36 @@ export class TilePalette {
         if (error) error.textContent = message;
     }
 
-    open() {
+    open(position = {}) {
         this._error = '';
         this._renderTilesGrid();
         const error = this._root.querySelector('#palette-error');
         if (error) error.textContent = '';
+        const { x, y, anchorRect } = position || {};
+        const fallbackRect = anchorRect || { left: 8, bottom: 8 };
+        this._openPosition = {
+            x: Number.isFinite(x) && x > 0 ? x : fallbackRect.left,
+            y: Number.isFinite(y) && y > 0 ? y : fallbackRect.bottom,
+            anchorRect: fallbackRect
+        };
+        const content = this._root.querySelector('.tile-picker-content');
+        content.style.visibility = 'hidden';
         this._root.classList.add('open');
+        requestAnimationFrame(() => {
+            if (!this._root.classList.contains('open')) return;
+            const bounds = content.getBoundingClientRect();
+            const margin = 8;
+            const desiredX = this._openPosition.x;
+            const belowY = this._openPosition.y + 8;
+            const top = belowY + bounds.height <= window.innerHeight - margin
+                ? belowY
+                : Math.max(margin, this._openPosition.y - bounds.height - 8);
+            content.style.left = `${Math.max(margin, Math.min(desiredX, window.innerWidth - bounds.width - margin))}px`;
+            content.style.top = `${top}px`;
+            content.style.visibility = '';
+            const firstTile = this._root.querySelector('#palette-tiles-grid .mj-tile:not(:disabled)');
+            firstTile?.focus({ preventScroll: true });
+        });
     }
 
     close() {

@@ -90,6 +90,8 @@ All models are pure, side-effect-free JavaScript ES6 classes with zero DOM depen
     * `isImplied`: boolean (true if suppressed by a higher rule).
     * `impliedBy`: Name or ID of the parent rule that suppressed it.
     * `tileIndices`: Array of indices in the hand for interactive highlighting.
+    * `highlightGroups`: Exact meld/tile groups for each matching occurrence.
+    * `flowerIndices`: Flower-row slots contributed to the score.
 
 ---
 
@@ -106,6 +108,7 @@ export class RuleSetStrategy {
 
 ### 3.2 `InternationalRules.js` (MCR)
 * Full port of Chinese Mahjong Competition Rules (81 official rules + flower bonus rule).
+* Enforces the MCR 8-fan minimum before flower fan is counted and rejects regular-hand Nine Gates decompositions that are not concealed.
 * **Implied Rule Matrix:** Maintained via rule definitions with `_implies` dependencies.
 * **Pedagogical Enhancement:** Suppressed rules are returned with `points: 0`, `isImplied: true`, `impliedBy: parentRule.name` rather than dropped, fulfilling the pedagogical requirement.
 * **Highlight Attribution:** Each rule computation maps which melds/tiles contributed to its condition.
@@ -131,11 +134,12 @@ Each UI component is an autonomous ES6 class managing its own DOM subtree and co
   * Renders 4 melds + 1 pair or 14 special tiles.
   * Displays concealed/exposed badges.
   * Subscribes to `HIGHLIGHT_TILES` to glow matching tiles.
-* `TilePalette.js`: On-demand tile picker with suit tabs; selecting a meld type opens it to choose the meld's starting tile. Pair and special-hand slots use it for tile entry or replacement.
+* `TilePalette.js`: On-demand contextual picker showing all 34 standard tiles at once, grouped into separate suit and honor rows. It opens beneath the interaction point, clamps to the viewport, and supports arrow-key navigation; flowers and seasons remain on their dedicated row.
 * `SpecialConditions.js`: Single-line status bar for winds and situational modifiers.
 * `ScoreBreakdown.js`:
   * Renders line items with points and implied notes.
   * Emits `HIGHLIGHT_TILES` on hover/click.
+  * Shows an English rule-definition tooltip on hover or keyboard focus; descriptions fall back to English for other locales.
 * Camera/photo recognition is deferred; users enter meld and special-hand tiles through the picker, and flowers through their dedicated row.
 * `SettingsModal.js`: Modal configuration panel.
 * `ExamplesModal.js`: 100 legacy sample hands browser and rule showcase loader.
@@ -144,7 +148,14 @@ Each UI component is an autonomous ES6 class managing its own DOM subtree and co
 * `variables.css`: Design tokens (spacing, typography, transitions, tile dimensions).
 * `themes.css`: The 5 theme definitions using CSS variable overrides on `[data-theme="..."]`.
 * `components.css`: Frosted glass cards, ivory bone tile styling, badges, modals.
-* `mobile.css`: Media queries and mobile ergonomics (44px touch targets, bottom sheets).
+* `mobile.css`: Media queries and mobile ergonomics, including compact scrolling controls and bottom sheets.
+* `two-state-push-button.css`: Standalone styling for the reusable accessible icon toggle.
+
+### 5.3 Compact Toggle Controls and Tile Images
+* `TwoStatePushButton.js` is a reusable accessible icon toggle; each button uses an external SVG and exposes its state through `aria-pressed`.
+* Its visual treatment is isolated in `two-state-push-button.css` for reuse outside the Mahjong app.
+* Supplied Mahjong tile images render at their source dimensions (38×50 px), with no inset and a small rounded image crop.
+* The wind/condition card is above the flowers row. Meld groups wrap into visible rows on narrow screens rather than requiring horizontal scrolling.
 
 ---
 

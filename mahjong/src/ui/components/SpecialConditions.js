@@ -3,6 +3,7 @@
 import { Tile, TileType, BAD_TILE } from '../../core/models/Tile.js';
 import { eventBus, Events } from '../../utils/EventBus.js';
 import { t } from '../../core/i18n/i18n.js';
+import { TwoStatePushButton } from './TwoStatePushButton.js';
 
 /**
  * Single-line compact status bar for table winds and situational scoring modifiers.
@@ -31,20 +32,15 @@ export class SpecialConditions {
     render() {
         this._root.className = 'glass-panel conditions-bar';
         this._root.innerHTML = `
-            <!-- Prevalent Round Wind -->
-            <div style="display: inline-flex; align-items: center; gap: 6px;">
-                <label for="table-wind-select" style="font-size: 12px; font-weight: 600; color: var(--color-accent-gold);">${t('PREVALENT_WIND_LABEL')}:</label>
+            <div class="condition-winds">
+                <label for="table-wind-select">${t('PREVALENT_WIND_LABEL')}:</label>
                 <select id="table-wind-select" class="wind-select">
                     <option value="1">${t('EAST')}</option>
                     <option value="2">${t('SOUTH')}</option>
                     <option value="3">${t('WEST')}</option>
                     <option value="4">${t('NORTH')}</option>
                 </select>
-            </div>
-
-            <!-- Seat Wind -->
-            <div style="display: inline-flex; align-items: center; gap: 6px;">
-                <label for="player-wind-select" style="font-size: 12px; font-weight: 600; color: var(--color-accent-gold);">${t('SEAT_WIND_LABEL')}:</label>
+                <label for="player-wind-select">${t('SEAT_WIND_LABEL')}:</label>
                 <select id="player-wind-select" class="wind-select">
                     <option value="1">${t('EAST')}</option>
                     <option value="2">${t('SOUTH')}</option>
@@ -52,39 +48,8 @@ export class SpecialConditions {
                     <option value="4">${t('NORTH')}</option>
                 </select>
             </div>
-
-            <!-- Self-Drawn -->
-            <div class="condition-pill" id="pill-self-drawn">
-                <span>${t('SELF_DRAWN_LABEL')}</span>
-            </div>
-
-            <!-- Last Tile Draw -->
-            <div class="condition-pill" id="pill-last-draw">
-                <span>${t('LAST_TILE_DRAW_LABEL')}</span>
-            </div>
-
-            <!-- Last Tile Claim -->
-            <div class="condition-pill" id="pill-last-claim">
-                <span>${t('LAST_TILE_CLAIM_LABEL')}</span>
-            </div>
-
-            <!-- Robbing Kong -->
-            <div class="condition-pill" id="pill-robbing-kong">
-                <span>${t('ROBBING_KONG_LABEL')}</span>
-            </div>
-
-            <!-- Replacement Tile -->
-            <div class="condition-pill" id="pill-replacement-tile">
-                <span>${t('REPLACEMENT_TILE_LABEL')}</span>
-            </div>
-
+            <div class="condition-toggles"></div>
             <div class="riichi-condition-group">
-                <div class="condition-pill" id="pill-riichi"><span>${t('RIICHI')}</span></div>
-                <div class="condition-pill" id="pill-double-riichi"><span>${t('DOUBLE_RIICHI')}</span></div>
-                <div class="condition-pill" id="pill-ippatsu"><span>${t('IPPATSU')}</span></div>
-                <div class="condition-pill" id="pill-tenho"><span>${t('TENHO')}</span></div>
-                <div class="condition-pill" id="pill-chiho"><span>${t('CHIHO')}</span></div>
-                <div class="condition-pill" id="pill-renho"><span>${t('RENHO')}</span></div>
                 <div class="indicator-select">
                     <label for="dora-select">${t('DORA')}</label>
                     <select id="dora-select" class="wind-select"></select>
@@ -96,9 +61,42 @@ export class SpecialConditions {
             </div>
         `;
 
+        const toggles = this._root.querySelector('.condition-toggles');
+        [
+            ['pill-self-drawn', 'SELF_DRAWN_LABEL', 'self-drawn.svg', 'selfDrawn'],
+            ['pill-last-draw', 'LAST_TILE_DRAW_LABEL', 'last-draw.svg', 'lastTileDrawn'],
+            ['pill-last-claim', 'LAST_TILE_CLAIM_LABEL', 'last-claim.svg', 'lastExistingTile'],
+            ['pill-robbing-kong', 'ROBBING_KONG_LABEL', 'robbing-kong.svg', 'robbedKong'],
+            ['pill-replacement-tile', 'REPLACEMENT_TILE_LABEL', 'replacement-tile.svg', 'replacementTile']
+        ].forEach(([id, label, icon, prop]) => this._addToggle(toggles, id, label, icon, prop));
+        const riichiGroup = this._root.querySelector('.riichi-condition-group');
+        [
+            ['pill-riichi', 'RIICHI', 'riichi.svg', 'riichi'],
+            ['pill-double-riichi', 'DOUBLE_RIICHI', 'double-riichi.svg', 'doubleRiichi'],
+            ['pill-ippatsu', 'IPPATSU', 'ippatsu.svg', 'ippatsu'],
+            ['pill-tenho', 'TENHO', 'tenho.svg', 'tenho'],
+            ['pill-chiho', 'CHIHO', 'chiho.svg', 'chiho'],
+            ['pill-renho', 'RENHO', 'renho.svg', 'renho']
+        ].forEach(([id, label, icon, prop]) => this._addToggle(riichiGroup, id, label, icon, prop));
+
         this._populateIndicatorOptions();
         this._bindEvents();
         this.setRuleset(this._ruleset);
+    }
+
+    _addToggle(container, id, labelKey, icon, propName) {
+        const button = new TwoStatePushButton({
+            label: t(labelKey),
+            icon: `img/icons/${icon}`,
+            className: 'condition-toggle',
+            onToggle: pressed => {
+                if (!this._hand) return;
+                this._hand[propName] = pressed;
+                eventBus.emit(Events.HAND_CHANGED, this._hand);
+            }
+        }).element;
+        button.id = id;
+        container.appendChild(button);
     }
 
     _populateIndicatorOptions() {
@@ -152,27 +150,6 @@ export class SpecialConditions {
         bindIndicator('#dora-select', 'dora');
         bindIndicator('#uradora-select', 'uradora');
 
-        const bindToggle = (pillId, propName) => {
-            const pill = this._root.querySelector(pillId);
-            pill.addEventListener('click', () => {
-                if (!this._hand) return;
-                this._hand[propName] = !this._hand[propName];
-                this.updateState();
-                eventBus.emit(Events.HAND_CHANGED, this._hand);
-            });
-        };
-
-        bindToggle('#pill-self-drawn', 'selfDrawn');
-        bindToggle('#pill-last-draw', 'lastTileDrawn');
-        bindToggle('#pill-last-claim', 'lastExistingTile');
-        bindToggle('#pill-robbing-kong', 'robbedKong');
-        bindToggle('#pill-replacement-tile', 'replacementTile');
-        bindToggle('#pill-riichi', 'riichi');
-        bindToggle('#pill-double-riichi', 'doubleRiichi');
-        bindToggle('#pill-ippatsu', 'ippatsu');
-        bindToggle('#pill-tenho', 'tenho');
-        bindToggle('#pill-chiho', 'chiho');
-        bindToggle('#pill-renho', 'renho');
     }
 
     _tileFromId(tileId) {
@@ -202,24 +179,25 @@ export class SpecialConditions {
         this._root.querySelector('#uradora-select').value =
             this._hand.uradora.isValid() ? String(this._hand.uradora.tileId) : '';
 
-        const updatePill = (id, active) => {
+        const updateToggle = (id, active, labelKey) => {
             const el = this._root.querySelector(id);
             if (el) {
-                if (active) el.classList.add('active');
-                else el.classList.remove('active');
+                el.setAttribute('aria-pressed', String(active));
+                el.title = t(labelKey);
+                el.setAttribute('aria-label', t(labelKey));
             }
         };
 
-        updatePill('#pill-self-drawn', this._hand.selfDrawn);
-        updatePill('#pill-last-draw', this._hand.lastTileDrawn);
-        updatePill('#pill-last-claim', this._hand.lastExistingTile);
-        updatePill('#pill-robbing-kong', this._hand.robbedKong);
-        updatePill('#pill-replacement-tile', this._hand.replacementTile);
-        updatePill('#pill-riichi', this._hand.riichi);
-        updatePill('#pill-double-riichi', this._hand.doubleRiichi);
-        updatePill('#pill-ippatsu', this._hand.ippatsu);
-        updatePill('#pill-tenho', this._hand.tenho);
-        updatePill('#pill-chiho', this._hand.chiho);
-        updatePill('#pill-renho', this._hand.renho);
+        updateToggle('#pill-self-drawn', this._hand.selfDrawn, 'SELF_DRAWN_LABEL');
+        updateToggle('#pill-last-draw', this._hand.lastTileDrawn, 'LAST_TILE_DRAW_LABEL');
+        updateToggle('#pill-last-claim', this._hand.lastExistingTile, 'LAST_TILE_CLAIM_LABEL');
+        updateToggle('#pill-robbing-kong', this._hand.robbedKong, 'ROBBING_KONG_LABEL');
+        updateToggle('#pill-replacement-tile', this._hand.replacementTile, 'REPLACEMENT_TILE_LABEL');
+        updateToggle('#pill-riichi', this._hand.riichi, 'RIICHI');
+        updateToggle('#pill-double-riichi', this._hand.doubleRiichi, 'DOUBLE_RIICHI');
+        updateToggle('#pill-ippatsu', this._hand.ippatsu, 'IPPATSU');
+        updateToggle('#pill-tenho', this._hand.tenho, 'TENHO');
+        updateToggle('#pill-chiho', this._hand.chiho, 'CHIHO');
+        updateToggle('#pill-renho', this._hand.renho, 'RENHO');
     }
 }
